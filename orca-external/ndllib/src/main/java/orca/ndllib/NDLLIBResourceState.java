@@ -22,17 +22,7 @@
 */
 package orca.ndllib;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
-import javax.swing.ImageIcon;
+import orca.ndllib.ndl.*;
 
 //import orca.ndllib.ndl.ResourceQueryProcessor;
 
@@ -51,44 +41,15 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
-public class GUIResourceState extends GUICommonState {
+public class NDLLIBResourceState extends NDLLIBCommonState {
 	
 	public static final String WORLD_ICON="worldmap3.png";
 	
-	private static GUIResourceState instance = null;
+	private static NDLLIBResourceState instance = null;
 
-	/**
-	 * Transform coordinates into a point
-	 * @author ibaldin
-	 *
-	 */
-	static class LatLonPixelTransformer implements Transformer<OrcaNode,Point2D> {
-		Dimension d;
-		int startOffset;
 
-		public LatLonPixelTransformer(Dimension d) {
-			this.d = d;
-		}
-		
-		/**
-		 * transform a lat
-		 */
-		 public Point2D transform(OrcaNode s) {
-			 if (!(s instanceof OrcaResourceSite))
-				 return null;
-			 OrcaResourceSite rs = (OrcaResourceSite)s;
-			 double latitude = rs.getLat();
-			 double longitude = rs.getLon();
-			 latitude *= d.height/180f;
-			 longitude *= d.width/360f;
-			 latitude = d.height/2 - latitude;
-			 longitude += d.width/2;
-
-			 return new Point2D.Double(longitude,latitude);
-		 }
-	}
 	
-	private GUIResourceState() {
+	private NDLLIBResourceState() {
 		;
 	}
 	
@@ -96,10 +57,10 @@ public class GUIResourceState extends GUICommonState {
 
 	}
 	
-	public static GUIResourceState getInstance() {
+	public static NDLLIBResourceState getInstance() {
 		if (instance == null) {
 			initialize();
-			instance = new GUIResourceState();
+			instance = new NDLLIBResourceState();
 		}
 		return instance;
 	}
@@ -115,7 +76,7 @@ public class GUIResourceState extends GUICommonState {
 //				// run XMLRPC query
 //
 //				try {
-//					final ProgressDialog pd = GUI.getProgressDialog("Contacting registry");
+//					final ProgressDialog pd = NDLLIB.getProgressDialog("Contacting registry");
 //					pd.track(new Task (){
 //
 //						@Override
@@ -128,8 +89,8 @@ public class GUIResourceState extends GUICommonState {
 //						}
 //					});
 //				} catch (Exception ex) {
-//					ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//					ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//					ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//					ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //					ed.setException("Exception encountered while making XMLRPC query: ", ex);
 //					ed.setVisible(true);
 //				}
@@ -159,7 +120,7 @@ public class GUIResourceState extends GUICommonState {
 			}
 		}
 		OrcaResourceSite newOrs = 
-			new OrcaResourceSite(dom, lat, lon);
+			new OrcaResourceSite(dom);
 		newOrs.addDomain(dom);
 		g.addVertex(newOrs);
 		return newOrs;
@@ -171,7 +132,7 @@ public class GUIResourceState extends GUICommonState {
 //		//Layout<OrcaNode, OrcaLink> layout = new StaticLayout<OrcaNode, OrcaLink>(g);
 //		Layout<OrcaNode,OrcaLink> layout = 
 //			new StaticLayout<OrcaNode,OrcaLink>(g,
-//				new GUIResourceState.LatLonPixelTransformer(new Dimension(7000,3500)));
+//				new NDLLIBResourceState.LatLonPixelTransformer(new Dimension(7000,3500)));
 //
 //		//layout.setSize(new Dimension(1000,800));
 //		vv = 
@@ -196,10 +157,10 @@ public class GUIResourceState extends GUICommonState {
 //		
 //		// add map pre-renderer
 //		ImageIcon mapIcon = null;
-//        String imageLocation = GUIResourceState.WORLD_ICON;
+//        String imageLocation = NDLLIBResourceState.WORLD_ICON;
 //        try {
 //            mapIcon = 
-//                    new ImageIcon(GUIResourceState.class.getResource(imageLocation));
+//                    new ImageIcon(NDLLIBResourceState.class.getResource(imageLocation));
 //        } catch(Exception ex) {
 //            System.err.println("Can't load \""+imageLocation+"\"");
 //        }

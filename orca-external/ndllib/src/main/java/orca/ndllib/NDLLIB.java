@@ -51,10 +51,10 @@ import orca.ndl.NdlCommons;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-public class GUI /* implements ComponentListener */{
+public class NDLLIB {
 
 	private static final String FLUKES_HELP_WIKI = "https://geni-orca.renci.org/trac/wiki/flukes";
-	public static final String buildVersion = GUI.class.getPackage()
+	public static final String buildVersion = NDLLIB.class.getPackage()
 			.getImplementationVersion();
 	public static final String aboutText = "ORCA FLUKES "
 			+ (buildVersion == null ? "Eclipse build" : buildVersion)
@@ -67,7 +67,7 @@ public class GUI /* implements ComponentListener */{
 	private String selectedControllerUrl;
 
 	private Properties prefProperties;
-	private static GUI instance = null;
+	private static NDLLIB instance = null;
 
 
 
@@ -85,7 +85,7 @@ public class GUI /* implements ComponentListener */{
 	}
 
 	public static Logger logger() {
-		return GUI.getInstance().getLogger();
+		return NDLLIB.getInstance().getLogger();
 	}
 
 
@@ -104,34 +104,34 @@ public class GUI /* implements ComponentListener */{
 		// Jena stuff needs to be set up early
 		NdlCommons.setGlobalJenaRedirections();
 
-		GUI gui = GUI.getInstance();
+		NDLLIB gui = NDLLIB.getInstance();
 
 	}
 
 	public static void non_gui_save(File f) {
 
-		GUIRequestState.getInstance().setSaveFile(f);
+		NDLLIBRequestState.getInstance().setSaveFile(f);
 
-		if (GUIRequestState.getInstance().getSaveFile() != null) {
+		if (NDLLIBRequestState.getInstance().getSaveFile() != null) {
 			RequestSaver.getInstance().saveGraph(
-					GUIRequestState.getInstance().getSaveFile(),
-					GUIRequestState.getInstance().g,
-					GUIRequestState.getInstance().nsGuid);
+					NDLLIBRequestState.getInstance().getSaveFile(),
+					NDLLIBRequestState.getInstance().g,
+					NDLLIBRequestState.getInstance().nsGuid);
 		} 
 	}
 
 	/**
 	 * Create the application.
 	 */
-	private GUI() {
-		logger = Logger.getLogger(GUI.class.getCanonicalName());
+	private NDLLIB() {
+		logger = Logger.getLogger(NDLLIB.class.getCanonicalName());
 		logger.setLevel(Level.DEBUG);
 		// UIChangeManager.setDefaultTexture(null);
 	}
 
-	public static GUI getInstance() {
+	public static NDLLIB getInstance() {
 		if (instance == null)
-			instance = new GUI();
+			instance = new NDLLIB();
 		return instance;
 	}
 

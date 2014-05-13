@@ -22,30 +22,15 @@
 */
 package orca.ndllib;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import orca.ndllib.ndl.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-//import orca.ndllib.GUI.GuiTabs;
-//import orca.ndllib.GUI.PrefsEnum;
-//import orca.ndllib.irods.IRodsException;
-//import orca.ndllib.irods.IRodsICommands;
-import orca.ndllib.ndl.ManifestLoader;
-import orca.ndllib.ndl.ModifySaver;
-//import orca.ndllib.ui.TextAreaDialog;
-import orca.ndllib.xmlrpc.NDLConverter;
-//import orca.ndllib.xmlrpc.OrcaSMXMLRPCProxy;
 
-//import com.hyperrealm.kiwi.ui.KTextArea;
-//import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
-//import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
-//import com.hyperrealm.kiwi.ui.dialog.KQuestionDialog;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -55,12 +40,12 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
-public class GUIManifestState extends GUICommonState {
-	private static GUIManifestState instance = new GUIManifestState();
+public class NDLLIBManifestState extends NDLLIBCommonState {
+	private static NDLLIBManifestState instance = new NDLLIBManifestState();
 	protected String manifestString;
 	private Date start = null, end = null, newEnd = null;
 
-	public static GUIManifestState getInstance() {
+	public static NDLLIBManifestState getInstance() {
 		return instance;
 	}
 
@@ -116,9 +101,9 @@ public class GUIManifestState extends GUICommonState {
 //	void deleteSlice(String name) {
 //		if ((name == null) || 
 //				(name.length() == 0)) {
-//			KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//			KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //			kmd.setMessage("You must specify a slice id");
-//			kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			kmd.setVisible(true);
 //			return;
 //		}
@@ -126,8 +111,8 @@ public class GUIManifestState extends GUICommonState {
 //		try {
 //			OrcaSMXMLRPCProxy.getInstance().deleteSlice(name);
 //		} catch (Exception ex) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while deleting slice manifest: ", ex);
 //			ed.setVisible(true);
 //		}
@@ -136,15 +121,15 @@ public class GUIManifestState extends GUICommonState {
 //	void modifySlice(String name, String req) {
 //		if ((name == null) || 
 //				(name.length() == 0)) {
-//			KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//			KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //			kmd.setMessage("You must specify a slice id");
-//			kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			kmd.setVisible(true);
 //			return;
 //		}
 //		try {
 //			String s = OrcaSMXMLRPCProxy.getInstance().modifySlice(name, req);
-//			TextAreaDialog tad = new TextAreaDialog(GUI.getInstance().getFrame(), "Modify Output", 
+//			TextAreaDialog tad = new TextAreaDialog(NDLLIB.getInstance().getFrame(), "Modify Output", 
 //					"Modify Output", 
 //					30, 50);
 //			KTextArea ta = tad.getTextArea();
@@ -154,8 +139,8 @@ public class GUIManifestState extends GUICommonState {
 //			tad.pack();
 //			tad.setVisible(true);
 //		} catch (Exception ex) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while modifying slice: ", ex);
 //			ed.setVisible(true);
 //		}
@@ -175,15 +160,15 @@ public class GUIManifestState extends GUICommonState {
 //		// run request manifest from controller
 //		if ((sliceIdField.getText() == null) || 
 //				(sliceIdField.getText().length() == 0)) {
-//			KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//			KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //			kmd.setMessage("You must specify a slice id");
-//			kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			kmd.setVisible(true);
 //			return;
 //		}
 //
 //		try {
-//			GUIManifestState.getInstance().clear();
+//			NDLLIBManifestState.getInstance().clear();
 //
 //			manifestString = OrcaSMXMLRPCProxy.getInstance().sliceStatus(sliceIdField.getText());
 //
@@ -192,17 +177,17 @@ public class GUIManifestState extends GUICommonState {
 //			String realM = stripManifest(manifestString);
 //			if (realM != null) {
 //				if (ml.loadString(realM))
-//					GUI.getInstance().kickLayout(GuiTabs.MANIFEST_VIEW);
+//					NDLLIB.getInstance().kickLayout(GuiTabs.MANIFEST_VIEW);
 //			} else {
-//				KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//				KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //				kmd.setMessage("Error has occurred, check raw controller response for details.");
-//				kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//				kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //				kmd.setVisible(true);
 //				return;
 //			}
 //		} catch (Exception ex) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while querying ORCA for slice manifest: ", ex);
 //			ed.setVisible(true);
 //		}
@@ -217,7 +202,7 @@ public class GUIManifestState extends GUICommonState {
 //				queryManifest();
 //			} else 
 //				if (e.getActionCommand().equals("raw")) {
-//					TextAreaDialog tad = new TextAreaDialog(GUI.getInstance().getFrame(), "Raw manifest", 
+//					TextAreaDialog tad = new TextAreaDialog(NDLLIB.getInstance().getFrame(), "Raw manifest", 
 //							"Raw manifest", 
 //							30, 50);
 //					KTextArea ta = tad.getTextArea();
@@ -230,16 +215,16 @@ public class GUIManifestState extends GUICommonState {
 //					if (e.getActionCommand().equals("delete")) {
 //						if ((sliceIdField.getText() == null) || 
 //								(sliceIdField.getText().length() == 0)) {
-//							KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//							KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //							kmd.setMessage("You must specify a slice id");
-//							kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//							kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //							kmd.setVisible(true);
 //							return;
 //						}
 //
-//						KQuestionDialog kqd = new KQuestionDialog(GUI.getInstance().getFrame(), "Exit", true);
+//						KQuestionDialog kqd = new KQuestionDialog(NDLLIB.getInstance().getFrame(), "Exit", true);
 //						kqd.setMessage("Are you sure you want to delete slice " + sliceIdField.getText());
-//						kqd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//						kqd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //						kqd.setVisible(true);
 //						if (!kqd.getStatus()) 
 //							return;
@@ -249,12 +234,12 @@ public class GUIManifestState extends GUICommonState {
 //						if (e.getActionCommand().equals("listSlices")) {
 //							try {
 //								String[] slices = OrcaSMXMLRPCProxy.getInstance().listMySlices();
-//								OrcaSliceList osl = new OrcaSliceList(GUI.getInstance().getFrame(), slices);
+//								OrcaSliceList osl = new OrcaSliceList(NDLLIB.getInstance().getFrame(), slices);
 //								osl.pack();
 //								osl.setVisible(true);
 //							} catch (Exception ex) {
-//								ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//								ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//								ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//								ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //								ed.setException("Exception encountered while listing user slices: ", ex);
 //								ed.setVisible(true);
 //							}
@@ -263,14 +248,14 @@ public class GUIManifestState extends GUICommonState {
 //								try {
 //									if ((sliceIdField.getText() == null) || 
 //											(sliceIdField.getText().length() == 0)) {
-//										KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//										KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //										kmd.setMessage("You must specify a slice id");
-//										kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//										kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //										kmd.setVisible(true);
 //										return;
 //									}
 //									ModifyTextSetter mts = new ModifyTextSetter(sliceIdField.getText());
-//									TextAreaDialog tad = new TextAreaDialog(GUI.getInstance().getFrame(), mts, 
+//									TextAreaDialog tad = new TextAreaDialog(NDLLIB.getInstance().getFrame(), mts, 
 //											"Modify Request", 
 //											"Cut and paste the modify request into the window", 30, 50);
 //									String txt = ModifySaver.getInstance().getModifyRequest();
@@ -279,8 +264,8 @@ public class GUIManifestState extends GUICommonState {
 //									tad.pack();
 //									tad.setVisible(true);
 //								} catch(Exception ex) {
-//									ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//									ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//									ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//									ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //									ed.setException("Exception encountered while modifying slice: ", ex);
 //									ed.setVisible(true);
 //								} 
@@ -289,7 +274,7 @@ public class GUIManifestState extends GUICommonState {
 //									ModifySaver.getInstance().clear();
 //								} else
 //									if (e.getActionCommand().equals("extend")) {
-//										ReservationExtensionDialog red = new ReservationExtensionDialog(GUI.getInstance().getFrame());
+//										ReservationExtensionDialog red = new ReservationExtensionDialog(NDLLIB.getInstance().getFrame());
 //										red.setFields(new Date());
 //										red.pack();
 //										red.setVisible(true);
@@ -297,24 +282,24 @@ public class GUIManifestState extends GUICommonState {
 //										if (newEnd != null) {
 //											try {
 //												Boolean res = OrcaSMXMLRPCProxy.getInstance().renewSlice(sliceIdField.getText(), newEnd);
-//												KMessageDialog kd = new KMessageDialog(GUI.getInstance().getFrame(), "Result", true);
+//												KMessageDialog kd = new KMessageDialog(NDLLIB.getInstance().getFrame(), "Result", true);
 //												kd.setMessage("The extend operation returned: " + res);
-//												kd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//												kd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //												kd.setVisible(true);
 //												if (res)
 //													resetEndDate();
 //												else
 //													newEnd = null;
 //											} catch (Exception ee) {
-//												ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//												ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//												ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//												ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //												ed.setException("Exception encountered while extending slice: ", ee);
 //												ed.setVisible(true);
 //											}
 //										} else {
-//											KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//											KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //											kmd.setMessage("Invalid new end date.");
-//											kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//											kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //											kmd.setVisible(true);
 //											return;
 //										}
@@ -329,7 +314,7 @@ public class GUIManifestState extends GUICommonState {
 //		resources.addAll(g.getVertices());
 //		resources.addAll(g.getEdges());
 //		
-//		OrcaResourceStateViewer viewer = new OrcaResourceStateViewer(GUI.getInstance().getFrame(), resources, start, end);
+//		OrcaResourceStateViewer viewer = new OrcaResourceStateViewer(NDLLIB.getInstance().getFrame(), resources, start, end);
 //		viewer.pack();
 //		viewer.setVisible(true);
 //	}
@@ -402,9 +387,9 @@ public class GUIManifestState extends GUICommonState {
 //	public void saveManifestToIRods() {
 //		IRodsICommands irods = new IRodsICommands();
 //		if (manifestString == null) {
-//			KMessageDialog md = new KMessageDialog(GUI.getInstance().getFrame(), "Manifest Error", true);
+//			KMessageDialog md = new KMessageDialog(NDLLIB.getInstance().getFrame(), "Manifest Error", true);
 //			md.setMessage("Manifest is empty!");
-//			md.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			md.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			md.setVisible(true);
 //			return;
 //		}
@@ -412,30 +397,30 @@ public class GUIManifestState extends GUICommonState {
 //			String realM = stripManifest(manifestString);
 //			// convert if needed
 //			String iRodsName = IRodsICommands.substituteManifestName();
-//			if (GUI.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("rspec")) {
+//			if (NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("rspec")) {
 //				String rspec = NDLConverter.callConverter(NDLConverter.MANIFEST_TO_RSPEC, new Object[]{realM, sliceIdField.getText()});
 //				irods.saveFile(iRodsName, rspec);
-//			} else if (GUI.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("ndl"))
+//			} else if (NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("ndl"))
 //				irods.saveFile(iRodsName, realM);
 //			else {
-//				ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//				ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//				ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//				ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //				ed.setException("Exception encountered while saving manifest to iRods: ", 
-//						new Exception("unknown format " + GUI.getInstance().getPreference(PrefsEnum.IRODS_FORMAT)));
+//						new Exception("unknown format " + NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT)));
 //				ed.setVisible(true);
 //			}
-//			KMessageDialog md = new KMessageDialog(GUI.getInstance().getFrame(), "Saving to iRods", true);
+//			KMessageDialog md = new KMessageDialog(NDLLIB.getInstance().getFrame(), "Saving to iRods", true);
 //			md.setMessage("Manifest saved as " + iRodsName);
-//			md.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			md.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			md.setVisible(true);
 //		} catch (IRodsException ie) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while saving manifest to iRods: ", ie);
 //			ed.setVisible(true);
 //		} catch (Exception e) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while saving manifest to iRods: ", e);
 //			ed.setVisible(true);
 //		}

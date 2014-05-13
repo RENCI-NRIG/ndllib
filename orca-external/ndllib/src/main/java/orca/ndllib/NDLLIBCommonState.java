@@ -21,12 +21,7 @@
 * IN THE WORK.
 */
 package orca.ndllib;
-
-import java.awt.Container;
-import java.awt.event.ActionListener;
-
-//import com.hyperrealm.kiwi.ui.KTextField;
-
+import orca.ndllib.ndl.*;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -36,7 +31,7 @@ import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
  * @author ibaldin
  *
  */
-public abstract class GUICommonState {
+public abstract class NDLLIBCommonState {
 	SparseMultigraph<OrcaNode, OrcaLink> g = new SparseMultigraph<OrcaNode, OrcaLink>();
 	OrcaNodeCreator nodeCreator = new OrcaNodeCreator(g);
 	OrcaLinkCreator linkCreator = new OrcaLinkCreator(g);
@@ -70,14 +65,6 @@ public abstract class GUICommonState {
 		return saveDirectory;
 	}
 
-//	public void setSliceIdField(KTextField ktf) {
-//		sliceIdField = ktf;
-//	}
-//	
-//	public void setSliceIdFieldText(String t) {
-//		sliceIdField.setText(t);
-//	}
-	
 	public void clear() {
 		nodeCreator.reset();
 		linkCreator.reset();

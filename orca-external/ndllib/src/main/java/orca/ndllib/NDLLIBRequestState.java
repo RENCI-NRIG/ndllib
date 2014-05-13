@@ -23,10 +23,8 @@
 
 package orca.ndllib;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import orca.ndllib.ndl.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,18 +35,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-//import orca.ndllib.GUI.PrefsEnum;
+//import orca.ndllib.NDLLIB.PrefsEnum;
 //import orca.ndllib.irods.IRodsException;
 //import orca.ndllib.irods.IRodsICommands;
-import orca.ndllib.ndl.AdLoader;
-import orca.ndllib.ndl.RequestSaver;
+////import orca.ndllib.ndl.AdLoader;
+////import orca.ndllib.ndl.RequestSaver;
 //import orca.ndllib.ui.ChooserWithNewDialog;
-//import orca.ndllib.ui.TextAreaDialog;
-import orca.ndllib.util.IP4Assign;
-import orca.ndllib.xmlrpc.NDLConverter;
+////import orca.ndllib.ui.TextAreaDialog;
+//import orca.ndllib.util.IP4Assign;
+////import orca.ndllib.xmlrpc.NDLConverter;
 //import orca.ndllib.xmlrpc.OrcaSMXMLRPCProxy;
-import orca.ndl.NdlAbstractDelegationParser;
-import orca.ndl.NdlException;
+////import orca.ndl.NdlAbstractDelegationParser;
+////import orca.ndl.NdlException;
 
 //import com.hyperrealm.kiwi.ui.KTextArea;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
@@ -64,11 +62,11 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
 /**
- * Singleton class that holds shared GUI request state. Since dialogs are all modal, no need for locking for now.
+ * Singleton class that holds shared NDLLIB request state. Since dialogs are all modal, no need for locking for now.
  * @author ibaldin
  *
  */
-public class GUIRequestState extends GUICommonState  {
+public class NDLLIBRequestState extends NDLLIBCommonState  {
 	private static final String IMAGE_NAME_SUFFIX = "-req";
 	public static final String NO_GLOBAL_IMAGE = "None";
 	public static final String NO_DOMAIN_SELECT = "System select";
@@ -76,7 +74,7 @@ public class GUIRequestState extends GUICommonState  {
 	public static final String NO_NODE_DEPS="No dependencies";
 	private static final String RDF_START = "<rdf:RDF";
 	private static final String RDF_END = "</rdf:RDF>";
-	private static GUIRequestState instance = null;
+	private static NDLLIBRequestState instance = null;
 	
 	// is it openflow (and what version [null means non-of])
 	private String ofNeededVersion = null;
@@ -111,7 +109,7 @@ public class GUIRequestState extends GUICommonState  {
 	}
 
 	
-	private GUIRequestState() {
+	private NDLLIBRequestState() {
 		term = new OrcaReservationTerm();
 		definedImages = new HashMap<String, OrcaImage>();
 		// Set some defaults for the Edges...
@@ -119,10 +117,10 @@ public class GUIRequestState extends GUICommonState  {
 		linkCreator.setDefaultLatency(5000);
 	}
 	
-	public static GUIRequestState getInstance() {
+	public static NDLLIBRequestState getInstance() {
 		if (instance == null) {
 			initialize();
-			instance = new GUIRequestState();
+			instance = new NDLLIBRequestState();
 		}
 		return instance;
 	}
@@ -148,7 +146,7 @@ public class GUIRequestState extends GUICommonState  {
 		saveFile = null;
 		
 		//definedImages = new HashMap<String, OrcaImage>();
-		//GUI.getInstance().getImagesFromPreferences();
+		//NDLLIB.getInstance().getImagesFromPreferences();
 	}
 	
 	public OrcaReservationTerm getTerm() {
@@ -471,13 +469,13 @@ public class GUIRequestState extends GUICommonState  {
 	 */
 //	public class RequestButtonListener implements ActionListener {
 //		public void actionPerformed(ActionEvent e) {
-//			GUI.getInstance().hideNodeMenu();
+//			NDLLIB.getInstance().hideNodeMenu();
 //			if (e.getActionCommand().equals("images")) {
-//				icd = new ImageChooserDialog(GUI.getInstance().getFrame());
+//				icd = new ImageChooserDialog(NDLLIB.getInstance().getFrame());
 //				icd.pack();
 //				icd.setVisible(true);
 //			} else if (e.getActionCommand().equals("reservation")) {
-//				rdd = new ReservationDetailsDialog(GUI.getInstance().getFrame());
+//				rdd = new ReservationDetailsDialog(NDLLIB.getInstance().getFrame());
 //				rdd.setFields(getDomainInReservation(),
 //						getTerm(), ofNeededVersion);
 //				rdd.pack();
@@ -494,32 +492,32 @@ public class GUIRequestState extends GUICommonState  {
 //				nodeCreator.setCurrent(OrcaNodeEnum.STORAGE);
 //			} else if (e.getActionCommand().equals("autoip")) {
 //				if (!autoAssignIPAddresses()) {
-//					KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//					KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //					kmd.setMessage("Unable auto-assign IP addresses.");
-//					kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//					kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //					kmd.setVisible(true);
 //				}
 //			} else if (e.getActionCommand().equals("submit")) {
 //				if ((sliceIdField.getText() == null) || 
 //						(sliceIdField.getText().length() == 0)) {
-//					KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//					KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //					kmd.setMessage("You must specify a slice id");
-//					kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//					kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //					kmd.setVisible(true);
 //					return;
 //				}
 //				String ndl = RequestSaver.getInstance().convertGraphToNdl(g, nsGuid);
 //				if ((ndl == null) ||
 //						(ndl.length() == 0)) {
-//					KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//					KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //					kmd.setMessage("Unable to convert graph to NDL.");
-//					kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//					kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //					kmd.setVisible(true);
 //					return;
 //				}
 //				try {
 //					String status = OrcaSMXMLRPCProxy.getInstance().createSlice(sliceIdField.getText(), ndl);
-//					TextAreaDialog tad = new TextAreaDialog(GUI.getInstance().getFrame(), "ORCA Response", 
+//					TextAreaDialog tad = new TextAreaDialog(NDLLIB.getInstance().getFrame(), "ORCA Response", 
 //							"ORCA Controller response", 
 //							25, 50);
 //					KTextArea ta = tad.getTextArea();
@@ -528,8 +526,8 @@ public class GUIRequestState extends GUICommonState  {
 //					tad.pack();
 //			        tad.setVisible(true);
 //				} catch (Exception ex) {
-//					ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//					ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//					ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//					ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //					ed.setException("Exception encountered while submitting slice request to ORCA: ", ex);
 //					ed.setVisible(true);
 //				}
@@ -592,8 +590,8 @@ public class GUIRequestState extends GUICommonState  {
 //			}
 //			
 //		} catch (Exception ex) {
-////			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-////			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+////			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+////			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 ////			ed.setException("Exception encountered while querying the SM for available resources: ", ex);
 ////			ed.setVisible(true);
 //		}
@@ -661,34 +659,34 @@ public class GUIRequestState extends GUICommonState  {
 //		String ndl = RequestSaver.getInstance().convertGraphToNdl(g, nsGuid);
 //		if ((ndl == null) ||
 //				(ndl.length() == 0)) {
-//			KMessageDialog kmd = new KMessageDialog(GUI.getInstance().getFrame());
+//			KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
 //			kmd.setMessage("Unable to convert graph to NDL.");
-//			kmd.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			kmd.setVisible(true);
 //			return;
 //		}
 //		try {
 //			// convert if needed
-//			if (GUI.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("rspec")) {
+//			if (NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("rspec")) {
 //				String rspec = NDLConverter.callConverter(NDLConverter.RSPEC3_TO_NDL, new Object[]{ndl, sliceIdField.getText()});
 //				irods.saveFile(IRodsICommands.substituteRequestName(), rspec);
-//			} else if (GUI.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("ndl"))
+//			} else if (NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("ndl"))
 //				irods.saveFile(IRodsICommands.substituteRequestName(), ndl);
 //			else {
-//				ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//				ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//				ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//				ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //				ed.setException("Exception encountered while saving request to iRods: ", 
-//						new Exception("unknown format " + GUI.getInstance().getPreference(PrefsEnum.IRODS_FORMAT)));
+//						new Exception("unknown format " + NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT)));
 //				ed.setVisible(true);
 //			}
 //		} catch (IRodsException ie) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while saving request to iRods: ", ie);
 //			ed.setVisible(true);
 //		} catch (Exception e) {
-//			ExceptionDialog ed = new ExceptionDialog(GUI.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(GUI.getInstance().getFrame());
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while saving request to iRods: ", e);
 //			ed.setVisible(true);
 //		}
@@ -698,7 +696,7 @@ public class GUIRequestState extends GUICommonState  {
 		return true;
 		// for each link and switch assign IP addresses
 		// treat node groups as switches
-		//int mpMask = Integer.parseInt(GUI.getInstance().getPreference(PrefsEnum.AUTOIP_MASK));
+		//int mpMask = Integer.parseInt(NDLLIB.getInstance().getPreference(PrefsEnum.AUTOIP_MASK));
 //		IP4Assign ipa = new IP4Assign(mpMask);
 //
 //		for(OrcaLink ol: g.getEdges()) {
