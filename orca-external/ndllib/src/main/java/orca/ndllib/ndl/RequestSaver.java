@@ -23,9 +23,6 @@
 
 package orca.ndllib.ndl;
 
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,6 +37,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import orca.ndllib.NDLLIB;
+import orca.ndllib.NDLLIBRequestState;
+import orca.ndllib.OrcaCrossconnect;
+import orca.ndllib.OrcaImage;
+import orca.ndllib.OrcaLink;
+import orca.ndllib.OrcaNode;
+import orca.ndllib.OrcaNodeGroup;
+import orca.ndllib.OrcaStitchPort;
+import orca.ndllib.OrcaStorageNode;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlException;
 import orca.ndl.NdlGenerator;
@@ -48,6 +54,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Resource;
+//import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -86,14 +93,8 @@ public class RequestSaver {
 		dm.put("NICTA (Sydney, Australia) XO Rack", "nictavmsite.rdf#nictavmsite");
 		dm.put("FIU (Miami, FL USA) XO Rack", "fiuvmsite.rdf#fiuvmsite");
 		dm.put("UH (Houston, TX USA) XO Rack", "uhvmsite.rdf#uhvmsite");
+		dm.put("NCSU (Raleigh, NC USA) XO Rack", "ncsuvmsite.rdf#ncsuvmsite");
 		dm.put("UvA (Amsterdam, The Netherlands) XO Rack", "uvanlvmsite.rdf#uvanlvmsite");
-		dm.put("UFL (Gainesville, FL USA) XO Rack", "uflvmsite.rdf#uflvmsite");
-		dm.put("UCD (Davis, CA USA) XO Rack", "ucdvmsite.rdf#ucdvmsite");
-		dm.put("OSF (Oakland, CA USA) XO Rack", "osfvmsite.rdf#osfvmsite");
-		dm.put("SL (Chicago, IL USA) XO Rack", "slvmsite.rdf#slvmsite");
-		dm.put("WVN (UCS-B series rack in Morgantown, WV, USA)", "wvnvmsite.rdf#wvnvmsite");
-		dm.put("NCSU (UCS-B series rack at NCSU)", "ncsuvmsite.rdf#ncsuvmsite");
-		dm.put("NCSU2 (UCS-C series rack at NCSU)", "ncsu2vmsite.rdf#ncsu2vmsite");
 		dm.put(OrcaStitchPort.STITCHING_DOMAIN_SHORT_NAME, "orca.rdf#Stitching");
 
 		domainMap = Collections.unmodifiableMap(dm);
@@ -105,25 +106,10 @@ public class RequestSaver {
 
 		ndm.put("RENCI XO Rack Net", "rciNet.rdf#rciNet");
 		ndm.put("BBN/GPO XO Rack Net", "bbnNet.rdf#bbnNet");
-		ndm.put("Duke CS Rack Net", "dukeNet.rdf#dukeNet");
-		ndm.put("UNC BEN XO Rack Net", "uncNet.rdf#uncNet");
-		ndm.put("NICTA XO Rack Net", "nictaNet.rdf#nictaNet");
 		ndm.put("FIU XO Rack Net", "fiuNet.rdf#fiuNet");
-		ndm.put("UH XO Rack Net", "uhNet.rdf#uhNet");
-		ndm.put("NCSU XO Rack Net", "ncsuNet.rdf#ncsuNet");
-		ndm.put("UvA XO Rack Net", "uvanlNet.rdf#uvanlNet");
-		ndm.put("UFL XO Rack Net", "uflNet.rdf#uflNet");
-		ndm.put("UCD XO Rack Net", "ucdNet.rdf#ucdNet");
-		ndm.put("OSF XO Rack Net", "osfNet.rdf#osfNet");
-		ndm.put("SL XO Rack Net", "slNet.rdf#slNet");
-		ndm.put("WVN XO Rack Net", "wvnNet.rdf#wvnNet");
-		ndm.put("NCSU XO Rack Net", "ncsuNet.rdf#ncsuNet");
-		ndm.put("NCSU2 XO Rack Net", "ncs2Net.rdf#ncsuNet");
-		
-		ndm.put("I2 ION/AL2S", "ion.rdf#ion");
 		ndm.put("NLR Net", "nlr.rdf#nlr");
 		ndm.put("BEN Net", "ben.rdf#ben");
-	
+		
 		netDomainMap = Collections.unmodifiableMap(ndm);
 	}
 	
@@ -325,12 +311,6 @@ public class RequestSaver {
 		Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(e);
 		if ((pn.getFirst() instanceof OrcaCrossconnect) ||
 				(pn.getSecond() instanceof OrcaCrossconnect))
-			return true;
-		return false;
-	}
-	
-	private boolean colorLink(OrcaLink e) {
-		if (e instanceof OrcaColorLink) 
 			return true;
 		return false;
 	}
@@ -581,7 +561,7 @@ public class RequestSaver {
 					}
 				}
 				
-				// node dependencies and color extensions (done afterwards to be sure all nodes are declared)
+				// node dependencies (done afterwards to be sure all nodes are declared)
 				for (OrcaNode n: NDLLIBRequestState.getInstance().getGraph().getVertices()) {
 					Individual ni = ngen.getRequestIndividual(n.getName());
 					for(OrcaNode dep: n.getDependencies()) {
@@ -590,8 +570,6 @@ public class RequestSaver {
 							ngen.addDependOnToIndividual(depI, ni);
 						}
 					}
-					// see if any color extensions have been added
-					processColorOnNE(n);
 				}
 				
 				// crossconnects are vertices in the graph, but are actually a kind of link
@@ -628,11 +606,6 @@ public class RequestSaver {
 						if (fakeLink(e))
 							continue;
 						
-						if (colorLink(e)) {
-							processColorLink((OrcaColorLink)e);
-							continue;
-						}
-						
 						checkLinkSanity(e);
 						
 						Individual ei = ngen.declareNetworkConnection(e.getName());
@@ -652,9 +625,6 @@ public class RequestSaver {
 						Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(e);
 						processNodeAndLink(pn.getFirst(), e, ei);
 						processNodeAndLink(pn.getSecond(), e, ei);
-						
-						// link color extensions
-						processColorOnNE(e);
 					}
 				}
 				
@@ -662,7 +632,11 @@ public class RequestSaver {
 				res = getFormattedOutput(ngen, outputFormat);
 
 			} catch (Exception e) {
-		
+//				ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//				ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
+//				ed.setException("Exception encountered while converting graph to NDL-OWL: ", e);
+//				ed.setVisible(true);
+				e.printStackTrace();
 				return null;
 			} finally {
 				if (ngen != null)
@@ -683,8 +657,10 @@ public class RequestSaver {
 		assert(f != null);
 
 		String ndl = convertGraphToNdl(g, nsGuid);
-		if (ndl == null)
+		if (ndl == null){
+			System.out.println("saveGraph: ndl == null");
 			return false;
+		}
 		
 		try{
 			FileOutputStream fsw = new FileOutputStream(f);
@@ -693,10 +669,13 @@ public class RequestSaver {
 			out.close();
 			return true;
 		} catch(FileNotFoundException e) {
+			System.out.println("saveGraph: FileNotFoundException");
 			;
 		} catch(UnsupportedEncodingException ex) {
+			System.out.println("saveGraph: UnsupportedEncodingException");
 			;
 		} catch(IOException ey) {
+			System.out.println("saveGraph: IOException");
 			;
 		} 
 		return false;
@@ -822,42 +801,5 @@ public class RequestSaver {
 	public static String sanitizePostBootScript(String s) {
 		// no longer needed
 		return s;
-	}
-	
-	// FIXME: order of nodes is random here and color links must
-	// be directional
-	private void processColorLink(OrcaColorLink e) throws NdlException {
-		// Declare a new color and save its key map and blob
-		
-		Individual colorI = ngen.declareColor(e.getColor().getLabel(), 
-				e.getColor().getKeys(), e.getColor().getBlob(), e.getColor().getXMLBlobState());
-		
-		Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(e);
-		
-		Individual fromI = ngen.getRequestIndividual(pn.getFirst().getName());
-		Individual toI = ngen.getRequestIndividual(pn.getSecond().getName());
-		
-		if ((fromI != null) && (toI != null)) {
-			ngen.encodeColorDependency(fromI, toI, colorI);
-		} else
-			throw new NdlException("Null resource as head or tail of color link " + e.getLabel());
-	}
-	
-	/**
-	 * good for nodes and links
-	 * @param or
-	 * @throws NdlException
-	 */
-	private void processColorOnNE(OrcaResource or) throws NdlException {
-		for(OrcaColor color: or.getColors()) {
-			Individual colorI = ngen.declareColor(color.getLabel(), 
-				color.getKeys(), color.getBlob(), color.getXMLBlobState());
-			Individual neI = ngen.getRequestIndividual(or.getName());
-			if (neI != null) { 
-				ngen.addColorToIndividual(neI, colorI);
-			} else
-				throw new NdlException("Null resource" + or.getName() + " with color extension");
-				
-		}
 	}
 }

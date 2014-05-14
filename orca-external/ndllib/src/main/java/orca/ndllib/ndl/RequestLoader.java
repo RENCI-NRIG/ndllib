@@ -22,9 +22,6 @@
 */
 package orca.ndllib.ndl;
 
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +34,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import orca.ndl.INdlColorRequestListener;
+import orca.ndllib.NDLLIB;
+import orca.ndllib.NDLLIBRequestState;
+import orca.ndllib.OrcaCrossconnect;
+import orca.ndllib.OrcaImage;
+import orca.ndllib.OrcaLink;
+import orca.ndllib.OrcaNode;
+import orca.ndllib.OrcaNodeGroup;
+import orca.ndllib.OrcaReservationTerm;
+import orca.ndllib.OrcaStitchPort;
+import orca.ndllib.OrcaStorageNode;
 import orca.ndl.INdlRequestModelListener;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlRequestParser;
@@ -52,13 +58,28 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class RequestLoader {
+public class RequestLoader implements INdlRequestModelListener {
 
 	private OrcaReservationTerm term = new OrcaReservationTerm();
 	private String reservationDomain = null;
 	private Map<String, OrcaNode> nodes = new HashMap<String, OrcaNode>();
-	private Map<String, OrcaResource> links = new HashMap<String, OrcaResource>();
+	private Map<String, Object> links = new HashMap<String, Object>();
 	private Map<String, OrcaNode> interfaceToNode = new HashMap<String, OrcaNode>();
+
+    
+    public Map<String, OrcaNode> getNodes(){
+	return nodes;
+    }
+    
+    public Map<String, Object> getLinks(){
+	return links;
+    }
+
+    public Map<String, OrcaNode> getInterfaceToNode(){
+	return interfaceToNode;
+    }
+    
+    
 
 	/**
 	 * Load from file
@@ -81,14 +102,19 @@ public class RequestLoader {
 			
 			bin.close();
 			
-			//NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
-			//nrp.addColorListener(this);
-			//NDLLIB.logger().debug("Parsing request");
-			//nrp.processRequest();
+			NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
+			NDLLIB.logger().debug("Parsing request");
+			nrp.processRequest();
 			
-			//nrp.freeModel();
+			nrp.freeModel();
 			
 		} catch (Exception e) {
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
+//			ed.setException("Exception encountered while loading file " + f.getName() + ":", e);
+//			ed.setVisible(true);
+			NDLLIB.logger().error(e);
+			e.printStackTrace();
 			return false;
 		} 
 		
@@ -96,19 +122,24 @@ public class RequestLoader {
 	}
 	
 	/**
-	 * Load from model contained in a string
+	 * Load from string
 	 * @param f
 	 * @return
 	 */
 	public boolean loadGraph(String f) {
 		try {
-			//NdlRequestParser nrp = new NdlRequestParser(f, this);
+			NdlRequestParser nrp = new NdlRequestParser(f, this);
 			NDLLIB.logger().debug("Parsing request");
-			//nrp.processRequest();
+			nrp.processRequest();
 			
-			//nrp.freeModel();
+			nrp.freeModel();
 			
 		} catch (Exception e) {
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
+//			ed.setException("Exception encountered while loading graph from string:", e);
+//			ed.setVisible(true);
+			NDLLIB.logger().error(e);
 			return false;
 		} 
 		
@@ -389,7 +420,6 @@ public class RequestLoader {
 	/**
 	 * Process a broadcast link
 	 */
-	
 	public void ndlBroadcastConnection(Resource bl, OntModel om,
 			long bandwidth, List<Resource> interfaces) {
 		NDLLIB.logger().debug("BroadcastConnection: " + bl);
@@ -415,62 +445,5 @@ public class RequestLoader {
 			}
 		}
 		links.put(bl.getURI(), oc);
-	}
-
-	
-	public void ndlResourceColor(Resource ne, Resource color, String label) {
-		//System.out.println("Found color resource " + color + ":" + label + " on network element " + ne);
-		
-		//System.out.println(NdlCommons.getColorBlob(color));
-		//System.out.println(NdlCommons.getColorBlobXML(color, true));
-		//System.out.println(NdlCommons.getColorKeys(color));
-		
-		// find the resource
-		OrcaResource or = null;
-		
-		if (nodes.get(ne.getURI()) != null)
-			or = nodes.get(ne.getURI());
-		else if (links.get(ne.getURI()) != null)
-			or = links.get(ne.getURI());
-			
-		OrcaColor oc = new OrcaColor(label);
-		oc.addKeys(NdlCommons.getColorKeys(color));
-		if (NdlCommons.getColorBlob(color) != null)
-			oc.setBlob(NdlCommons.getColorBlob(color));
-		else { 
-			oc.setBlob(NdlCommons.getColorBlobXML(color, true));
-			oc.setXMLBlobState(true);
-		}
-		
-		if (or != null)
-			or.addColor(oc);
-	}
-
-	
-	public void ndlColorDependency(Resource fromNe, Resource toNe, Resource color, String label) {
-		//System.out.println("Found color dependency from " + fromNe + " to " + toNe + " with color " + color + ":" + label);
-		
-		//System.out.println(NdlCommons.getColorBlob(color));
-		//System.out.println(NdlCommons.getColorBlobXML(color, true));
-		//System.out.println(NdlCommons.getColorKeys(color));
-		
-		OrcaNode fromOr = null, toOr = null;
-		
-		fromOr = nodes.get(fromNe.getURI());
-		toOr = nodes.get(toNe.getURI());
-		
-		if ((fromOr == null) || (toOr == null))
-			return;
-		
-		OrcaColorLink ocl = new OrcaColorLink(label);
-		
-		ocl.getColor().addKeys(NdlCommons.getColorKeys(color));
-		if (NdlCommons.getColorBlob(color) != null)
-			ocl.getColor().setBlob(NdlCommons.getColorBlob(color));
-		else { 
-			ocl.getColor().setBlob(NdlCommons.getColorBlobXML(color, true));
-			ocl.getColor().setXMLBlobState(true);
-		}
-		NDLLIBRequestState.getInstance().getGraph().addEdge(ocl, new Pair<OrcaNode>(fromOr, toOr), EdgeType.UNDIRECTED);
 	}
 }

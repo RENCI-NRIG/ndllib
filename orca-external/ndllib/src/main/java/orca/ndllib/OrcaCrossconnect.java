@@ -20,14 +20,15 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.ndl;
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
+package orca.ndllib;
 
 import java.util.Collection;
 import java.util.Map.Entry;
 
+import javax.swing.ImageIcon;
+
 import edu.uci.ics.jung.graph.util.Pair;
+import edu.uci.ics.jung.visualization.LayeredIcon;
 
 /*
 * Copyright (c) 2011 RENCI/UNC Chapel Hill 
@@ -85,7 +86,7 @@ public class OrcaCrossconnect extends OrcaNode {
 	 * Create a detailed printout of properties
 	 * @return
 	 */
-	
+	@Override
 	public String getViewerText() {
 		String viewText = "";
 		viewText += "Node name: " + name;
@@ -126,6 +127,4 @@ public class OrcaCrossconnect extends OrcaNode {
 		}
 		return false;
     }
-    
-
 }

@@ -26,6 +26,8 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
+
+
 /**
  * XMLRPC Proxy singleton for ORCA Actor Registry (partial)
  * @author ibaldin
@@ -92,7 +94,11 @@ public class RegistryXMLRPCProxy {
     					} catch (NoSuchAlgorithmException e) {
     						;
     					} catch (Exception e) {
-    						
+//    						ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//    						ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
+//    						ed.setException("Exception encountered while contacting ORCA registry " + 
+//    								NDLLIB.getInstance().getPreference(NDLLIB.PrefsEnum.ORCA_REGISTRY), e);
+//    						ed.setVisible(true);
     					}
     				}
     			}

@@ -27,7 +27,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 
 /**
- * holds common state for GUI panes
+ * holds common state for  panes
  * @author ibaldin
  *
  */

@@ -1,13 +1,10 @@
-package orca.ndllib.ndl;
-
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
+package orca.ndllib;
 
 import java.util.Map.Entry;
 
-import orca.ndllib.NDLLIB.PrefsEnum;
+import javax.swing.ImageIcon;
 
-
+import edu.uci.ics.jung.visualization.LayeredIcon;
 
 /*
 * Copyright (c) 2013 RENCI/UNC Chapel Hill 
@@ -69,7 +66,7 @@ public class OrcaStitchPort extends OrcaNode {
 	 * Create a detailed printout of properties
 	 * @return
 	 */
-	
+	@Override
 	public String getViewerText() {
 		String viewText = "";
 		viewText += "Stitch port: " + name;
@@ -84,6 +81,4 @@ public class OrcaStitchPort extends OrcaNode {
 		}
 		return viewText;
 	}
-	
- 
 }

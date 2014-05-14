@@ -98,7 +98,7 @@ public class NDLLIB {
 	}
 
 	/**
-	 * Launch the non-GUI application.
+	 * Launch the non- application.
 	 */
 	public static void non_gui_main() {
 		// Jena stuff needs to be set up early

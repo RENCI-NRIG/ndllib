@@ -1,10 +1,11 @@
-package orca.ndllib.ndl;
-
-import orca.ndllib.ndl.*;
+package orca.ndllib;
 
 import java.util.Map;
 
+import javax.swing.ImageIcon;
+
 import edu.uci.ics.jung.graph.util.Pair;
+import edu.uci.ics.jung.visualization.LayeredIcon;
 
 /**
  * Orca storage node implementation
@@ -37,7 +38,7 @@ public class OrcaStorageNode extends OrcaNode {
 	 * Create a detailed printout of properties
 	 * @return
 	 */
-	
+	@Override
 	public String getViewerText() {
 		String viewText = "";
 		viewText += "Storage node: " + name;
@@ -89,6 +90,4 @@ public class OrcaStorageNode extends OrcaNode {
 	public String getMntPoint() {
 		return hasMntPoint;
 	}
-	
-   
 }

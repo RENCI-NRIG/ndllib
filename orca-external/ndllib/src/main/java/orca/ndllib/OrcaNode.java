@@ -20,28 +20,34 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.ndl;
+package orca.ndllib;
 
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
-
+import java.awt.Color;
+import java.awt.Shape;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.geom.Ellipse2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.graph.util.Pair;
-//import edu.uci.ics.jung.visualization.LayeredIcon;
-//import edu.uci.ics.jung.visualization.renderers.Checkmark;
+import edu.uci.ics.jung.visualization.LayeredIcon;
+import edu.uci.ics.jung.visualization.renderers.Checkmark;
 
-public class OrcaNode extends OrcaResource {
+public class OrcaNode implements OrcaResource {
 
 	protected static final String NOT_SPECIFIED = "Not specified";
 	public static final String NODE_NETMASK="32";
+	protected String name;
 	protected String url;
 	protected String image = null;
 	protected String domain = null;
@@ -53,13 +59,19 @@ public class OrcaNode extends OrcaResource {
 	protected List<String> managementAccess = null;
 	
 	//protected final LayeredIcon icon;
-
+	
+	protected boolean isResource=false;
+	
 	protected Map<String, String> substrateInfo = new HashMap<String, String>();
 
 	// specific node type 
 	protected String nodeType = null;
 	// post-boot script
 	protected String postBootScript = null;
+	// reservation state
+	protected String state = null;
+	// reservation notice
+	protected String resNotice = null;
 	// list of open ports
 	protected String openPorts = null;
 	
@@ -82,13 +94,79 @@ public class OrcaNode extends OrcaResource {
 		return ret;
 	}
 	
+	public String toString() {
+		return name;
+	}
 	
+	// Icon transformer for NDLLIB
+	//public static class OrcaNodeIconTransformer implements Transformer<OrcaNode, Icon> {
+
+	//	public Icon transform(OrcaNode node) {
+	//		return node.icon;
+	//	}
+	//}
+	
+	public boolean isResource() {
+		return isResource;
+	}
+	
+	public void setIsResource() {
+		isResource = true;
+	}
+	
+	
+	// Icon shape transformer for NDLLIB (to make sure icon clickable shape roughly matches the icon)
+	public static class OrcaNodeIconShapeTransformer implements Transformer<OrcaNode, Shape> {
+		private static final int ICON_HEIGHT = 30;
+		private static final int ICON_WIDTH = 50;
+
+				//		        private final Shape[] styles = {
+//		            new Rectangle(-20, -10, 40, 20),
+//		            new Ellipse2D.Double(-25, -10, 50, 20),
+//		            new Arc2D.Double(-30, -15, 60, 30, 30, 30,
+//		                Arc2D.PIE) };
+		        public Shape transform(OrcaNode i) {
+		            return new Ellipse2D.Double(-ICON_WIDTH/2, -ICON_HEIGHT/2, ICON_WIDTH, ICON_HEIGHT);
+		        }
+		    }
+
+	
+	// check mark for selected nodes
+	// boosted from JUNG Lens example
+   /* public static class PickWithIconListener implements ItemListener {
+        OrcaNodeIconTransformer imager;
+        Icon checked;
+        
+        public PickWithIconListener(OrcaNodeIconTransformer imager) {
+            this.imager = imager;
+            checked = new Checkmark(Color.red);
+        }
+
+        public void itemStateChanged(ItemEvent e) {
+            Icon icon = imager.transform((OrcaNode)e.getItem());
+            if(icon != null && icon instanceof LayeredIcon) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    ((LayeredIcon)icon).add(checked);
+                } else {
+                    ((LayeredIcon)icon).remove(checked);
+                }
+            }
+        }
+    }*/
+	
+	public OrcaNode(String name) {
+		this.name = name;
+		this.addresses = new HashMap<OrcaLink, Pair<String>>();
+		this.macAddresses = new HashMap<OrcaLink, String>();
+		//this.icon = new LayeredIcon(new ImageIcon(NDLLIBRequestState.class.getResource(OrcaNodeEnum.CE.getIconName())).getImage());
+	}
 
 	// inherit some properties from parent
 	public OrcaNode(String name, OrcaNode parent) {
-		super(name);
+		this.name = name;
 		this.addresses = new HashMap<OrcaLink, Pair<String>>();
 		this.macAddresses = new HashMap<OrcaLink, String>();
+		//this.icon = new LayeredIcon(new ImageIcon(NDLLIBRequestState.class.getResource(OrcaNodeEnum.CE.getIconName())).getImage());
 		this.domain = parent.getDomain();
 		this.group = parent.getGroup();
 		this.image = parent.getImage();
@@ -103,10 +181,19 @@ public class OrcaNode extends OrcaResource {
 	 * @param name
 	 * @param icon
 	 */
-	protected OrcaNode(String name) {
-		super(name);
+	protected OrcaNode(String name, LayeredIcon icon) {
+		this.name = name;
 		this.addresses = new HashMap<OrcaLink, Pair<String>>();
 		this.macAddresses = new HashMap<OrcaLink, String>();
+		//this.icon = icon;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setUrl(String u) {
@@ -277,6 +364,22 @@ public class OrcaNode extends OrcaResource {
 		return null;
 	}
 	
+	public void setState(String s) {
+		state = s;
+	}
+	
+	public String getState() {
+		return state;
+	}
+	
+	public void setReservationNotice(String n) {
+		resNotice = n;
+	}
+	
+	public String getReservationNotice() {
+		return resNotice;
+	}
+	
 	public String getPortsList() {
 		return openPorts;
 	}
@@ -300,7 +403,40 @@ public class OrcaNode extends OrcaResource {
 		return false;
 	}
 	
-
+	/** 
+	 * Create a detailed printout of properties
+	 * @return
+	 */
+	public String getViewerText() {
+		String viewText = "";
+		viewText += "Node name: " + name;
+		viewText += "\nNode reservation state: " + (state != null ? state : NOT_SPECIFIED);
+		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
+//		viewText += "\nNode Type: " + node.getNodeType();
+//		viewText += "\nImage: " + node.getImage();
+//		viewText += "\nDomain: " + domain;
+		viewText += "\n\nPost Boot Script: \n" + (postBootScript == null ? NOT_SPECIFIED : postBootScript);
+		viewText += "\n\nManagement access: \n";
+		for (String service: getManagementAccess()) {
+			viewText += service + "\n";
+		}
+		if (getManagementAccess().size() == 0) {
+			viewText += NOT_SPECIFIED + "\n";
+		}
+		viewText += "\n\nInterfaces: ";
+		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
+			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond() + " " + 
+			(macAddresses.get(e.getKey()) != null ? macAddresses.get(e.getKey()) : "");
+		}
+		
+		if (substrateInfo.size() > 0) {
+			viewText += "\n\nSubstrate information: ";
+			for(Map.Entry<String, String> e: substrateInfo.entrySet()) {
+				viewText += "\n\t" + e.getKey() + ": " + e.getValue();
+			}
+		}
+		return viewText;
+	}
 	
 	/**
 	 * Node factory for requests
@@ -337,7 +473,4 @@ public class OrcaNode extends OrcaResource {
     public String getSubstrateInfo(String t) {
     	return substrateInfo.get(t);
     }
-    
- 
-
 }

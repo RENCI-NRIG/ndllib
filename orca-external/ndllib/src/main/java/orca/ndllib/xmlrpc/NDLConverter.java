@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import orca.ndllib.NDLLIB;
-import orca.ndllib.NDLLIB.PrefsEnum;
+import orca.ndllib.*;
+//import orca.ndllib..PrefsEnum;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -27,40 +27,40 @@ public class NDLConverter {
 	 * @param params
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static String callConverter(String call, Object[] params) throws Exception {
-		
-		Map<String, Object> ret = null;
-		// make a round robin call to all converters (list is shuffled to do load balancing)
-		ArrayList<String> urlList = new ArrayList<String>(Arrays.asList(NDLLIB.getInstance().getPreference(PrefsEnum.NDL_CONVERTER_LIST).split(",")));
-		Collections.shuffle(urlList);
-		for(String cUrl: urlList) {
-			try {
-				XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-				config.setServerURL(new URL(cUrl));
-				XmlRpcClient client = new XmlRpcClient();
-				client.setConfig(config);
-
-				ret = (Map<String, Object>)client.execute(call, params);
-				break;
-			} catch (XmlRpcException e) {
-				continue;
-			} catch (MalformedURLException ue) {
-				throw new Exception("Unable to call converter at " + cUrl + " due to " + ue);
-			} catch (ClassCastException ce) {
-				// old converter, skip it
-				continue;
-			}
-		}
-		
-		if (ret == null) {
-			throw new Exception("Unable to call converter");
-		}
-		
-		if ((Boolean)ret.get("err")) {
-			throw new Exception ("Unable to call converter due to: " + (String)ret.get("msg"));
-		}
-		
-		return (String)ret.get("ret");
-	}
+//	@SuppressWarnings("unchecked")
+//	public static String callConverter(String call, Object[] params) throws Exception {
+//		
+//		Map<String, Object> ret = null;
+//		// make a round robin call to all converters (list is shuffled to do load balancing)
+//		ArrayList<String> urlList = new ArrayList<String>(Arrays.asList(.getInstance().getPreference(PrefsEnum.NDL_CONVERTER_LIST).split(",")));
+//		Collections.shuffle(urlList);
+//		for(String cUrl: urlList) {
+//			try {
+//				XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+//				config.setServerURL(new URL(cUrl));
+//				XmlRpcClient client = new XmlRpcClient();
+//				client.setConfig(config);
+//
+//				ret = (Map<String, Object>)client.execute(call, params);
+//				break;
+//			} catch (XmlRpcException e) {
+//				continue;
+//			} catch (MalformedURLException ue) {
+//				throw new Exception("Unable to call converter at " + cUrl + " due to " + ue);
+//			} catch (ClassCastException ce) {
+//				// old converter, skip it
+//				continue;
+//			}
+//		}
+//		
+//		if (ret == null) {
+//			throw new Exception("Unable to call converter");
+//		}
+//		
+//		if ((Boolean)ret.get("err")) {
+//			throw new Exception ("Unable to call converter due to: " + (String)ret.get("msg"));
+//		}
+//		
+//		return (String)ret.get("ret");
+//	}
 }

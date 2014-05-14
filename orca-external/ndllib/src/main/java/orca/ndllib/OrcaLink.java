@@ -20,36 +20,37 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.ndl;
-
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
+package orca.ndllib;
 
 import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class OrcaLink extends OrcaResource {
+public class OrcaLink implements OrcaResource {
     protected long bandwidth;
     protected long latency;
     protected String label = null;
     protected String realName = null;
+    
+    protected String name;
+	// reservation state
+	protected String state = null;
+	// reservation notice
+	protected String resNotice = null;
+	protected boolean isResource = false;
+	
+	public boolean isResource() {
+		return isResource;
+	}
+    
+	public void setIsResource() {
+		isResource = true;
+	}
 	
     public OrcaLink(String name) {
-        super(name);
+        this.name = name;
     }
 
-    public OrcaLink(OrcaLink ol) {
-    	super(ol.name, ol.isResource());
-    	bandwidth = ol.bandwidth;
-    	latency = ol.latency;
-    	label = ol.label;
-    	realName = ol.realName;
-    	state = ol.state;
-    	resNotice = ol.resNotice;
-    }
-    
-    
     interface ILinkCreator {
     	public OrcaLink create(String prefix);
     	public OrcaLink create(String nm, long bw);
@@ -83,11 +84,72 @@ public class OrcaLink extends OrcaResource {
     	return latency;
     }
     
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }       
+    
     public void setRealName(String n) {
     	this.realName = n;
     }
     
-  
+	public void setState(String s) {
+		state = s;
+	}
+	
+	public String getState() {
+		return state;
+	}
+	
+	public void setReservationNotice(String n) {
+		resNotice = n;
+	}
+    
+	public String getReservationNotice() {
+		return resNotice;
+	}
+	
+    @Override
+    public String toString() {
+        return name;
+    }
+    
+    /**
+     * Get text for NDLLIB viewer
+     * @return
+     */
+    public String getViewerText() {
+    	String viewText = "Link name: " + (realName != null ? realName : name);
+    	if (bandwidth == 0)
+    		viewText += "\nBandwidth: unspecified";
+    	else 
+    		viewText += "\nBandwidth: " + bandwidth;
+    	
+    	if (latency == 0) 
+    		viewText += "\nLatency: unspecified";
+    	else
+    		viewText += "\nLatency: " + latency;
+    	
+    	if (label == null) 
+    		viewText += "\nLabel: unspecified";
+    	else
+    		viewText += "\nLabel: " + label;
+    	
+    	if (state == null)
+    		viewText += "\nLink reservation state: unspecified";
+    	else
+    		viewText += "\nLink reservation state: " + state;
+    		
+    	if (resNotice == null)
+    		viewText += "\nReservation notice: unspecified";
+    	else
+    		viewText += "\nReservation notice: " + resNotice;
+    	
+    	return viewText;
+    }
     
     public static class OrcaLinkFactory implements Factory<OrcaLink> {
        private ILinkCreator inc = null;
@@ -149,6 +211,4 @@ public class OrcaLink extends OrcaResource {
     public String getSubstrateInfo(String t) {
     	return null;
     }
-    
-  
 }

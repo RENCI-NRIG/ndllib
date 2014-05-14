@@ -21,16 +21,12 @@
 * IN THE WORK.
 */
 package orca.ndllib.ndl;
-import orca.ndllib.ndl.*;
-import orca.ndllib.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,21 +35,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import orca.ndl.INdlColorRequestListener;
+import orca.ndllib.NDLLIB;
+import orca.ndllib.NDLLIBManifestState;
+import orca.ndllib.NDLLIBRequestState;
+import orca.ndllib.OrcaCrossconnect;
+import orca.ndllib.OrcaImage;
+import orca.ndllib.OrcaLink;
+import orca.ndllib.OrcaNode;
+import orca.ndllib.OrcaNodeGroup;
+import orca.ndllib.OrcaStitchPort;
+import orca.ndllib.OrcaStorageNode;
 import orca.ndl.INdlManifestModelListener;
 import orca.ndl.INdlRequestModelListener;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlManifestParser;
 import orca.ndl.NdlRequestParser;
-import orca.ndl.NdlToRSpecHelper;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+//import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -63,9 +67,9 @@ import edu.uci.ics.jung.graph.util.Pair;
  * @author ibaldin
  *
  */
-public class ManifestLoader {
+public class ManifestLoader implements INdlManifestModelListener, INdlRequestModelListener {
 
-	private Map<String, List<OrcaNode>> interfaceToNode = new HashMap<String, List<OrcaNode>>();
+	private Map<String, OrcaNode> interfaceToNode = new HashMap<String, OrcaNode>();
 	private Map<String, OrcaNode> nodes = new HashMap<String, OrcaNode>();
 	private Map<String, OrcaLink> links = new HashMap<String, OrcaLink>();
 	boolean requestPhase = true;
@@ -89,27 +93,29 @@ public class ManifestLoader {
 			bin.close();
 
 			// parse as request
-			//NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
+			NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
 			// something wrong with request model that is part of manifest
 			// some interfaces belong only to nodes, and no connections
 			// for now do less strict checking so we can get IP info
 			// 07/2012/ib
-			//nrp.doLessStrictChecking();
-			//nrp.addColorListener(this);
-			//nrp.processRequest();
-			//nrp.freeModel();
+			nrp.doLessStrictChecking();
+			nrp.processRequest();
+			nrp.freeModel();
 			
 			// parse as manifest
 			requestPhase = false;
-//			NdlManifestParser nmp = new NdlManifestParser(sb.toString(), this);
-//			nmp.processManifest();
-//			nmp.freeModel();
-//			NDLLIBManifestState.getInstance().setManifestString(sb.toString());
-//			NDLLIBManifestState.getInstance().setManifestTerm(creationTime, expirationTime);
-//			NDLLIBManifestState.getInstance().launchResourceStateViewer(creationTime, expirationTime);
+			NdlManifestParser nmp = new NdlManifestParser(sb.toString(), this);
+			nmp.processManifest();
+			nmp.freeModel();
+			NDLLIBManifestState.getInstance().setManifestString(sb.toString());
+			NDLLIBManifestState.getInstance().setManifestTerm(creationTime, expirationTime);
+			//NDLLIBManifestState.getInstance().launchResourceStateViewer(creationTime, expirationTime);
 			
 		} catch (Exception e) {
-	
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
+//			ed.setException("Exception encountered while loading file " + f.getName() + ":", e);
+//			ed.setVisible(true);
 			return false;
 		} 
 		
@@ -120,25 +126,28 @@ public class ManifestLoader {
 		
 		try {
 			// parse as request
-			//NdlRequestParser nrp = new NdlRequestParser(s, this);
+			NdlRequestParser nrp = new NdlRequestParser(s, this);
 			// something wrong with request model that is part of manifest
 			// some interfaces belong only to nodes, and no connections
 			// for now do less strict checking so we can get IP info
 			// 07/2012/ib
-			//nrp.doLessStrictChecking();
-			//nrp.processRequest();
-			//nrp.freeModel();
+			nrp.doLessStrictChecking();
+			nrp.processRequest();
+			nrp.freeModel();
 			
 			// parse as manifest
 			requestPhase = false;
-			//NdlManifestParser nmp = new NdlManifestParser(s, this);
-			//nmp.processManifest();	
-			//nmp.freeModel();
-			
-			NDLLIBManifestState.getInstance().setManifestString(s);
+			NdlManifestParser nmp = new NdlManifestParser(s, this);
+			nmp.processManifest();	
+			nmp.freeModel();			
 			NDLLIBManifestState.getInstance().setManifestTerm(creationTime, expirationTime);
-			//NDLLIBManifestState.getInstance().printResourceState(creationTime, expirationTime);
+			//NDLLIBManifestState.getInstance().launchResourceStateViewer(creationTime, expirationTime);
+			
 		} catch (Exception e) {
+//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
+//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
+//			ed.setException("Exception encountered while parsing manifest(m): ", e);
+//			ed.setVisible(true);
 			return false;
 		} 
 		return true;
@@ -162,14 +171,6 @@ public class ManifestLoader {
 		return rname;
 	}
 	
-	private void addNodeToInterface(String iface, OrcaNode n) {
-		List<OrcaNode> others = interfaceToNode.get(iface);
-		if (others != null) 
-			others.add(n);
-		else
-			interfaceToNode.put(iface, new ArrayList<OrcaNode>(Arrays.asList(n)));
-	}
-	
 	// get domain name from inter-domain resource name
 	private String getInterDomainName(Resource r) {
 		String trueName = getTrueName(r);
@@ -186,7 +187,6 @@ public class ManifestLoader {
 		return null;
 	}
 	
-	
 	public void ndlLinkConnection(Resource l, OntModel m,
 			List<Resource> interfaces, Resource parent) {
 		//System.out.println("Found link connection " + l + " connecting " + interfaces);
@@ -196,23 +196,57 @@ public class ManifestLoader {
 		if (requestPhase)
 			return;
 		
-		NDLLIB.logger().debug("Link Connection: " + l + " with interfaces " + interfaces);
-		
-		if (parent != null) {
-			NDLLIB.logger().debug("    ignoring due to parent " + parent);
-			return;
-		}
+		NDLLIB.logger().debug("Link Connection: " + l);
 		
 		// find what nodes it connects (should be two)
 		Iterator<Resource> it = interfaces.iterator(); 
 		
 		String label = NdlCommons.getResourceLabel(l);
 		
-		// limit to link connections not part of a network connection
-		if (interfaces.size() == 2){
+		if (interfaces.size() == 2) {
 			NDLLIB.logger().debug("  Adding p-to-p link");
 			OrcaLink ol = NDLLIBManifestState.getInstance().getLinkCreator().create(getPrettyName(l), NdlCommons.getResourceBandwidth(l));
 			ol.setLabel(label);
+
+			// maybe point-to-point link
+			// the ends
+			Resource if1 = it.next(), if2 = it.next();
+			
+			if ((if1 != null) && (if2 != null)) {
+				OrcaNode if1Node = interfaceToNode.get(getTrueName(if1));
+				OrcaNode if2Node = interfaceToNode.get(getTrueName(if2));
+				
+				if ((if1Node != null) && if1Node.equals(if2Node)) {
+					// degenerate case of a node on a shared vlan
+					OrcaCrossconnect oc = new OrcaCrossconnect(getPrettyName(l));
+					oc.setLabel(label);
+					oc.setDomain(RequestSaver.reverseLookupDomain(NdlCommons.getDomain(l)));
+					nodes.put(getTrueName(l), oc);
+					// save one interface
+					interfaceToNode.put(getTrueName(if1), oc);
+					NDLLIBManifestState.getInstance().getGraph().addVertex(oc);
+					return;
+				}
+				
+				// get the bandwidth of crossconnects if possible
+				long bw1 = 0, bw2 = 0;
+				if (if1Node instanceof OrcaCrossconnect) {
+					OrcaCrossconnect oc = (OrcaCrossconnect)if1Node;
+					bw1 = oc.getBandwidth();
+				} 
+				if (if2Node instanceof OrcaCrossconnect) {
+					OrcaCrossconnect oc = (OrcaCrossconnect)if2Node;
+					bw2 = oc.getBandwidth();
+				}
+				ol.setBandwidth(bw1 > bw2 ? bw1 : bw2);
+				
+				// have to be there
+				if ((if1Node != null) && (if2Node != null)) {
+					NDLLIB.logger().debug("  Creating a link " + ol.getName() + " from " + if1Node + " to " + if2Node);
+					NDLLIBManifestState.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(if1Node, if2Node), 
+							EdgeType.UNDIRECTED);
+				}
+			}
 			// state
 			ol.setState(NdlCommons.getResourceStateAsString(l));
 			
@@ -222,62 +256,6 @@ public class ManifestLoader {
 			// reservation notice
 			ol.setReservationNotice(NdlCommons.getResourceReservationNotice(l));
 			links.put(getTrueName(l), ol);
-
-			// maybe point-to-point link
-			// the ends
-			Resource if1 = it.next(), if2 = it.next();
-			
-			boolean usedOnce = false;
-			if ((if1 != null) && (if2 != null)) {
-				List<OrcaNode> if1List = interfaceToNode.get(getTrueName(if1));
-				List<OrcaNode> if2List = interfaceToNode.get(getTrueName(if2));
-				
-				if (if1List != null) {
-					for(OrcaNode if1Node: if1List) {
-						if (if2List != null) {
-							for (OrcaNode if2Node: if2List) {
-								
-								if ((if1Node != null) && if1Node.equals(if2Node)) {
-									// degenerate case of a node on a shared vlan
-									OrcaCrossconnect oc = new OrcaCrossconnect(getPrettyName(l));
-									oc.setLabel(label);
-									oc.setDomain(RequestSaver.reverseLookupDomain(NdlCommons.getDomain(l)));
-									nodes.put(getTrueName(l), oc);
-									// save one interface
-									//interfaceToNode.put(getTrueName(if1), oc);
-									addNodeToInterface(getTrueName(if1), oc);
-									NDLLIBManifestState.getInstance().getGraph().addVertex(oc);
-									return;
-								}
-								
-								if (!usedOnce) {
-									// get the bandwidth of crossconnects if possible
-									long bw1 = 0, bw2 = 0;
-									if (if1Node instanceof OrcaCrossconnect) {
-										OrcaCrossconnect oc = (OrcaCrossconnect)if1Node;
-										bw1 = oc.getBandwidth();
-									} 
-									if (if2Node instanceof OrcaCrossconnect) {
-										OrcaCrossconnect oc = (OrcaCrossconnect)if2Node;
-										bw2 = oc.getBandwidth();
-									}
-									ol.setBandwidth(bw1 > bw2 ? bw1 : bw2);
-								} else
-									ol = new OrcaLink(ol);
-								
-								// have to be there
-								if ((if1Node != null) && (if2Node != null)) {
-									NDLLIB.logger().debug("  Creating a link " + ol.getName() + " from " + if1Node + " to " + if2Node);
-									NDLLIBManifestState.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(if1Node, if2Node), 
-											EdgeType.UNDIRECTED);
-									usedOnce = true;
-								}
-							}
-						}
-					}
-				}
-			}
-
 		} else {			
 			NDLLIB.logger().debug("  Adding multi-point crossconnect " + getTrueName(l) + " (has " + interfaces.size() + " interfaces)");
 			// multi-point link
@@ -298,8 +276,7 @@ public class ManifestLoader {
 			while(it.hasNext()) {
 				Resource intR = it.next();
 				NDLLIB.logger().debug("  Remembering interface " + intR + " of " + ml);
-				//interfaceToNode.put(getTrueName(intR), ml);
-				addNodeToInterface(getTrueName(intR), ml);
+				interfaceToNode.put(getTrueName(intR), ml);
 			}
 			
 			// add crossconnect to the graph
@@ -317,7 +294,6 @@ public class ManifestLoader {
 //			}
 		}
 	}
-
 
 	public void ndlManifest(Resource i, OntModel m) {
 		// nothing to do in this case
@@ -380,7 +356,6 @@ public class ManifestLoader {
 				on.setInterfaceName(ol, getTrueName(intf));
 				on.setMac(ol, NdlCommons.getAddressMAC(intf));
 			} else if (crs != null) {
-				// for individual nodes
 				if (intf.toString().matches(node.toString() + "/IP/[0-9]+")) {
 					// include only interfaces that have nodename/IP/<number> format - those
 					// are generated by Yufeng. 
@@ -416,7 +391,6 @@ public class ManifestLoader {
 
 	}
 
-
 	public void ndlCrossConnect(Resource c, OntModel m, 
 			long bw, String label, List<Resource> interfaces, Resource parent) {
 		
@@ -427,7 +401,7 @@ public class ManifestLoader {
 		if (c == null)
 			return;
 
-		NDLLIB.logger().debug("CrossConnect: " + c + " with label " + label);
+		NDLLIB.logger().debug("CrossConnect: " + c);
 		
 		OrcaCrossconnect oc = new OrcaCrossconnect(getPrettyName(c));
 		oc.setLabel(label);
@@ -441,8 +415,7 @@ public class ManifestLoader {
 		// process interfaces
 		for (Iterator<Resource> it = interfaces.iterator(); it.hasNext();) {
 			Resource intR = it.next();
-			//interfaceToNode.put(getTrueName(intR), oc);
-			addNodeToInterface(getTrueName(intR), oc);
+			interfaceToNode.put(getTrueName(intR), oc);
 		}
 		
 		nodes.put(getTrueName(c), oc);
@@ -497,8 +470,7 @@ public class ManifestLoader {
 		// process interfaces
 		for (Iterator<Resource> it = interfaces.iterator(); it.hasNext();) {
 			Resource intR = it.next();
-			//interfaceToNode.put(getTrueName(intR), newNode);
-			addNodeToInterface(getTrueName(intR), newNode);
+			interfaceToNode.put(getTrueName(intR), newNode);
 		}
 		
 		// disk image
@@ -509,7 +481,7 @@ public class ManifestLoader {
 				String imageHash = NdlCommons.getIndividualsImageHash(ce);
 				NDLLIBRequestState.getInstance().addImage(new OrcaImage(di.getLocalName(), 
 						new URL(imageURL), imageHash), null);
-				newNode.setImage(di.getLocalName());
+				//newNode.setImage(di.getLocalName());
 			} catch (Exception e) {
 				// FIXME: ?
 				;
@@ -549,8 +521,7 @@ public class ManifestLoader {
 			// process interfaces. if there is an interface that leads to
 			// a link, this is an intra-domain case, so we can delete the parent later
 			for (Resource intR: NdlCommons.getResourceInterfaces(tmpR)) {
-				//interfaceToNode.put(getTrueName(intR), on);
-				addNodeToInterface(getTrueName(intR), on);
+				interfaceToNode.put(getTrueName(intR), on);
 				// HACK: for now check that this interface connects to something
 				// and is not just hanging there with IP address
 				List<Resource> hasI = NdlCommons.getWhoHasInterface(intR, om);
@@ -616,73 +587,37 @@ public class ManifestLoader {
 		if (requestPhase)
 			return;
 		
-		// process colors
-		processColors();
-		
 		// nothing to do in this case
 		NDLLIB.logger().debug("Parse complete.");
 	}
 
 	public void ndlNetworkConnectionPath(Resource c, OntModel m,
-			List<List<Resource>> paths, List<Resource> roots) {
+			List<List<Resource>> path, List<Resource> roots) {
 
 		// ignore request items
 		if (requestPhase)
 			return;
 
+		// nothing to do in this case
 		NDLLIB.logger().debug("Network Connection Path: " + c);
-		if (roots != null) {
-			NDLLIB.logger().debug("Printing roots");
-			for (Resource rr: roots) {
-				NDLLIB.logger().debug(rr);
-			}
-		}
-		if (paths != null) {
+		if (path != null) {
 			NDLLIB.logger().debug("Printing paths");
-			for (List<Resource> p: paths) {
-				StringBuilder sb =  new StringBuilder();
+			StringBuilder sb =  new StringBuilder();
+			for (List<Resource> p: path) {
 				sb.append("   Path: ");
 				for (Resource r: p) {
 					sb.append(r + " ");
 				}
 				NDLLIB.logger().debug(sb.toString());
-				
-				Iterator<Resource> pIter = p.iterator();
-				Resource first = pIter.next();
-				if (first == null) 
-					continue;
-				while(pIter.hasNext()) {
-					// only take nodes, skip interfaces on the path
-					pIter.next();
-					if (!pIter.hasNext())
-						break;
-					Resource second = pIter.next();
-					OrcaNode firstNode = nodes.get(getTrueName(first));
-					OrcaNode secondNode = nodes.get(getTrueName(second));
-					if (secondNode == null)
-						break;
-
-					NDLLIB.logger().debug("  Adding p-to-p link");
-					OrcaLink ol = NDLLIBManifestState.getInstance().getLinkCreator().create("Unnamed");
-					
-					NDLLIB.logger().debug("  Creating a link " + ol.getName() + " from " + first + " to " + second);
-					NDLLIBManifestState.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(firstNode, secondNode), 
-							EdgeType.UNDIRECTED);
-					
-					first = second;
-				}
 			}
-
 		} else 
 			NDLLIB.logger().debug("   None");
-		
 	} 
 
 	/**
 	 * Request items - mostly ignored
 	 * 
 	 */
-	
 	
 	
 	public void ndlBroadcastConnection(Resource bl, OntModel om,
@@ -746,99 +681,4 @@ public class ManifestLoader {
 		
 	}
 
-	//
-	// Dealing with color - early
-	//
-	
-	private class NEColor {
-		Resource ne;
-		OrcaColor oc;
-		
-		NEColor(Resource n, OrcaColor o) {
-			ne = n;
-			oc = o;
-		}
-	}
-
-	private class ColorDependency {
-		Resource fromNe, toNe;
-		OrcaColorLink ocl;
-		
-		ColorDependency(Resource f, Resource t, OrcaColorLink o) {
-			fromNe = f;
-			toNe = t;
-			ocl = o;
-		}
-	}
-	
-	private List<NEColor> necolors = new ArrayList<NEColor>();
-	private List<ColorDependency> colorDependencies = new ArrayList<ColorDependency>();
-	
-	
-	public void ndlResourceColor(Resource ne, Resource color, String label) {
-			
-		OrcaColor oc = new OrcaColor(label);
-		oc.addKeys(NdlCommons.getColorKeys(color));
-		if (NdlCommons.getColorBlob(color) != null)
-			oc.setBlob(NdlCommons.getColorBlob(color));
-		else { 
-			oc.setBlob(NdlToRSpecHelper.stripXmlNs(NdlToRSpecHelper.stripXmlHead(NdlCommons.getColorBlobXML(color, true))));
-			oc.setXMLBlobState(true);
-		}
-
-		necolors.add(new NEColor(ne, oc));
-
-	}
-
-	
-	public void ndlColorDependency(Resource fromNe, Resource toNe,
-			Resource color, String label) {
-		
-
-		
-		OrcaColorLink ocl = new OrcaColorLink(label);
-		
-		ocl.getColor().addKeys(NdlCommons.getColorKeys(color));
-		if (NdlCommons.getColorBlob(color) != null)
-			ocl.getColor().setBlob(NdlCommons.getColorBlob(color));
-		else { 
-			ocl.getColor().setBlob(NdlToRSpecHelper.stripXmlNs(NdlToRSpecHelper.stripXmlHead(NdlCommons.getColorBlobXML(color, true))));
-			ocl.getColor().setXMLBlobState(true);
-		}
-	
-		colorDependencies.add(new ColorDependency(fromNe, toNe, ocl));
-
-	}
-	
-	/**
-	 * Re-add colors collected previously in request parse phase
-	 */
-	private void processColors() {
-		
-		// attach colors to network elements
-		for(NEColor nec: necolors) {
-			OrcaResource or = null;
-			if (nodes.get(getTrueName(nec.ne)) != null)
-				or = nodes.get(getTrueName(nec.ne));
-			else if (links.get(getTrueName(nec.ne)) != null)
-				or = links.get(getTrueName(nec.ne));
-			
-			if (or != null) {
-				or.addColor(nec.oc);
-			} 
-		}
-		
-		// add dependencies between elements
-		for(ColorDependency cd: colorDependencies) {
-			OrcaNode fromOr = null, toOr = null;
-			
-			fromOr = nodes.get(getTrueName(cd.fromNe));
-			toOr = nodes.get(getTrueName(cd.toNe));
-			
-			if ((fromOr == null) || (toOr == null)) {
-				return;
-			}
-			NDLLIBManifestState.getInstance().getGraph().addEdge(cd.ocl, new Pair<OrcaNode>(fromOr, toOr), EdgeType.UNDIRECTED);
-		}
-	}
 }

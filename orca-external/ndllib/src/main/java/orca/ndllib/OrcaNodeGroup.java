@@ -20,11 +20,12 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.ndl;
+package orca.ndllib;
 
-import orca.ndllib.ndl.*;
+import javax.swing.ImageIcon;
 
 import edu.uci.ics.jung.graph.util.Pair;
+import edu.uci.ics.jung.visualization.LayeredIcon;
 
 public class OrcaNodeGroup extends OrcaNode {
 	Pair<String> internalVlanAddress = null;
@@ -85,5 +86,32 @@ public class OrcaNodeGroup extends OrcaNode {
 		return splittable;
 	}
 	
-  
+	/* no more internal vlans
+	public void setInternalVlan(boolean f) {
+		internalVlan = f;
+	}
+	
+	public boolean getInternalVlan() {
+		return internalVlan;
+	}
+	
+	public void setInternalVlanBw(long bw) {
+		internalVlanBw = bw;
+	}
+	
+	public long getInternalVlanBw() {
+		return internalVlanBw;
+	}
+	
+    public void setInternalVlanLabel(String l) {
+    	if ((l != null) && l.length() > 0)
+    		internalVlanLabel = l;
+    	else
+    		internalVlanLabel = null;
+    }
+
+    public String getInternalVlanLabel() {
+    	return internalVlanLabel;
+    }
+    */
 }

@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.ndl;
+package orca.ndllib;
 
 import java.net.URL;
 

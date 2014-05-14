@@ -20,13 +20,14 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.ndl;
+package orca.ndllib;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 
-//import edu.uci.ics.jung.visualization.LayeredIcon;
+import edu.uci.ics.jung.visualization.LayeredIcon;
 
 public class OrcaResourceSite extends OrcaNode {
 	float lat, lon;
@@ -34,6 +35,12 @@ public class OrcaResourceSite extends OrcaNode {
 	
 	public OrcaResourceSite(String name) {
 		super(name);
+		domain = name;
+	}
+	
+	public OrcaResourceSite(String name, float lat, float lon) {
+		super(name, 
+				new LayeredIcon(new ImageIcon(NDLLIBRequestState.class.getResource(OrcaNodeEnum.RESOURCESITE.getIconName())).getImage()));
 		domain = name;
 		this.lat = lat;
 		this.lon = lon;
