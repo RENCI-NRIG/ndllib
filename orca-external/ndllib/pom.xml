@@ -85,6 +85,7 @@
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>
+    <!--
     <dependency>
     	<groupId>org.apache.xmlrpc</groupId>
     	<artifactId>xmlrpc-client</artifactId>
@@ -114,6 +115,7 @@
     	<artifactId>bcpkix-jdk15on</artifactId>
     	<version>1.49</version>
     </dependency>
+    -->
     <dependency>
     	<groupId>orca.core</groupId>
     	<artifactId>util</artifactId>

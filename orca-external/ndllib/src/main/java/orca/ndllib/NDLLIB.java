@@ -45,7 +45,6 @@ import orca.ndllib.ndl.ManifestLoader;
 import orca.ndllib.ndl.RequestLoader;
 import orca.ndllib.ndl.RequestSaver;
 
-import orca.ndllib.xmlrpc.RegistryXMLRPCProxy;
 import orca.ndl.NdlCommons;
 
 import org.apache.log4j.Level;
@@ -98,12 +97,12 @@ public class NDLLIB {
 	}
 
 	/**
-	 * Launch the non- application.
+	 * Launch the non-GUI application.
 	 */
 	public static void non_gui_main() {
 		// Jena stuff needs to be set up early
 		NdlCommons.setGlobalJenaRedirections();
-
+		
 		NDLLIB gui = NDLLIB.getInstance();
 
 	}
