@@ -23,12 +23,14 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
+import orca.ndllib.resources.OrcaNode;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 
 
@@ -40,12 +42,12 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
-public class NDLLIBManifestState extends NDLLIBCommonState {
-	private static NDLLIBManifestState instance = new NDLLIBManifestState();
+public class Manifest extends NDLLIBCommon {
+	private static Manifest instance = new Manifest();
 	protected String manifestString;
 	private Date start = null, end = null, newEnd = null;
 
-	public static NDLLIBManifestState getInstance() {
+	public static Manifest getInstance() {
 		return instance;
 	}
 

@@ -3,7 +3,6 @@ package orca.ndllib.util;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
@@ -12,9 +11,9 @@ import java.util.Iterator;
 
 import com.google.common.net.InetAddresses;
 
-import orca.ndllib.OrcaLink;
-import orca.ndllib.OrcaResource;
-import orca.ndllib.OrcaCrossconnect;
+import orca.ndllib.resources.OrcaCrossconnect;
+import orca.ndllib.resources.OrcaLink;
+import orca.ndllib.resources.OrcaResource;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -23,11 +22,9 @@ import java.net.UnknownHostException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.google.gson.Gson;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-
 import java.util.BitSet;
 
 /**

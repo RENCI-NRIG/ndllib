@@ -20,13 +20,14 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
 import java.util.Collection;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 
+import orca.ndllib.Request;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -106,9 +107,9 @@ public class OrcaCrossconnect extends OrcaNode {
 	// is this crossconnect linked to shared storage?
     public boolean linkToSharedStorage() {
     	
-    	Collection<OrcaLink> iLinks = NDLLIBRequestState.getInstance().getGraph().getIncidentEdges(this);
+    	Collection<OrcaLink> iLinks = Request.getInstance().getGraph().getIncidentEdges(this);
 		for(OrcaLink l: iLinks) {
-			Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(l);
+			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
 			OrcaNode n = null;
 			// find the non-crossconnect side
 			if (!(pn.getFirst() instanceof OrcaCrossconnect))

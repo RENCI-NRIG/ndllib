@@ -20,14 +20,13 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
-
-import orca.ndllib.OrcaNode.INodeCreator;
+import orca.ndllib.resources.OrcaNode.INodeCreator;
 
 public class OrcaNodeCreator implements INodeCreator {
 	private OrcaNodeEnum currentSetting = OrcaNodeEnum.CE;

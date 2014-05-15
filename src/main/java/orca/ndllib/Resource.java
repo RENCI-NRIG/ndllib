@@ -23,14 +23,15 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
-
-//import orca.ndllib.ndl.ResourceQueryProcessor;
+import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaResourceSite;
 
 import org.apache.commons.collections15.Transformer;
 
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 //import com.hyperrealm.kiwi.ui.dialog.ProgressDialog;
 //import com.hyperrealm.kiwi.util.Task;
+
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
@@ -41,15 +42,15 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
-public class NDLLIBResourceState extends NDLLIBCommonState {
+public class Resource extends NDLLIBCommon {
 	
 	public static final String WORLD_ICON="worldmap3.png";
 	
-	private static NDLLIBResourceState instance = null;
+	private static Resource instance = null;
 
 
 	
-	private NDLLIBResourceState() {
+	private Resource() {
 		;
 	}
 	
@@ -57,10 +58,10 @@ public class NDLLIBResourceState extends NDLLIBCommonState {
 
 	}
 	
-	public static NDLLIBResourceState getInstance() {
+	public static Resource getInstance() {
 		if (instance == null) {
 			initialize();
-			instance = new NDLLIBResourceState();
+			instance = new Resource();
 		}
 		return instance;
 	}

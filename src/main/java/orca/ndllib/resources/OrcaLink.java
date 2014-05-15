@@ -20,7 +20,9 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
+
+import orca.ndllib.Request;
 
 import org.apache.commons.collections15.Factory;
 
@@ -170,7 +172,7 @@ public class OrcaLink implements OrcaResource {
     // link to broadcast?
     public boolean linkToBroadcast() {
     	// if it is a link to broadcastlink, no editable properties
-    	Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(this);
+    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
     	
     	if (pn == null)
     		return false;
@@ -184,7 +186,7 @@ public class OrcaLink implements OrcaResource {
     // link to shared storage?
     public boolean linkToSharedStorage() {
     	// if it is a link to broadcastlink, no editable properties
-    	Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(this);
+    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
     	
     	if (pn == null)
     		return false;

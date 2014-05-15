@@ -20,45 +20,38 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 
-import javax.swing.ImageIcon;
+/** 
+ * Defines an ORCA VM Image
+ * @author ibaldin
+ *
+ */
+public class OrcaImage {
+	private String shortName, hash;
+	private URL url;
+	
+	public OrcaImage(String shortName, URL url, String hash) {
+		this.shortName = shortName;
+		this.url = url;
+		this.hash = hash;
+	}
 
-import edu.uci.ics.jung.visualization.LayeredIcon;
-
-public class OrcaResourceSite extends OrcaNode {
-	float lat, lon;
-	List<String> domains = new ArrayList<String>();
-	
-	public OrcaResourceSite(String name) {
-		super(name);
-		domain = name;
+	public URL getUrl() {
+		return url;
 	}
 	
-	public OrcaResourceSite(String name, float lat, float lon) {
-		super(name, 
-				new LayeredIcon(new ImageIcon(NDLLIBRequestState.class.getResource(OrcaNodeEnum.RESOURCESITE.getIconName())).getImage()));
-		domain = name;
-		this.lat = lat;
-		this.lon = lon;
+	public String getHash() {
+		return hash;
 	}
 	
-	public float getLat() {
-		return lat;
+	public String getShortName() {
+		return shortName;
 	}
 	
-	public float getLon() {
-		return lon;
-	}
-	
-	public void addDomain(String d) {
-		domains.add(d);
-	}
-	
-	public List<String> getDomains() {
-		return domains;
+	public void substituteName(String newName) {
+		shortName = newName;
 	}
 }

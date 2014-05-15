@@ -36,15 +36,15 @@ import java.util.Map;
 import java.util.Set;
 
 import orca.ndllib.NDLLIB;
-import orca.ndllib.NDLLIBManifestState;
-import orca.ndllib.NDLLIBRequestState;
-import orca.ndllib.OrcaCrossconnect;
-import orca.ndllib.OrcaImage;
-import orca.ndllib.OrcaLink;
-import orca.ndllib.OrcaNode;
-import orca.ndllib.OrcaNodeGroup;
-import orca.ndllib.OrcaStitchPort;
-import orca.ndllib.OrcaStorageNode;
+import orca.ndllib.Manifest;
+import orca.ndllib.Request;
+import orca.ndllib.resources.OrcaCrossconnect;
+import orca.ndllib.resources.OrcaImage;
+import orca.ndllib.resources.OrcaLink;
+import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaNodeGroup;
+import orca.ndllib.resources.OrcaStitchPort;
+import orca.ndllib.resources.OrcaStorageNode;
 import orca.ndl.INdlManifestModelListener;
 import orca.ndl.INdlRequestModelListener;
 import orca.ndl.NdlCommons;
@@ -58,6 +58,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
+
 
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -107,8 +108,8 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 			NdlManifestParser nmp = new NdlManifestParser(sb.toString(), this);
 			nmp.processManifest();
 			nmp.freeModel();
-			NDLLIBManifestState.getInstance().setManifestString(sb.toString());
-			NDLLIBManifestState.getInstance().setManifestTerm(creationTime, expirationTime);
+			Manifest.getInstance().setManifestString(sb.toString());
+			Manifest.getInstance().setManifestTerm(creationTime, expirationTime);
 			//NDLLIBManifestState.getInstance().launchResourceStateViewer(creationTime, expirationTime);
 			
 		} catch (Exception e) {
@@ -140,7 +141,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 			NdlManifestParser nmp = new NdlManifestParser(s, this);
 			nmp.processManifest();	
 			nmp.freeModel();			
-			NDLLIBManifestState.getInstance().setManifestTerm(creationTime, expirationTime);
+			Manifest.getInstance().setManifestTerm(creationTime, expirationTime);
 			//NDLLIBManifestState.getInstance().launchResourceStateViewer(creationTime, expirationTime);
 			
 		} catch (Exception e) {
@@ -205,7 +206,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 		
 		if (interfaces.size() == 2) {
 			NDLLIB.logger().debug("  Adding p-to-p link");
-			OrcaLink ol = NDLLIBManifestState.getInstance().getLinkCreator().create(getPrettyName(l), NdlCommons.getResourceBandwidth(l));
+			OrcaLink ol = Manifest.getInstance().getLinkCreator().create(getPrettyName(l), NdlCommons.getResourceBandwidth(l));
 			ol.setLabel(label);
 
 			// maybe point-to-point link
@@ -224,7 +225,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 					nodes.put(getTrueName(l), oc);
 					// save one interface
 					interfaceToNode.put(getTrueName(if1), oc);
-					NDLLIBManifestState.getInstance().getGraph().addVertex(oc);
+					Manifest.getInstance().getGraph().addVertex(oc);
 					return;
 				}
 				
@@ -243,7 +244,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 				// have to be there
 				if ((if1Node != null) && (if2Node != null)) {
 					NDLLIB.logger().debug("  Creating a link " + ol.getName() + " from " + if1Node + " to " + if2Node);
-					NDLLIBManifestState.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(if1Node, if2Node), 
+					Manifest.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(if1Node, if2Node), 
 							EdgeType.UNDIRECTED);
 				}
 			}
@@ -280,7 +281,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 			}
 			
 			// add crossconnect to the graph
-			NDLLIBManifestState.getInstance().getGraph().addVertex(ml);
+			Manifest.getInstance().getGraph().addVertex(ml);
 			
 			// link to this later from interface information
 			
@@ -362,8 +363,8 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 
 					// create link from node to crossconnect and assign IP if it doesn't exist
 					NDLLIB.logger().debug("  Creating a link  from " + on + " to " + crs);
-					ol = NDLLIBManifestState.getInstance().getLinkCreator().create("Unnamed");
-					NDLLIBManifestState.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(on, crs), 
+					ol = Manifest.getInstance().getLinkCreator().create("Unnamed");
+					Manifest.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(on, crs), 
 							EdgeType.UNDIRECTED);
 					on.setIp(ol, ip, nmInt);
 					on.setMac(ol, NdlCommons.getAddressMAC(intf));
@@ -421,7 +422,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 		nodes.put(getTrueName(c), oc);
 		
 		// add nodes to the graph
-		NDLLIBManifestState.getInstance().getGraph().addVertex(oc);
+		Manifest.getInstance().getGraph().addVertex(oc);
 	}
 	
 	public void ndlNode(Resource ce, OntModel om, Resource ceClass,
@@ -479,7 +480,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 			try {
 				String imageURL = NdlCommons.getIndividualsImageURL(ce);
 				String imageHash = NdlCommons.getIndividualsImageHash(ce);
-				NDLLIBRequestState.getInstance().addImage(new OrcaImage(di.getLocalName(), 
+				Request.getInstance().addImage(new OrcaImage(di.getLocalName(), 
 						new URL(imageURL), imageHash), null);
 				//newNode.setImage(di.getLocalName());
 			} catch (Exception e) {
@@ -491,7 +492,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 		nodes.put(getTrueName(ce), newNode);
 		
 		// add nodes to the graph
-		NDLLIBManifestState.getInstance().getGraph().addVertex(newNode);
+		Manifest.getInstance().getGraph().addVertex(newNode);
 		
 		// are there nodes hanging off of it as elements? if so, link them in
 		processDomainVmElements(ce, om, newNode);
@@ -507,12 +508,12 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 			Resource tmpR = vmEl.next().getResource();
 			OrcaNode on = new OrcaNode(getTrueName(tmpR), parent);
 			nodes.put(getTrueName(tmpR), on);
-			NDLLIBManifestState.getInstance().getGraph().addVertex(on);
-			OrcaLink ol = NDLLIBManifestState.getInstance().getLinkCreator().create("Unnamed");
+			Manifest.getInstance().getGraph().addVertex(on);
+			OrcaLink ol = Manifest.getInstance().getLinkCreator().create("Unnamed");
 			
 			// link to parent (a visual HACK)
 			links.put(ol.getName(), ol);
-			NDLLIBManifestState.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(parent, on), 
+			Manifest.getInstance().getGraph().addEdge(ol, new Pair<OrcaNode>(parent, on), 
 					EdgeType.UNDIRECTED);
 			
 			// add various properties
@@ -532,7 +533,7 @@ public class ManifestLoader implements INdlManifestModelListener, INdlRequestMod
 		
 		// Hack - remove parent if nodes are linked between themselves
 		if (innerNodeConnected)
-			NDLLIBManifestState.getInstance().getGraph().removeVertex(parent);
+			Manifest.getInstance().getGraph().removeVertex(parent);
 	}
 	
 	// set common node properties from NDL

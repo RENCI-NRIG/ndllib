@@ -24,6 +24,11 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
+import orca.ndllib.resources.OrcaCrossconnect;
+import orca.ndllib.resources.OrcaImage;
+import orca.ndllib.resources.OrcaLink;
+import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaReservationTerm;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,6 +57,7 @@ import java.util.Set;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 //import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
 
+
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -66,7 +72,7 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
  * @author ibaldin
  *
  */
-public class NDLLIBRequestState extends NDLLIBCommonState  {
+public class Request extends NDLLIBCommon  {
 	private static final String IMAGE_NAME_SUFFIX = "-req";
 	public static final String NO_GLOBAL_IMAGE = "None";
 	public static final String NO_DOMAIN_SELECT = "System select";
@@ -74,7 +80,7 @@ public class NDLLIBRequestState extends NDLLIBCommonState  {
 	public static final String NO_NODE_DEPS="No dependencies";
 	private static final String RDF_START = "<rdf:RDF";
 	private static final String RDF_END = "</rdf:RDF>";
-	private static NDLLIBRequestState instance = null;
+	private static Request instance = null;
 	
 	// is it openflow (and what version [null means non-of])
 	private String ofNeededVersion = null;
@@ -109,7 +115,7 @@ public class NDLLIBRequestState extends NDLLIBCommonState  {
 	}
 
 	
-	private NDLLIBRequestState() {
+	private Request() {
 		term = new OrcaReservationTerm();
 		definedImages = new HashMap<String, OrcaImage>();
 		// Set some defaults for the Edges...
@@ -117,10 +123,10 @@ public class NDLLIBRequestState extends NDLLIBCommonState  {
 		linkCreator.setDefaultLatency(5000);
 	}
 	
-	public static NDLLIBRequestState getInstance() {
+	public static Request getInstance() {
 		if (instance == null) {
 			initialize();
-			instance = new NDLLIBRequestState();
+			instance = new Request();
 		}
 		return instance;
 	}
