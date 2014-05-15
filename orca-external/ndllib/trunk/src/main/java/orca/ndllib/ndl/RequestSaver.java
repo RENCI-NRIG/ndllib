@@ -38,14 +38,14 @@ import java.util.List;
 import java.util.Map;
 
 import orca.ndllib.NDLLIB;
-import orca.ndllib.NDLLIBRequestState;
-import orca.ndllib.OrcaCrossconnect;
-import orca.ndllib.OrcaImage;
-import orca.ndllib.OrcaLink;
-import orca.ndllib.OrcaNode;
-import orca.ndllib.OrcaNodeGroup;
-import orca.ndllib.OrcaStitchPort;
-import orca.ndllib.OrcaStorageNode;
+import orca.ndllib.Request;
+import orca.ndllib.resources.OrcaCrossconnect;
+import orca.ndllib.resources.OrcaImage;
+import orca.ndllib.resources.OrcaLink;
+import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaNodeGroup;
+import orca.ndllib.resources.OrcaStitchPort;
+import orca.ndllib.resources.OrcaStorageNode;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlException;
 import orca.ndl.NdlGenerator;
@@ -55,6 +55,7 @@ import org.apache.commons.lang.StringUtils;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Resource;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
+
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -194,7 +195,7 @@ public class RequestSaver {
 		
 		// if the other end is storage, need to add dependency
 		if (e.linkToSharedStorage() && !(n instanceof OrcaStorageNode)) {
-			Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(e);
+			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(e);
 			OrcaStorageNode osn = null;
 			try {
 				if (pn.getFirst() instanceof OrcaStorageNode)
@@ -288,7 +289,7 @@ public class RequestSaver {
 		// sanity checks
 		// 1) if label is specified, nodes cannot be in different domains
 
-		Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(l);
+		Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
 		
 		if ((l.getLabel() != null) && 
 				(((pn.getFirst().getDomain() != null) && 
@@ -308,7 +309,7 @@ public class RequestSaver {
 	 * @return
 	 */
 	private boolean fakeLink(OrcaLink e) {
-		Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(e);
+		Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(e);
 		if ((pn.getFirst() instanceof OrcaCrossconnect) ||
 				(pn.getSecond() instanceof OrcaCrossconnect))
 			return true;
@@ -326,7 +327,7 @@ public class RequestSaver {
 	}
 	
 	private void addCrossConnectStorageDependency(OrcaCrossconnect oc) throws NdlException {
-		Collection<OrcaLink> iLinks = NDLLIBRequestState.getInstance().getGraph().getIncidentEdges(oc);
+		Collection<OrcaLink> iLinks = Request.getInstance().getGraph().getIncidentEdges(oc);
 		boolean sharedStorage = oc.linkToSharedStorage();
 		
 		if (!sharedStorage)
@@ -336,7 +337,7 @@ public class RequestSaver {
 		List<OrcaNode> otherNodes = new ArrayList<OrcaNode>();
 		
 		for(OrcaLink l: iLinks) {
-			Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(l);
+			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
 			OrcaNode n = null;
 			// find the non-crossconnect side
 			if (!(pn.getFirst() instanceof OrcaCrossconnect))
@@ -365,10 +366,10 @@ public class RequestSaver {
 		
 		addCrossConnectStorageDependency(oc);
 		
-		Collection<OrcaLink> iLinks = NDLLIBRequestState.getInstance().getGraph().getIncidentEdges(oc);
+		Collection<OrcaLink> iLinks = Request.getInstance().getGraph().getIncidentEdges(oc);
 		
 		for(OrcaLink l: iLinks) {
-			Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(l);
+			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
 			OrcaNode n = null;
 			// find the non-crossconnect side
 			if (!(pn.getFirst() instanceof OrcaCrossconnect))
@@ -434,27 +435,27 @@ public class RequestSaver {
 				Individual term = ngen.declareTerm();
 				
 				// not an immediate reservation? declare term beginning
-				if (NDLLIBRequestState.getInstance().getTerm().getStart() != null) {
-					Individual tStart = ngen.declareTermBeginning(NDLLIBRequestState.getInstance().getTerm().getStart());
+				if (Request.getInstance().getTerm().getStart() != null) {
+					Individual tStart = ngen.declareTermBeginning(Request.getInstance().getTerm().getStart());
 					ngen.addBeginningToTerm(tStart, term);
 				}
 				// now duration
-				NDLLIBRequestState.getInstance().getTerm().normalizeDuration();
-				Individual duration = ngen.declareTermDuration(NDLLIBRequestState.getInstance().getTerm().getDurationDays(), 
-						NDLLIBRequestState.getInstance().getTerm().getDurationHours(), NDLLIBRequestState.getInstance().getTerm().getDurationMins());
+				Request.getInstance().getTerm().normalizeDuration();
+				Individual duration = ngen.declareTermDuration(Request.getInstance().getTerm().getDurationDays(), 
+						Request.getInstance().getTerm().getDurationHours(), Request.getInstance().getTerm().getDurationMins());
 				ngen.addDurationToTerm(duration, term);
 				ngen.addTermToReservation(term, reservation);
 				
 				// openflow
-				ngen.addOpenFlowCapable(reservation, NDLLIBRequestState.getInstance().getOfNeededVersion());
+				ngen.addOpenFlowCapable(reservation, Request.getInstance().getOfNeededVersion());
 				
 				// add openflow details
-				if (NDLLIBRequestState.getInstance().getOfNeededVersion() != null) {
+				if (Request.getInstance().getOfNeededVersion() != null) {
 					Individual ofSliceI = ngen.declareOfSlice("of-slice");
 					ngen.addSliceToReservation(reservation, ofSliceI);
-					ngen.addOfPropertiesToSlice(NDLLIBRequestState.getInstance().getOfUserEmail(), 
-							NDLLIBRequestState.getInstance().getOfSlicePass(), 
-							NDLLIBRequestState.getInstance().getOfCtrlUrl(), 
+					ngen.addOfPropertiesToSlice(Request.getInstance().getOfUserEmail(), 
+							Request.getInstance().getOfSlicePass(), 
+							Request.getInstance().getOfCtrlUrl(), 
 							ofSliceI);
 				}
 				
@@ -462,17 +463,17 @@ public class RequestSaver {
 				boolean globalDomain = false;
 				
 				// is domain specified in the reservation?
-				if (NDLLIBRequestState.getInstance().getDomainInReservation() != null) {
-					if (!NDLLIBRequestState.getInstance().isAKnownDomain(NDLLIBRequestState.getInstance().getDomainInReservation()))
-						throw new NdlException("Domain " + NDLLIBRequestState.getInstance().getDomainInReservation() + " is not visible from this SM!");
+				if (Request.getInstance().getDomainInReservation() != null) {
+					if (!Request.getInstance().isAKnownDomain(Request.getInstance().getDomainInReservation()))
+						throw new NdlException("Domain " + Request.getInstance().getDomainInReservation() + " is not visible from this SM!");
 					globalDomain = true;
-					Individual domI = ngen.declareDomain(domainMap.get(NDLLIBRequestState.getInstance().getDomainInReservation()));
+					Individual domI = ngen.declareDomain(domainMap.get(Request.getInstance().getDomainInReservation()));
 					ngen.addDomainToIndividual(domI, reservation);
 				}
 				
 				// shove invidividual nodes onto the reservation/crossconnects are vertices, but not 'nodes'
 				// so require special handling
-				for (OrcaNode n: NDLLIBRequestState.getInstance().getGraph().getVertices()) {
+				for (OrcaNode n: Request.getInstance().getGraph().getVertices()) {
 					Individual ni;
 					if (n instanceof OrcaCrossconnect) {
 						continue;
@@ -487,7 +488,7 @@ public class RequestSaver {
 								snode.getFSType(), snode.getFSParam(), snode.getMntPoint(), 
 								snode.getDoFormat());
 						if (!globalDomain && (n.getDomain() != null)) {
-							if (!NDLLIBRequestState.getInstance().isAKnownDomain(n.getDomain()))
+							if (!Request.getInstance().isAKnownDomain(n.getDomain()))
 								throw new NdlException("Domain " + n.getDomain() + " of node " + n + " is not visible from this SM!");
 							Individual domI = ngen.declareDomain(domainMap.get(n.getDomain()));
 							ngen.addNodeToDomain(domI, ni);
@@ -522,7 +523,7 @@ public class RequestSaver {
 						// check if node has its own image
 						if (n.getImage() != null) {
 							// check if image is set in this node
-							OrcaImage im = NDLLIBRequestState.getInstance().getImageByName(n.getImage());
+							OrcaImage im = Request.getInstance().getImageByName(n.getImage());
 							if (im != null) {
 								Individual imI = ngen.declareDiskImage(im.getUrl().toString(), im.getHash(), im.getShortName());
 								ngen.addDiskImageToIndividual(imI, ni);
@@ -536,7 +537,7 @@ public class RequestSaver {
 
 						// if no global domain domain is set, declare a domain and add inDomain property
 						if (!globalDomain && (n.getDomain() != null)) {
-							if (!NDLLIBRequestState.getInstance().isAKnownDomain(n.getDomain()))
+							if (!Request.getInstance().isAKnownDomain(n.getDomain()))
 								throw new NdlException("Domain " + n.getDomain() + " of node " + n + " is not visible from this SM!");
 							Individual domI = ngen.declareDomain(domainMap.get(n.getDomain()));
 							ngen.addNodeToDomain(domI, ni);
@@ -562,7 +563,7 @@ public class RequestSaver {
 				}
 				
 				// node dependencies (done afterwards to be sure all nodes are declared)
-				for (OrcaNode n: NDLLIBRequestState.getInstance().getGraph().getVertices()) {
+				for (OrcaNode n: Request.getInstance().getGraph().getVertices()) {
 					Individual ni = ngen.getRequestIndividual(n.getName());
 					for(OrcaNode dep: n.getDependencies()) {
 						Individual depI = ngen.getRequestIndividual(dep.getName());
@@ -573,7 +574,7 @@ public class RequestSaver {
 				}
 				
 				// crossconnects are vertices in the graph, but are actually a kind of link
-				for (OrcaNode n: NDLLIBRequestState.getInstance().getGraph().getVertices()) {
+				for (OrcaNode n: Request.getInstance().getGraph().getVertices()) {
 					Individual bl;
 					if (n instanceof OrcaCrossconnect) {
 						// sanity check
@@ -596,12 +597,12 @@ public class RequestSaver {
 				}
 				
 
-				if (NDLLIBRequestState.getInstance().getGraph().getEdgeCount() == 0) {
+				if (Request.getInstance().getGraph().getEdgeCount() == 0) {
 					// a bunch of disconnected nodes, no IP addresses 
 					
 				} else {
 					// edges, nodes, IP addresses oh my!
-					for (OrcaLink e: NDLLIBRequestState.getInstance().getGraph().getEdges()) {
+					for (OrcaLink e: Request.getInstance().getGraph().getEdges()) {
 						// skip links to crossconnects
 						if (fakeLink(e))
 							continue;
@@ -622,7 +623,7 @@ public class RequestSaver {
 
 						// TODO: latency
 						
-						Pair<OrcaNode> pn = NDLLIBRequestState.getInstance().getGraph().getEndpoints(e);
+						Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(e);
 						processNodeAndLink(pn.getFirst(), e, ei);
 						processNodeAndLink(pn.getSecond(), e, ei);
 					}

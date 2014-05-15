@@ -1,4 +1,4 @@
-package orca.ndllib;
+package orca.ndllib.resources;
 
 //import java.awt.Component;
 //import java.awt.GridBagLayout;

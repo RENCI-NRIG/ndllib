@@ -52,30 +52,30 @@ import org.apache.log4j.Logger;
 
 public class NDLLIB {
 
-	private static final String FLUKES_HELP_WIKI = "https://geni-orca.renci.org/trac/wiki/flukes";
+	//private static final String FLUKES_HELP_WIKI = "https://geni-orca.renci.org/trac/wiki/flukes";
 	public static final String buildVersion = NDLLIB.class.getPackage()
 			.getImplementationVersion();
-	public static final String aboutText = "ORCA FLUKES "
-			+ (buildVersion == null ? "Eclipse build" : buildVersion)
-			+ "\nNDL-OWL network editor for ORCA (Open Resource Control Architecture)"
-			+ "\nDeveloped using Jena Semantic Web Framework, JUNG Java Universal Network/Graph Framework and Kiwi Swing toolkit. \nSplitButton adopted from implementation by Edward Scholl (edscholl@atwistedweb.com)"
-			+ "\n\nCopyright 2011-2013 RENCI/UNC Chapel Hill";
+//	public static final String aboutText = "ORCA FLUKES "
+//			+ (buildVersion == null ? "Eclipse build" : buildVersion)
+//			+ "\nNDL-OWL network editor for ORCA (Open Resource Control Architecture)"
+//			+ "\nDeveloped using Jena Semantic Web Framework, JUNG Java Universal Network/Graph Framework and Kiwi Swing toolkit. \nSplitButton adopted from implementation by Edward Scholl (edscholl@atwistedweb.com)"
+//			+ "\n\nCopyright 2011-2013 RENCI/UNC Chapel Hill";
 
-	private Logger logger;
-	private String[] controllerUrls;
-	private String selectedControllerUrl;
+	protected Logger logger;
+	//private String[] controllerUrls;
+	//private String selectedControllerUrl;
 
 	private Properties prefProperties;
-	private static NDLLIB instance = null;
+	//private static NDLLIB instance = null;
 
 
 
-	public static final Set<String> NDL_EXTENSIONS = new HashSet<String>();
-	static {
-		NDL_EXTENSIONS.add("ndl");
-		NDL_EXTENSIONS.add("rdf");
-		NDL_EXTENSIONS.add("n3");
-	}
+//	public static final Set<String> NDL_EXTENSIONS = new HashSet<String>();
+//	static {
+//		NDL_EXTENSIONS.add("ndl");
+//		NDL_EXTENSIONS.add("rdf");
+//		NDL_EXTENSIONS.add("n3");
+//	}
 
 
 
@@ -83,9 +83,9 @@ public class NDLLIB {
 		return logger;
 	}
 
-	public static Logger logger() {
-		return NDLLIB.getInstance().getLogger();
-	}
+//	public static Logger logger() {
+//		return NDLLIB.getInstance().getLogger();
+//	}
 
 
 
@@ -103,19 +103,19 @@ public class NDLLIB {
 		// Jena stuff needs to be set up early
 		NdlCommons.setGlobalJenaRedirections();
 		
-		NDLLIB gui = NDLLIB.getInstance();
+		//NDLLIB gui = NDLLIB.getInstance();
 
 	}
 
 	public static void non_gui_save(File f) {
 
-		NDLLIBRequestState.getInstance().setSaveFile(f);
+		Request.getInstance().setSaveFile(f);
 
-		if (NDLLIBRequestState.getInstance().getSaveFile() != null) {
+		if (Request.getInstance().getSaveFile() != null) {
 			RequestSaver.getInstance().saveGraph(
-					NDLLIBRequestState.getInstance().getSaveFile(),
-					NDLLIBRequestState.getInstance().g,
-					NDLLIBRequestState.getInstance().nsGuid);
+					Request.getInstance().getSaveFile(),
+					Request.getInstance().g,
+					Request.getInstance().nsGuid);
 		} 
 	}
 
@@ -128,11 +128,11 @@ public class NDLLIB {
 		// UIChangeManager.setDefaultTexture(null);
 	}
 
-	public static NDLLIB getInstance() {
-		if (instance == null)
-			instance = new NDLLIB();
-		return instance;
-	}
+//	public static NDLLIB getInstance() {
+//		if (instance == null)
+//			instance = new NDLLIB();
+//		return instance;
+//	}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -253,9 +253,9 @@ public class NDLLIB {
 		}
 	}
 
-	public String getSelectedController() {
-		return selectedControllerUrl;
-	}
+	//public String getSelectedController() {
+	//	return selectedControllerUrl;
+	//}
 
 	private void getCustomInstancePreferences() {
 		String[] customInstances = getPreference(PrefsEnum.CUSTOM_INSTANCE_LIST)

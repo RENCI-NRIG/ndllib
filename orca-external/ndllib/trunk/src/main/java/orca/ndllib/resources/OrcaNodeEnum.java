@@ -20,38 +20,51 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
-import java.net.URL;
-
-/** 
- * Defines an ORCA VM Image
+/**
+ * Enum defines various kinds of nodes
  * @author ibaldin
  *
  */
-public class OrcaImage {
-	private String shortName, hash;
-	private URL url;
+public enum OrcaNodeEnum {
+	CE(OrcaNode.class, "Node", "node-50.gif"), 
+	NODEGROUP(OrcaNodeGroup.class, "NodeGroup", "server-stack-50.gif"), 
+	CROSSCONNECT(OrcaCrossconnect.class, "VLAN", "crossconnect-50.gif"),
+	STITCHPORT(OrcaStitchPort.class, "StitchPort", "stitch-50.gif"),
+	STORAGE(OrcaStorageNode.class, "Storage", "disk-50.gif"),
+	RESOURCESITE(OrcaResourceSite.class, "Resource Site", "resourcesite-50.gif");
 	
-	public OrcaImage(String shortName, URL url, String hash) {
-		this.shortName = shortName;
-		this.url = url;
-		this.hash = hash;
-	}
-
-	public URL getUrl() {
-		return url;
-	}
+	private int nodeCount;
+	private String namePrefix;
+	private Class<?> clazz;
+	private String icon;
 	
-	public String getHash() {
-		return hash;
-	}
-	
-	public String getShortName() {
-		return shortName;
+	OrcaNodeEnum(Class<?> c, String pf, String i) {
+		clazz = c;
+		nodeCount = 0;
+		namePrefix = pf;
+		icon = i;
 	}
 	
-	public void substituteName(String newName) {
-		shortName = newName;
+	public int getCount() {
+		return nodeCount++;
+	}
+	
+	public String getName() {
+		return namePrefix;
+	}
+	
+	public Class<?> getClazz() {
+		return clazz;
+	}
+	
+	public String getIconName() {
+		return icon;
+	}
+	
+	public void resetCount() {
+		
+		nodeCount = 0;
 	}
 }

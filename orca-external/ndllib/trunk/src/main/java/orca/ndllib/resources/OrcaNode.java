@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
 import java.awt.Color;
 import java.awt.Shape;
@@ -35,6 +35,8 @@ import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+
+import orca.ndllib.Request;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
@@ -226,7 +228,7 @@ public class OrcaNode implements OrcaResource {
 	
 	public void setDomainWithGlobalReset(String d) {
 		// reset reservation-level setting
-		NDLLIBRequestState.getInstance().resetDomainInReservation();
+		Request.getInstance().resetDomainInReservation();
 		domain = d;
 	}
 	

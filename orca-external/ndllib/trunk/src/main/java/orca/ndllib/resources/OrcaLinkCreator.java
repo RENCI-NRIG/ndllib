@@ -20,11 +20,11 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
 import java.util.Collection;
 
-import orca.ndllib.OrcaLink.ILinkCreator;
+import orca.ndllib.resources.OrcaLink.ILinkCreator;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 
 public class OrcaLinkCreator implements ILinkCreator {

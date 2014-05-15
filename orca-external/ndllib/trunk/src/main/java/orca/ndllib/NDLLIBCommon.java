@@ -22,6 +22,10 @@
 */
 package orca.ndllib;
 import orca.ndllib.ndl.*;
+import orca.ndllib.resources.OrcaLink;
+import orca.ndllib.resources.OrcaLinkCreator;
+import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaNodeCreator;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -31,7 +35,7 @@ import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
  * @author ibaldin
  *
  */
-public abstract class NDLLIBCommonState {
+public abstract class NDLLIBCommon {
 	SparseMultigraph<OrcaNode, OrcaLink> g = new SparseMultigraph<OrcaNode, OrcaLink>();
 	OrcaNodeCreator nodeCreator = new OrcaNodeCreator(g);
 	OrcaLinkCreator linkCreator = new OrcaLinkCreator(g);

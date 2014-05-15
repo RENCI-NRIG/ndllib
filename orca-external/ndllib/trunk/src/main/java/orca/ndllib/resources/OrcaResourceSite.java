@@ -20,51 +20,46 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib;
+package orca.ndllib.resources;
 
-/**
- * Enum defines various kinds of nodes
- * @author ibaldin
- *
- */
-public enum OrcaNodeEnum {
-	CE(OrcaNode.class, "Node", "node-50.gif"), 
-	NODEGROUP(OrcaNodeGroup.class, "NodeGroup", "server-stack-50.gif"), 
-	CROSSCONNECT(OrcaCrossconnect.class, "VLAN", "crossconnect-50.gif"),
-	STITCHPORT(OrcaStitchPort.class, "StitchPort", "stitch-50.gif"),
-	STORAGE(OrcaStorageNode.class, "Storage", "disk-50.gif"),
-	RESOURCESITE(OrcaResourceSite.class, "Resource Site", "resourcesite-50.gif");
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+
+import orca.ndllib.Request;
+import edu.uci.ics.jung.visualization.LayeredIcon;
+
+public class OrcaResourceSite extends OrcaNode {
+	float lat, lon;
+	List<String> domains = new ArrayList<String>();
 	
-	private int nodeCount;
-	private String namePrefix;
-	private Class<?> clazz;
-	private String icon;
-	
-	OrcaNodeEnum(Class<?> c, String pf, String i) {
-		clazz = c;
-		nodeCount = 0;
-		namePrefix = pf;
-		icon = i;
+	public OrcaResourceSite(String name) {
+		super(name);
+		domain = name;
 	}
 	
-	public int getCount() {
-		return nodeCount++;
+	public OrcaResourceSite(String name, float lat, float lon) {
+		super(name, 
+				new LayeredIcon(new ImageIcon(Request.class.getResource(OrcaNodeEnum.RESOURCESITE.getIconName())).getImage()));
+		domain = name;
+		this.lat = lat;
+		this.lon = lon;
 	}
 	
-	public String getName() {
-		return namePrefix;
+	public float getLat() {
+		return lat;
 	}
 	
-	public Class<?> getClazz() {
-		return clazz;
+	public float getLon() {
+		return lon;
 	}
 	
-	public String getIconName() {
-		return icon;
+	public void addDomain(String d) {
+		domains.add(d);
 	}
 	
-	public void resetCount() {
-		
-		nodeCount = 0;
+	public List<String> getDomains() {
+		return domains;
 	}
 }
