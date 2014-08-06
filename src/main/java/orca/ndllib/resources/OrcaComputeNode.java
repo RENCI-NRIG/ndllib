@@ -62,28 +62,7 @@ public class OrcaComputeNode extends OrcaNode {
 		
 	}
 	
-	public String getPortsList() {
-		return openPorts;
-	}
 	
-	public boolean setPortsList(String list) {
-		
-		if ((list == null) || (list.trim().length() == 0))
-			return true;
-		
-		String chkRegex = "(\\s*\\d+\\s*)(,(\\s*\\d+\\s*))*";
-		
-		if (list.matches(chkRegex)) { 
-			for(String port: list.split(",")) {
-				int portI = Integer.decode(port.trim());
-				if (portI > 65535)
-					return false;
-			}
-			openPorts = list;
-			return true;
-		}
-		return false;
-	}
 	
 	
 	protected int nodeCount = 1;
@@ -148,6 +127,12 @@ public class OrcaComputeNode extends OrcaNode {
 		return splittable;
 	}
 
+	
+	public OrcaStitch stitch(OrcaResource r){
+		return null;
+	}
+	
+	
 	@Override
 	public String getPrintText() {
 		// TODO Auto-generated method stub

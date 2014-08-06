@@ -60,8 +60,8 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class RequestLoader implements INdlRequestModelListener {
-	private Request request;
+public class RequestLoader{ // implements INdlRequestModelListener {
+	/*private Request request;
 	
 	private OrcaReservationTerm term = new OrcaReservationTerm();
 	private String reservationDomain = null;
@@ -91,11 +91,11 @@ public class RequestLoader implements INdlRequestModelListener {
     
     
 
-	/**
+	*//**
 	 * Load from file
 	 * @param f
 	 * @return
-	 */
+	 *//*
 	public boolean loadGraph(File f) {
 		BufferedReader bin = null; 
 		try {
@@ -131,11 +131,11 @@ public class RequestLoader implements INdlRequestModelListener {
 		return true;
 	}
 	
-	/**
+	*//**
 	 * Load from string
 	 * @param f
 	 * @return
-	 */
+	 *//*
 	public boolean loadGraph(String f) {
 		try {
 			NdlRequestParser nrp = new NdlRequestParser(f, this);
@@ -274,12 +274,12 @@ public class RequestLoader implements INdlRequestModelListener {
 		this.request.getGraph().addVertex(newNode);
 	}
 
-	/**
+	*//**
 	 * For now deals only with p-to-p connections
-	 */
+	 *//*
 	public void ndlNetworkConnection(Resource l, OntModel om, 
 			long bandwidth, long latency, List<Resource> interfaces) {
-/*		
+		
 		NDLLIB.logger().debug("NetworkConnection: " + l);
 		// System.out.println("Found connection " + l + " connecting " + interfaces + " with bandwidth " + bandwidth);
 		if (l == null)
@@ -323,11 +323,11 @@ public class RequestLoader implements INdlRequestModelListener {
 				}
 			}
 			
-		}*/
+		}
 	}
 
 	public void ndlInterface(Resource intf, OntModel om, Resource conn, Resource node, String ip, String mask) {
-	/*
+	
 		
 		// System.out.println("Interface " + l + " has IP/netmask" + ip + "/" + mask);
 		NDLLIB.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
@@ -385,7 +385,7 @@ public class RequestLoader implements INdlRequestModelListener {
 				
 			}
 				
-		}*/
+		}
 	}
 	
 	public void ndlSlice(Resource sl, OntModel m) {
@@ -432,12 +432,12 @@ public class RequestLoader implements INdlRequestModelListener {
 		}
 	}
 
-	/**
+	*//**
 	 * Process a broadcast link
-	 */
+	 *//*
 	public void ndlBroadcastConnection(Resource bl, OntModel om,
 			long bandwidth, List<Resource> interfaces) {
-		/*
+		
 		NDLLIB.logger().debug("BroadcastConnection: " + bl);
 
 		if (bl == null)
@@ -461,6 +461,6 @@ public class RequestLoader implements INdlRequestModelListener {
 			}
 		}
 		links.put(bl.getURI(), oc);
-		*/
-	}
+		
+	}*/
 }

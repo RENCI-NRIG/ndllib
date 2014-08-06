@@ -13,20 +13,24 @@ import java.util.Set;
  *
  */
 public abstract class OrcaResource implements OrcaRequestResource,OrcaManifestResource{
+	
+
+	protected Set<OrcaResource> dependencies = new HashSet<OrcaResource>(); 
+	protected Set<OrcaStitch> stitches = new HashSet<OrcaStitch>(); 
+	
+	protected Map<String, String> substrateInfo = new HashMap<String, String>();
+	
+	//Properties:
 	protected String name;
 
-	protected Set<OrcaNode> dependencies = new HashSet<OrcaNode>(); 
-	
-	//protected boolean isResource=false;
-	protected Map<String, String> substrateInfo = new HashMap<String, String>();
-
-	// ### Manifest Vars ####
 	// reservation state
 	protected String state = null;
-	// reservation notice
+	// reservation notice:  PRUTH--what is this?
 	protected String resNotice = null;
 	
 	protected String domain; 
+	
+	
 	
 	//abstact methods 
 	public abstract String getPrintText();

@@ -128,7 +128,12 @@ public class OrcaCrossconnect extends OrcaLink {
 //		}
 		return false;
     }
-
+    
+    
+	public OrcaStitch stitch(OrcaResource r){
+		return null;
+	}
+	
 	@Override
 	public String getPrintText() {
 		// TODO Auto-generated method stub

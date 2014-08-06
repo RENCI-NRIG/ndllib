@@ -90,6 +90,11 @@ public class OrcaStorageNode extends OrcaNode {
 		return hasMntPoint;
 	}
 
+	public OrcaStitch stitch(OrcaResource r){
+		return null;
+	}
+	
+	
 	@Override
 	public String getPrintText() {
 		// TODO Auto-generated method stub
