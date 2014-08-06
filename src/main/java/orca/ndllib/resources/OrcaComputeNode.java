@@ -34,10 +34,12 @@ public class OrcaComputeNode extends OrcaNode {
 	protected class Image{
 		String imageURL;
 		String imageHash;
+		String shortName;
 	
-		public Image(String imageURL, String imageHash) {
+		public Image(String imageURL, String imageHash, String shortName) {
 			this.imageURL = imageURL;
 			this.imageHash = imageHash;
+			this.shortName = shortName;
 		}
 		public String getImageURL() {
 			return imageURL;
@@ -51,6 +53,13 @@ public class OrcaComputeNode extends OrcaNode {
 		public void setImageHash(String imageHash) {
 			this.imageHash = imageHash;
 		}
+		public String getShortName() {
+			return shortName;
+		}
+		public void setshortName(String shortName) {
+			this.shortName = shortName;
+		}
+		
 	}
 	
 	public String getPortsList() {
@@ -78,7 +87,7 @@ public class OrcaComputeNode extends OrcaNode {
 	
 	
 	protected int nodeCount = 1;
-	//protected boolean splittable = false;
+	protected boolean splittable = false;
 
 	protected Image image = null;
 	protected String domain = null;
@@ -91,7 +100,26 @@ public class OrcaComputeNode extends OrcaNode {
 	// list of open ports
 	protected String openPorts = null;
 	
-
+	//get image properties
+	public String getImageUrl(){
+		return image.getImageURL();
+	}
+	
+	public String getImageHash(){
+		return image.getImageHash();
+	}
+	
+	public String getImageShortName(){
+		return image.getShortName();
+	}
+	
+	public String getPostBootScript(){
+		return postBootScript;
+	}
+	
+	public String setgetPostBootScript(){
+		return postBootScript;
+	}
 	public OrcaComputeNode(String name) {
 		super(name);
 	}
@@ -105,13 +133,20 @@ public class OrcaComputeNode extends OrcaNode {
 			nodeCount = nc;
 	}
 	
-//	public void setSplittable(boolean f) {
-//		splittable = f;
-//	}
-//	
-//	public boolean getSplittable() {
-//		return splittable;
-//	}
+	public String getNodeType() {
+		return nodeType;
+	}
+	
+	public void setNodeType(String nt) {
+		nodeType = nt;
+	}
+	public void setSplittable(boolean f) {
+		splittable = f;
+	}
+	
+	public boolean getSplittable() {
+		return splittable;
+	}
 
 	@Override
 	public String getPrintText() {
