@@ -11,9 +11,9 @@ import java.util.Iterator;
 
 import com.google.common.net.InetAddresses;
 
-import orca.ndllib.resources.OrcaCrossconnect;
-import orca.ndllib.resources.OrcaLink;
-import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.*;
+import orca.ndllib.util.*;
+import orca.ndl.*;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;

@@ -28,26 +28,12 @@ import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class OrcaLink implements OrcaResource {
+public abstract class OrcaLink extends OrcaResource {
     protected long bandwidth;
     protected long latency;
     protected String label = null;
     protected String realName = null;
     
-    protected String name;
-	// reservation state
-	protected String state = null;
-	// reservation notice
-	protected String resNotice = null;
-	protected boolean isResource = false;
-	
-	public boolean isResource() {
-		return isResource;
-	}
-    
-	public void setIsResource() {
-		isResource = true;
-	}
 	
     public OrcaLink(String name) {
         this.name = name;
@@ -86,72 +72,17 @@ public class OrcaLink implements OrcaResource {
     	return latency;
     }
     
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }       
     
     public void setRealName(String n) {
     	this.realName = n;
     }
-    
-	public void setState(String s) {
-		state = s;
-	}
-	
-	public String getState() {
-		return state;
-	}
-	
-	public void setReservationNotice(String n) {
-		resNotice = n;
-	}
-    
-	public String getReservationNotice() {
-		return resNotice;
-	}
 	
     @Override
     public String toString() {
         return name;
     }
     
-    /**
-     * Get text for NDLLIB viewer
-     * @return
-     */
-    public String getViewerText() {
-    	String viewText = "Link name: " + (realName != null ? realName : name);
-    	if (bandwidth == 0)
-    		viewText += "\nBandwidth: unspecified";
-    	else 
-    		viewText += "\nBandwidth: " + bandwidth;
-    	
-    	if (latency == 0) 
-    		viewText += "\nLatency: unspecified";
-    	else
-    		viewText += "\nLatency: " + latency;
-    	
-    	if (label == null) 
-    		viewText += "\nLabel: unspecified";
-    	else
-    		viewText += "\nLabel: " + label;
-    	
-    	if (state == null)
-    		viewText += "\nLink reservation state: unspecified";
-    	else
-    		viewText += "\nLink reservation state: " + state;
-    		
-    	if (resNotice == null)
-    		viewText += "\nReservation notice: unspecified";
-    	else
-    		viewText += "\nReservation notice: " + resNotice;
-    	
-    	return viewText;
-    }
+  
     
     public static class OrcaLinkFactory implements Factory<OrcaLink> {
        private ILinkCreator inc = null;
@@ -171,46 +102,39 @@ public class OrcaLink implements OrcaResource {
     
     // link to broadcast?
     public boolean linkToBroadcast() {
-    	// if it is a link to broadcastlink, no editable properties
-    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
-    	
-    	if (pn == null)
-    		return false;
-    	
-    	if ((pn.getFirst() instanceof OrcaCrossconnect) || 
-    			(pn.getSecond() instanceof OrcaCrossconnect))
-    		return true;
+//    	// if it is a link to broadcastlink, no editable properties
+//    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
+//    	
+//    	if (pn == null)
+//    		return false;
+//    	
+//    	//if ((pn.getFirst() instanceof OrcaVLAN) || 
+//    	//		(pn.getSecond() instanceof OrcaVLAN))
+//    	//	return true;
     	return false;
     }
     
     // link to shared storage?
     public boolean linkToSharedStorage() {
     	// if it is a link to broadcastlink, no editable properties
-    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
-    	
-    	if (pn == null)
-    		return false;
-    	
-    	if (pn.getFirst() instanceof OrcaStorageNode) {
-    		OrcaStorageNode snode = (OrcaStorageNode)pn.getFirst();
-    		if (snode.getSharedNetwork())
-    			return true;
-    	}
-    	
-    	if (pn.getSecond() instanceof OrcaStorageNode) {
-    		OrcaStorageNode snode = (OrcaStorageNode)pn.getSecond();
-    		if (snode.getSharedNetwork())
-    			return true;
-    	}
+//    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
+//    	
+//    	if (pn == null)
+//    		return false;
+//    	
+//    	if (pn.getFirst() instanceof OrcaStorageNode) {
+//    		OrcaStorageNode snode = (OrcaStorageNode)pn.getFirst();
+//    		if (snode.getSharedNetwork())
+//    			return true;
+//    	}
+//    	
+//    	if (pn.getSecond() instanceof OrcaStorageNode) {
+//    		OrcaStorageNode snode = (OrcaStorageNode)pn.getSecond();
+//    		if (snode.getSharedNetwork())
+//    			return true;
+//    	}
     	return false;
     }
     
-    
-    public void setSubstrateInfo(String t, String o) {
-    	// FIXME:
-    }
-    
-    public String getSubstrateInfo(String t) {
-    	return null;
-    }
+
 }

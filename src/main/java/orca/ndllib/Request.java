@@ -25,10 +25,10 @@ package orca.ndllib;
 
 import orca.ndllib.ndl.*;
 import orca.ndllib.resources.OrcaCrossconnect;
-import orca.ndllib.resources.OrcaImage;
 import orca.ndllib.resources.OrcaLink;
 import orca.ndllib.resources.OrcaNode;
 import orca.ndllib.resources.OrcaReservationTerm;
+import orca.ndllib.resources.OrcaResource;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,6 +58,9 @@ import java.util.Set;
 //import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
 
 
+
+
+
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -80,7 +83,7 @@ public class Request extends NDLLIBCommon  {
 	public static final String NO_NODE_DEPS="No dependencies";
 	private static final String RDF_START = "<rdf:RDF";
 	private static final String RDF_END = "</rdf:RDF>";
-	private static Request instance = null;
+	
 	
 	// is it openflow (and what version [null means non-of])
 	private String ofNeededVersion = null;
@@ -88,18 +91,6 @@ public class Request extends NDLLIBCommon  {
 	private String ofSlicePass = null;
 	private String ofCtrlUrl = null;
 	
-	// VM domains known to this controller
-	private List<String> knownDomains = null;
-	
-	// VM images defined by the user
-	HashMap<String, OrcaImage> definedImages; 
-	
-	//ChooserWithNewDialog<String> icd = null;
-	//ReservationDetailsDialog rdd = null;
-	
-	// are we adding a new image definition or editing existing
-	boolean addingNewImage = false;
-
 	// File in which we save
 	File saveFile = null;
 	
@@ -115,45 +106,29 @@ public class Request extends NDLLIBCommon  {
 	}
 
 	
-	private Request() {
-		term = new OrcaReservationTerm();
-		definedImages = new HashMap<String, OrcaImage>();
-		// Set some defaults for the Edges...
-		linkCreator.setDefaultBandwidth(10000000);
-		linkCreator.setDefaultLatency(5000);
-	}
-	
-	public static Request getInstance() {
-		if (instance == null) {
-			initialize();
-			instance = new Request();
-		}
-		return instance;
-	}
-	
-	@Override
-	public void clear() {
-		super.clear();
+	public Request() {
+		super();
 		// clear the graph, reservation set else to defaults
 		if (g == null)
 			return;
 		
-		Set<OrcaNode> nodes = new HashSet<OrcaNode>(g.getVertices());
-		for (OrcaNode n: nodes)
-			g.removeVertex(n);
+		Set<OrcaResource> resources = new HashSet<OrcaResource>(g.getVertices());
+		for (OrcaResource r: resources)
+			g.removeVertex(r);
 		resDomainName = null;
 		term = new OrcaReservationTerm();
-		addingNewImage = false;
 		ofNeededVersion = null;
 		ofUserEmail = null;
 		ofSlicePass = null;
 		ofCtrlUrl = null;
 		nsGuid = null;
 		saveFile = null;
-		
-		//definedImages = new HashMap<String, OrcaImage>();
-		//NDLLIB.getInstance().getImagesFromPreferences();
 	}
+	
+	public static Request getInstance() {
+		return new Request();
+	}
+	
 	
 	public OrcaReservationTerm getTerm() {
 		return term;
@@ -179,7 +154,7 @@ public class Request extends NDLLIBCommon  {
 		if ((resDomainName != null) && (resDomainName.equals(d)))
 			return;
 		// reset all node domains
-		for(OrcaNode n: g.getVertices()) {
+		for(OrcaResource n: g.getVertices()) {
 			n.setDomain(null);
 		}
 		resDomainName = d;
@@ -196,71 +171,6 @@ public class Request extends NDLLIBCommon  {
 		return resDomainName;
 	}
 	
-	public OrcaImage getImageByName(String nm) {
-		return definedImages.get(nm);
-	}
-	
-	public String addImage(OrcaImage newIm, OrcaImage oldIm) {
-		if (newIm == null)
-			return null;
-		
-		String retImageName = newIm.getShortName();
-		
-		// if old image is not null, then we are replacing, so delete first
-		if (oldIm != null) {
-			definedImages.remove(oldIm.getShortName());
-		} else {
-			// if old image is null, we should check if there is already an image
-			// with that name and if its URL and hash match. If not ???
-			oldIm = definedImages.get(newIm.getShortName());
-			if (oldIm != null) {
-				if (!oldIm.getHash().equals(newIm.getHash()) || !oldIm.getUrl().equals(newIm.getUrl())) {
-					// try to find a new name, substitute it for the old one
-					if (definedImages.containsKey(retImageName + IMAGE_NAME_SUFFIX)) {
-						int i = 1;
-						for(;definedImages.containsKey(retImageName + IMAGE_NAME_SUFFIX + i);i++);
-						retImageName += IMAGE_NAME_SUFFIX + i;
-					} else
-						retImageName += IMAGE_NAME_SUFFIX;
-					newIm.substituteName(retImageName);
-					definedImages.put(retImageName, newIm);
-				} else {
-					// nothing to do - same image
-				}
-			} 
-		}
-		
-		definedImages.put(retImageName, newIm);
-		return retImageName;
-	}
-	
-	/**
-	 * Add images from a list (of preferences)
-	 * @param newIm
-	 */
-	public void addImages(List<OrcaImage> newIm) {
-		for (OrcaImage im: newIm) {
-			addImage(im, null);
-		}
-	}
-	
-	public Object[] getImageShortNames() {
-		if (definedImages.size() > 0)
-			return definedImages.keySet().toArray();
-		else return new String[0];
-	}
-	
-	public String[] getImageShortNamesWithNone() {
-		String[] fa = new String[definedImages.size() + 1];
-		fa[0] = NO_GLOBAL_IMAGE;
-		System.arraycopy(getImageShortNames(), 0, fa, 1, definedImages.size());
-		return fa;		
-	}
-	
-	public Iterator<String> getImageShortNamesIterator() {
-		return definedImages.keySet().iterator();
-	}
-	
 	/**
 	 * Cleanup before deleting an edge
 	 * @param e
@@ -269,9 +179,9 @@ public class Request extends NDLLIBCommon  {
 		if (e == null)
 			return;
 		// remove edge from node IP maps
-		Pair<OrcaNode> p = g.getEndpoints(e);
-		p.getFirst().removeIp(e);
-		p.getSecond().removeIp(e);
+		//Pair<OrcaResource> p = g.getEndpoints(e);
+		//p.getFirst().removeIp(e);
+		//p.getSecond().removeIp(e);
 	}
 
 	/**
@@ -281,10 +191,10 @@ public class Request extends NDLLIBCommon  {
 		if (n == null)
 			return;
 		// remove incident edges
-		Collection<OrcaLink> edges = g.getIncidentEdges(n);
-		for (OrcaLink e: edges) {
-			deleteEdgeCallBack(e);
-		}
+		//Collection<OrcaLink> edges = g.getIncidentEdges(n);
+		//for (OrcaLink e: edges) {
+		//	deleteEdgeCallBack(e);
+		//}
 	}
 	
 	/**
@@ -313,11 +223,11 @@ public class Request extends NDLLIBCommon  {
 	 * Is this a known domain
 	 * @return
 	 */
-	public boolean isAKnownDomain(String d) {
-		if (knownDomains != null)
-			return knownDomains.contains(d);
-		return true;
-	}
+//	public boolean isAKnownDomain(String d) {
+//		if (knownDomains != null)
+//			return knownDomains.contains(d);
+//		return true;
+//	}
 	
 	/**
 	 * Return null if 'None' image is asked for
@@ -364,11 +274,11 @@ public class Request extends NDLLIBCommon  {
 	}
 	
 	public String[] getAvailableDependencies(OrcaNode subject) {
-		Collection<OrcaNode> knownNodes = g.getVertices();
+		Collection<OrcaResource> knownNodes = g.getVertices();
 		String[] ret = new String[knownNodes.size() - 1];
 		int i = 0;
-		for (OrcaNode n: knownNodes) {
-			if ((!n.equals(subject)) && !(n instanceof OrcaCrossconnect)) {
+		for (OrcaResource n: knownNodes) {
+			if (!n.equals(subject)) {
 				ret[i] = n.getName();
 				i++;
 			}
@@ -376,13 +286,13 @@ public class Request extends NDLLIBCommon  {
 		return ret;
 	}
 	
-	public String[] getAvailableDependenciesWithNone(OrcaNode subject) {
-		Collection<OrcaNode> knownNodes = g.getVertices();
+	public String[] getAvailableDependenciesWithNone(OrcaResource subject) {
+		Collection<OrcaResource> knownNodes = g.getVertices();
 		String[] ret = new String[knownNodes.size()];
 		ret[0] = NO_NODE_DEPS;
 		int i = 1;
-		for (OrcaNode n: knownNodes) {
-			if ((!n.equals(subject)) && !(n instanceof OrcaCrossconnect)) {
+		for (OrcaResource n: knownNodes) {
+			if (!n.equals(subject)) {
 				ret[i] = n.getName();
 				i++;
 			}
@@ -390,11 +300,11 @@ public class Request extends NDLLIBCommon  {
 		return ret;
 	}
 	
-	public OrcaNode getNodeByName(String nm) {
+	public OrcaResource getNodeByName(String nm) {
 		if (nm == null)
 			return null;
 		
-		for (OrcaNode n: g.getVertices()) {
+		for (OrcaResource n: g.getVertices()) {
 			if (nm.equals(n.getName()))
 				return n;
 		}

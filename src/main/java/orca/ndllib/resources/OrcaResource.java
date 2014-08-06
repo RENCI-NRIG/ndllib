@@ -1,20 +1,80 @@
 package orca.ndllib.resources;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * A generic resource with a state and a notice
  * @author ibaldin
+ * @author pruth
  *
  */
-public interface OrcaResource {
-	public boolean isResource();
-	public void setIsResource();
-	public String getName();
-	public void setName(String s);
-	public String getState();
-	public String getReservationNotice();
-	public void setState(String s);
-	public void setReservationNotice(String s);
-	public void setSubstrateInfo(String t, String o);
-	public String getSubstrateInfo(String t);
+public abstract class OrcaResource implements OrcaRequestResource,OrcaManifestResource{
+	protected String name;
+
+	protected Set<OrcaNode> dependencies = new HashSet<OrcaNode>(); 
+	
+	//protected boolean isResource=false;
+	protected Map<String, String> substrateInfo = new HashMap<String, String>();
+
+	// ### Manifest Vars ####
+	// reservation state
+	protected String state = null;
+	// reservation notice
+	protected String resNotice = null;
+	
+	protected String domain; 
+	
+	//abstact methods 
+	public abstract String getPrintText();
+	
+
+	public String getName(){ 
+		return name; 
+	}
+
+	public void setName(String s) {
+		name = s;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String s) {
+		state = s;
+	}
+
+	public String getReservationNotice() {
+		return resNotice;
+	}
+
+	public void setReservationNotice(String s) {
+		resNotice = s;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+	
+	public void setDomain(String d) {
+		domain = d;
+	}
+	
+	/**
+	 * Substrate info is just an associative array. 
+	 * Describes some information about the substrate of the resource
+	 */
+	public void setSubstrateInfo(String t, String o) {
+		substrateInfo.put(t, o);
+	}
+
+	public String getSubstrateInfo(String t) {
+		return substrateInfo.get(t);
+	}
+
+	//
 }

@@ -21,11 +21,18 @@
 * IN THE WORK.
 */
 package orca.ndllib;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import orca.ndllib.ndl.*;
+import orca.ndllib.resources.OrcaComputeNode;
+import orca.ndllib.resources.OrcaCrossconnect;
 import orca.ndllib.resources.OrcaLink;
-import orca.ndllib.resources.OrcaLinkCreator;
 import orca.ndllib.resources.OrcaNode;
-import orca.ndllib.resources.OrcaNodeCreator;
+import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.OrcaStitch;
+import orca.ndllib.resources.OrcaStitchPort;
+import orca.ndllib.resources.OrcaStorageNode;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -36,28 +43,12 @@ import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
  *
  */
 public abstract class NDLLIBCommon {
-	SparseMultigraph<OrcaNode, OrcaLink> g = new SparseMultigraph<OrcaNode, OrcaLink>();
-	OrcaNodeCreator nodeCreator = new OrcaNodeCreator(g);
-	OrcaLinkCreator linkCreator = new OrcaLinkCreator(g);
-	//KTextField sliceIdField = null;
-	
-	EditingModalGraphMouse<OrcaNode, OrcaLink> gm = null;
+	SparseMultigraph<OrcaResource, OrcaStitch> g = new SparseMultigraph<OrcaResource, OrcaStitch>();
 	
 	// where are we saving
 	String saveDirectory = null;
 	
-	// Vis viewer 
-	VisualizationViewer<OrcaNode,OrcaLink> vv = null;
-	
-	public OrcaLinkCreator getLinkCreator() {
-		return linkCreator;
-	}
-	
-	public OrcaNodeCreator getNodeCreator() {
-		return nodeCreator;
-	}
-	
-	public SparseMultigraph<OrcaNode, OrcaLink> getGraph() {
+	private SparseMultigraph<OrcaResource, OrcaStitch> getGraph() {
 		return g;
 	}
 
@@ -68,18 +59,76 @@ public abstract class NDLLIBCommon {
 	public String getSaveDir() {
 		return saveDirectory;
 	}
-
-	public void clear() {
-		nodeCreator.reset();
-		linkCreator.reset();
+	
+	public Collection<OrcaResource> getResources(){
+		return g.getVertices();
 	}
 	
-//	public String getSliceName() {
-//		return sliceIdField.getText();
-//	}
+	public Collection<OrcaLink> getLinks(){
+		ArrayList<OrcaLink> links = new ArrayList<OrcaLink>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaLink){
+				links.add((OrcaLink)resource);
+			}
+		}
+		return links;
+	}
+		
+	public Collection<OrcaCrossconnect> getCrossconnects(){
+		ArrayList<OrcaCrossconnect> crossconnects = new ArrayList<OrcaCrossconnect>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaCrossconnect){
+				crossconnects.add((OrcaCrossconnect)resource);
+			}
+		}
+		return crossconnects;
+	}
 	
-	// a pane may have an action listener (e.g. for internal buttons)
-//	abstract public ActionListener getActionListener();
-//	
-//	abstract public void addPane(Container c);
+
+	public Collection<OrcaNode> getNodes(){
+		ArrayList<OrcaNode> nodes = new ArrayList<OrcaNode>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaNode){
+				nodes.add((OrcaNode)resource);
+			}
+		}
+		return nodes;
+	}
+	
+	public Collection<OrcaComputeNode> getComputeNodes(){
+		ArrayList<OrcaComputeNode> nodes = new ArrayList<OrcaComputeNode>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaComputeNode){
+				nodes.add((OrcaComputeNode)resource);
+			}
+		}
+		return nodes;
+	}
+	
+	public Collection<OrcaStorageNode> getStorageNodes(){
+		ArrayList<OrcaStorageNode> nodes = new ArrayList<OrcaStorageNode>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaStorageNode){
+				nodes.add((OrcaStorageNode)resource);
+			}
+		}
+		return nodes;
+	}	
+	public Collection<OrcaStitchPort> getStitchPorts(){
+		ArrayList<OrcaStitchPort> nodes = new ArrayList<OrcaStitchPort>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaStitchPort){
+				nodes.add((OrcaStitchPort)resource);
+			}
+		}
+		return nodes;
+	}	
+
 }
+	

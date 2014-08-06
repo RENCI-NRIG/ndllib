@@ -40,10 +40,11 @@ import java.util.Map;
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
 import orca.ndllib.resources.OrcaCrossconnect;
-import orca.ndllib.resources.OrcaImage;
 import orca.ndllib.resources.OrcaLink;
 import orca.ndllib.resources.OrcaNode;
-import orca.ndllib.resources.OrcaNodeGroup;
+import orca.ndllib.resources.OrcaComputeNode;
+import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.OrcaStitch;
 import orca.ndllib.resources.OrcaStitchPort;
 import orca.ndllib.resources.OrcaStorageNode;
 import orca.ndl.NdlCommons;
@@ -57,10 +58,14 @@ import com.hp.hpl.jena.rdf.model.Resource;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 
 
+
+
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestSaver {
+	
+	
 	private static final String EUCALYPTUS_NS = "eucalyptus";
 	private static final String EXOGENI_NS = "exogeni";
 	public static final String BAREMETAL = "ExoGENI Bare-metal";
@@ -68,8 +73,9 @@ public class RequestSaver {
 	public static final String N3_FORMAT = "N3";
 	public static final String RDF_XML_FORMAT = "RDF-XML";
 
-	private static RequestSaver instance = null;
 	public static final String defaultFormat = RDF_XML_FORMAT;
+	
+	private static RequestSaver instance;
 	private NdlGenerator ngen = null;
 	private Individual reservation = null;
 	private String outputFormat = null;
@@ -136,13 +142,12 @@ public class RequestSaver {
 		
 	}
 	
-	public static void addCustomType(String type) {
-		nodeTypes.put(type, new Pair<String>(EUCALYPTUS_NS, type));
-	}
+
 	
 	public static RequestSaver getInstance() {
-		if (instance == null)
+		if (instance == null){
 			instance = new RequestSaver();
+		}
 		return instance;
 	}
 	
@@ -164,38 +169,13 @@ public class RequestSaver {
 		outputFormat = of;
 	}
 	
-	/**
-	 * Convert netmask string to an integer (24-bit returned if no match)
-	 * @param nm
-	 * @return
-	 */
-	public static int netmaskStringToInt(String nm) {
-		int i = 1;
-		for(String s: netmaskConverter) {
-			if (s.equals(nm))
-				return i;
-			i++;
-		}
-		return 24;
-	}
-	
-	/**
-	 * Convert netmask int to string (255.255.255.0 returned if nm > 32 or nm < 1)
-	 * @param nm
-	 * @return
-	 */
-	public static String netmaskIntToString(int nm) {
-		if ((nm > 32) || (nm < 1)) 
-			return "255.255.255.0";
-		else
-			return netmaskConverter[nm - 1];
-	}
-	
+
+	/*
 	private void addLinkStorageDependency(OrcaNode n, OrcaLink e) throws NdlException {
 		
 		// if the other end is storage, need to add dependency
 		if (e.linkToSharedStorage() && !(n instanceof OrcaStorageNode)) {
-			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(e);
+			Pair<OrcaNode> pn = r.getGraph().getEndpoints(e);
 			OrcaStorageNode osn = null;
 			try {
 				if (pn.getFirst() instanceof OrcaStorageNode)
@@ -213,15 +193,16 @@ public class RequestSaver {
 				throw new NdlException("Unable to find individual for node " + osn + " or " + n);
 			ngen.addDependOnToIndividual(storInd, nodeInd);
 		}
+		
 	}
-	
+	*/
 	/**
 	 * Link node to edge, create interface and process IP address 
 	 * @param n
 	 * @param e
 	 * @param edgeI
 	 * @throws NdlException
-	 */
+	 *//*
 	private void processNodeAndLink(OrcaNode n, OrcaLink e, Individual edgeI) throws NdlException {
 
 		Individual intI;
@@ -249,17 +230,17 @@ public class RequestSaver {
 		if (n.getIp(e) != null) {
 			// create IP object, attach to interface
 			Individual ipInd = ngen.addUniqueIPToIndividual(n.getIp(e), e.getName()+"-"+n.getName(), intI);
-			if (n.getNm(e) != null)
-				ngen.addNetmaskToIP(ipInd, netmaskIntToString(Integer.parseInt(n.getNm(e))));
+			if (n.getNetmask(e) != null)
+				ngen.addNetmaskToIP(ipInd, netmaskIntToString(Integer.parseInt(n.getNetmask(e))));
 		}
 	}
 	
-	/**
+	*//**
 	 * Special handling for node group internal vlan
 	 * @param ong
 	 * @throws NdlException
-	 */
-	private void processNodeGroupInternalVlan(Individual reservation, OrcaNodeGroup ong) throws NdlException {
+	 *//*
+	private void processNodeGroupInternalVlan(Individual reservation, OrcaComputeNode ong) throws NdlException {
 		Individual netI = ngen.declareNetworkConnection("private-vlan-" + ong.getName());
 		ngen.addLayerToConnection(netI, "ethernet", "EthernetNetworkElement");
 		ngen.addResourceToReservation(reservation, netI);
@@ -270,13 +251,13 @@ public class RequestSaver {
 		Individual nodeI = ngen.getRequestIndividual(ong.getName());
 		ngen.addInterfaceToIndividual(intI, nodeI);
 		
-		/* no more internal vlans
+		 no more internal vlans
 		if (ong.getInternalVlanBw() > 0) 
 			ngen.addBandwidthToConnection(netI, ong.getInternalVlanBw());
 		
 		if (ong.getInternalVlanLabel() != null)
 			ngen.addLabelToIndividual(netI, ong.getInternalVlanLabel());
-		*/
+		
 		
 		if (ong.getInternalIp() != null) {
 			Individual ipInd = ngen.addUniqueIPToIndividual(ong.getInternalIp(), "private-vlan-intf-" + ong.getName(), intI);
@@ -289,7 +270,7 @@ public class RequestSaver {
 		// sanity checks
 		// 1) if label is specified, nodes cannot be in different domains
 
-		Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
+		Pair<OrcaNode> pn = r.getGraph().getEndpoints(l);
 		
 		if ((l.getLabel() != null) && 
 				(((pn.getFirst().getDomain() != null) && 
@@ -303,31 +284,31 @@ public class RequestSaver {
 			throw new NdlException("Link " + l.getName() + " in invalid: it connects two storage nodes together");
 	}
 	
-	/** 
+	*//** 
 	 * Links connecting nodes to crossconnects aren't real
 	 * @param e
 	 * @return
-	 */
+	 *//*
 	private boolean fakeLink(OrcaLink e) {
-		Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(e);
+		Pair<OrcaNode> pn = r.getGraph().getEndpoints(e);
 		if ((pn.getFirst() instanceof OrcaCrossconnect) ||
 				(pn.getSecond() instanceof OrcaCrossconnect))
 			return true;
 		return false;
 	}
 	
-	/**
+	*//**
 	 * Check the sanity of a crossconnect
 	 * @param n
 	 * @throws NdlException
-	 */
+	 *//*
 	private void checkCrossconnectSanity(OrcaCrossconnect n) throws NdlException {
 		// sanity checks
 		// 1) nodes can't be from different domains (obsoleted 08/28/13 /ib)
 	}
 	
 	private void addCrossConnectStorageDependency(OrcaCrossconnect oc) throws NdlException {
-		Collection<OrcaLink> iLinks = Request.getInstance().getGraph().getIncidentEdges(oc);
+		Collection<OrcaLink> iLinks = r.getGraph().getIncidentEdges(oc);
 		boolean sharedStorage = oc.linkToSharedStorage();
 		
 		if (!sharedStorage)
@@ -337,7 +318,7 @@ public class RequestSaver {
 		List<OrcaNode> otherNodes = new ArrayList<OrcaNode>();
 		
 		for(OrcaLink l: iLinks) {
-			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
+			Pair<OrcaNode> pn = r.getGraph().getEndpoints(l);
 			OrcaNode n = null;
 			// find the non-crossconnect side
 			if (!(pn.getFirst() instanceof OrcaCrossconnect))
@@ -366,10 +347,10 @@ public class RequestSaver {
 		
 		addCrossConnectStorageDependency(oc);
 		
-		Collection<OrcaLink> iLinks = Request.getInstance().getGraph().getIncidentEdges(oc);
+		Collection<OrcaLink> iLinks = r.getGraph().getIncidentEdges(oc);
 		
 		for(OrcaLink l: iLinks) {
-			Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(l);
+			Pair<OrcaNode> pn = r.getGraph().getEndpoints(l);
 			OrcaNode n = null;
 			// find the non-crossconnect side
 			if (!(pn.getFirst() instanceof OrcaCrossconnect))
@@ -400,12 +381,12 @@ public class RequestSaver {
 			if (n.getIp(l) != null) {
 				// create IP object, attach to interface
 				Individual ipInd = ngen.addUniqueIPToIndividual(n.getIp(l), oc.getName()+"-"+n.getName(), intI);
-				if (n.getNm(l) != null)
-					ngen.addNetmaskToIP(ipInd, netmaskIntToString(Integer.parseInt(n.getNm(l))));
+				if (n.getNetmask(l) != null)
+					ngen.addNetmaskToIP(ipInd, netmaskIntToString(Integer.parseInt(n.getNetmask(l))));
 			}
 		}
 	}
-	
+	*/
 	private void setNodeTypeOnInstance(String type, Individual ni) throws NdlException {
 		if (BAREMETAL.equals(type))
 			ngen.addBareMetalDomainProperty(ni);
@@ -422,10 +403,11 @@ public class RequestSaver {
 	 * @param f
 	 * @param requestGraph
 	 */
-	public String convertGraphToNdl(SparseMultigraph<OrcaNode, OrcaLink> g, String nsGuid) {
+	//public String convertGraphToNdl(SparseMultigraph<OrcaResource, OrcaStitch> g, String nsGuid) {
+	public String convertGraphToNdl(Request r, String nsGuid) {
 		String res = null;
 		
-		assert(g != null);
+		assert(r != null);
 		// this should never run in parallel anyway
 		synchronized(instance) {
 			try {
@@ -435,27 +417,27 @@ public class RequestSaver {
 				Individual term = ngen.declareTerm();
 				
 				// not an immediate reservation? declare term beginning
-				if (Request.getInstance().getTerm().getStart() != null) {
-					Individual tStart = ngen.declareTermBeginning(Request.getInstance().getTerm().getStart());
+				if (r.getTerm().getStart() != null) {
+					Individual tStart = ngen.declareTermBeginning(r.getTerm().getStart());
 					ngen.addBeginningToTerm(tStart, term);
 				}
 				// now duration
-				Request.getInstance().getTerm().normalizeDuration();
-				Individual duration = ngen.declareTermDuration(Request.getInstance().getTerm().getDurationDays(), 
-						Request.getInstance().getTerm().getDurationHours(), Request.getInstance().getTerm().getDurationMins());
+				r.getTerm().normalizeDuration();
+				Individual duration = ngen.declareTermDuration(r.getTerm().getDurationDays(), 
+						r.getTerm().getDurationHours(), r.getTerm().getDurationMins());
 				ngen.addDurationToTerm(duration, term);
 				ngen.addTermToReservation(term, reservation);
 				
 				// openflow
-				ngen.addOpenFlowCapable(reservation, Request.getInstance().getOfNeededVersion());
+				ngen.addOpenFlowCapable(reservation, r.getOfNeededVersion());
 				
 				// add openflow details
-				if (Request.getInstance().getOfNeededVersion() != null) {
+				if (r.getOfNeededVersion() != null) {
 					Individual ofSliceI = ngen.declareOfSlice("of-slice");
 					ngen.addSliceToReservation(reservation, ofSliceI);
-					ngen.addOfPropertiesToSlice(Request.getInstance().getOfUserEmail(), 
-							Request.getInstance().getOfSlicePass(), 
-							Request.getInstance().getOfCtrlUrl(), 
+					ngen.addOfPropertiesToSlice(r.getOfUserEmail(), 
+							r.getOfSlicePass(), 
+							r.getOfCtrlUrl(), 
 							ofSliceI);
 				}
 				
@@ -463,109 +445,99 @@ public class RequestSaver {
 				boolean globalDomain = false;
 				
 				// is domain specified in the reservation?
-				if (Request.getInstance().getDomainInReservation() != null) {
-					if (!Request.getInstance().isAKnownDomain(Request.getInstance().getDomainInReservation()))
-						throw new NdlException("Domain " + Request.getInstance().getDomainInReservation() + " is not visible from this SM!");
+				if (r.getDomainInReservation() != null) {
 					globalDomain = true;
-					Individual domI = ngen.declareDomain(domainMap.get(Request.getInstance().getDomainInReservation()));
+					Individual domI = ngen.declareDomain(domainMap.get(r.getDomainInReservation()));
 					ngen.addDomainToIndividual(domI, reservation);
 				}
 				
 				// shove invidividual nodes onto the reservation/crossconnects are vertices, but not 'nodes'
 				// so require special handling
-				for (OrcaNode n: Request.getInstance().getGraph().getVertices()) {
-					Individual ni;
-					if (n instanceof OrcaCrossconnect) {
-						continue;
-					} else if (n instanceof OrcaStitchPort) {
-						OrcaStitchPort sp = (OrcaStitchPort)n;
-						ni = ngen.declareStitchingNode(sp.getName());
-						ngen.addResourceToReservation(reservation, ni);
-					} else if (n instanceof OrcaStorageNode) {
-						OrcaStorageNode snode = (OrcaStorageNode)n;
-						ni = ngen.declareISCSIStorageNode(snode.getName(), 
-								snode.getCapacity(),
-								snode.getFSType(), snode.getFSParam(), snode.getMntPoint(), 
-								snode.getDoFormat());
-						if (!globalDomain && (n.getDomain() != null)) {
-							if (!Request.getInstance().isAKnownDomain(n.getDomain()))
-								throw new NdlException("Domain " + n.getDomain() + " of node " + n + " is not visible from this SM!");
-							Individual domI = ngen.declareDomain(domainMap.get(n.getDomain()));
-							ngen.addNodeToDomain(domI, ni);
-						}
-						ngen.addResourceToReservation(reservation, ni);
+				Individual ni;
+				//Handle stitchports
+				for (OrcaStitchPort sp: r.getStitchPorts()){
+					ni = ngen.declareStitchingNode(sp.getName());
+					ngen.addResourceToReservation(reservation, ni);
+				}
+				
+				//Handle storage nodes
+				for (OrcaStorageNode snode: r.getStorageNodes()){
+					ni = ngen.declareISCSIStorageNode(snode.getName(), 
+							snode.getCapacity(),
+							snode.getFSType(), snode.getFSParam(), snode.getMntPoint(), 
+							snode.getDoFormat());
+					if (!globalDomain && (snode.getDomain() != null)) {
+						Individual domI = ngen.declareDomain(domainMap.get(resource.getDomain()));
+						ngen.addNodeToDomain(domI, ni);
+					}
+					ngen.addResourceToReservation(reservation, ni);
+				}
+
+				//Handle compute nodes (includes "groups")
+				for (OrcaComputeNode cn: r.getComputeNodes()){
+					// nodes and nodegroups
+					if (cn.getNodeCount() > 0){
+						if (cn.getSplittable())
+							ni = ngen.declareServerCloud(cn.getName(), cn.getSplittable());
+						else
+							ni = ngen.declareServerCloud(cn.getName());
 					} else {
-						// nodes and nodegroups
-						if (n instanceof OrcaNodeGroup) {
-							OrcaNodeGroup ong = (OrcaNodeGroup) n;
-							if (ong.getSplittable())
-								ni = ngen.declareServerCloud(ong.getName(), ong.getSplittable());
-							else
-								ni = ngen.declareServerCloud(ong.getName());
-						}
-						else {
-							ni = ngen.declareComputeElement(n.getName());
-							//ngen.addVMDomainProperty(ni);
-						}
+						ni = ngen.declareComputeElement(cn.getName());
+						ngen.addVMDomainProperty(ni);
+					}
 
-						ngen.addResourceToReservation(reservation, ni);
-						
-						// for clusters, add number of nodes, declare as cluster (VM domain)
-						if (n instanceof OrcaNodeGroup) {
-							OrcaNodeGroup ong = (OrcaNodeGroup)n;
-							ngen.addNumCEsToCluster(ong.getNodeCount(), ni);
-							//ngen.addVMDomainProperty(ni);
-						}
+					ngen.addResourceToReservation(reservation, ni);
 
-						// node type 
-						setNodeTypeOnInstance(n.getNodeType(), ni);
-						
-						// check if node has its own image
-						if (n.getImage() != null) {
-							// check if image is set in this node
-							OrcaImage im = Request.getInstance().getImageByName(n.getImage());
-							if (im != null) {
-								Individual imI = ngen.declareDiskImage(im.getUrl().toString(), im.getHash(), im.getShortName());
-								ngen.addDiskImageToIndividual(imI, ni);
-							}
-						} else {
-							// only bare-metal can specify no image
-							if (!NdlCommons.isBareMetal(ni))
-								throw new NdlException("Node " + n.getName() + " is not bare-metal and does not specify an image");
-								
-						}
+					// for clusters, add number of nodes, declare as cluster (VM domain)
+					if (cn.getNodeCount() > 0){
+						ngen.addNumCEsToCluster(cn.getNodeCount(), ni);
+						ngen.addVMDomainProperty(ni);
+					}
 
-						// if no global domain domain is set, declare a domain and add inDomain property
-						if (!globalDomain && (n.getDomain() != null)) {
-							if (!Request.getInstance().isAKnownDomain(n.getDomain()))
-								throw new NdlException("Domain " + n.getDomain() + " of node " + n + " is not visible from this SM!");
-							Individual domI = ngen.declareDomain(domainMap.get(n.getDomain()));
-							ngen.addNodeToDomain(domI, ni);
-						}
+					// node type 
+					setNodeTypeOnInstance(cn.getNodeType(), ni);
 
-						// open ports
-						if (n.getPortsList() != null) {
-							// Say it's a TCPProxy with proxied port
-							String[] ports = n.getPortsList().split(",");
-							int pi = 0;
-							for (String port: ports) {
-								Individual prx = ngen.declareTCPProxy("prx-" + n.getName().replaceAll("[ \t#:/]", "-") + "-" + pi++);
-								ngen.addProxyToIndividual(prx, ni);
-								ngen.addPortToProxy(port.trim(), prx);
-							}
-						}
+					
+					// check if image is set in this node
+					if (cn.getImageUrl() != null) {
+						Individual imI = ngen.declareDiskImage(cn.getImageUrl().toString(), cn.getImageHash(), cn.getImageShortName());
+						ngen.addDiskImageToIndividual(imI, ni);
+					} else {
+						// only bare-metal can specify no image
+						if (!NdlCommons.isBareMetal(ni))
+							throw new NdlException("Node " + cn.getName() + " is not bare-metal and does not specify an image");
 
-						// post boot script
-						if ((n.getPostBootScript() != null) && (n.getPostBootScript().length() > 0)) {
-							ngen.addPostBootScriptToCE(n.getPostBootScript(), ni);
+					}
+
+					// if no global domain domain is set, declare a domain and add inDomain property
+					if (!globalDomain && (cn.getDomain() != null)) {
+						Individual domI = ngen.declareDomain(domainMap.get(cn.getDomain()));
+						ngen.addNodeToDomain(domI, ni);
+					}
+
+					// open ports
+					if (cn.getPortsList() != null) {
+						// Say it's a TCPProxy with proxied port
+						String[] ports = cn.getPortsList().split(",");
+						int pi = 0;
+						for (String port: ports) {
+							Individual prx = ngen.declareTCPProxy("prx-" + cn.getName().replaceAll("[ \t#:/]", "-") + "-" + pi++);
+							ngen.addProxyToIndividual(prx, ni);
+							ngen.addPortToProxy(port.trim(), prx);
 						}
+					}
+
+					// post boot script
+					if ((cn.getPostBootScript() != null) && (cn.getPostBootScript().length() > 0)) {
+						ngen.addPostBootScriptToCE(cn.getPostBootScript(), ni);
 					}
 				}
 				
+				
 				// node dependencies (done afterwards to be sure all nodes are declared)
-				for (OrcaNode n: Request.getInstance().getGraph().getVertices()) {
-					Individual ni = ngen.getRequestIndividual(n.getName());
-					for(OrcaNode dep: n.getDependencies()) {
+				for (OrcaResource resource: r.getResources()) {
+					Individual ni = ngen.getRequestIndividual(resource.getName());
+					for(OrcaResource dep: resource.getDependencies()) {
 						Individual depI = ngen.getRequestIndividual(dep.getName());
 						if (depI != null) {
 							ngen.addDependOnToIndividual(depI, ni);
@@ -574,11 +546,11 @@ public class RequestSaver {
 				}
 				
 				// crossconnects are vertices in the graph, but are actually a kind of link
-				for (OrcaNode n: Request.getInstance().getGraph().getVertices()) {
+				for (OrcaResource resource: r.getGraph().getVertices()) {
 					Individual bl;
-					if (n instanceof OrcaCrossconnect) {
+					if (resource instanceof OrcaCrossconnect) {
 						// sanity check
-						OrcaCrossconnect oc = (OrcaCrossconnect)n;
+						OrcaCrossconnect oc = (OrcaCrossconnect)resource;
 						checkCrossconnectSanity(oc);
 						bl = ngen.declareBroadcastConnection(oc.getName());
 						ngen.addResourceToReservation(reservation, bl);
@@ -597,12 +569,12 @@ public class RequestSaver {
 				}
 				
 
-				if (Request.getInstance().getGraph().getEdgeCount() == 0) {
+				if (r.getGraph().getEdgeCount() == 0) {
 					// a bunch of disconnected nodes, no IP addresses 
 					
 				} else {
 					// edges, nodes, IP addresses oh my!
-					for (OrcaLink e: Request.getInstance().getGraph().getEdges()) {
+					for (OrcaLink e: r.getGraph().getEdges()) {
 						// skip links to crossconnects
 						if (fakeLink(e))
 							continue;
@@ -623,7 +595,7 @@ public class RequestSaver {
 
 						// TODO: latency
 						
-						Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(e);
+						Pair<OrcaNode> pn = r.getGraph().getEndpoints(e);
 						processNodeAndLink(pn.getFirst(), e, ei);
 						processNodeAndLink(pn.getSecond(), e, ei);
 					}
@@ -654,10 +626,11 @@ public class RequestSaver {
 	 * @param nsGuid
 	 * @return
 	 */
-	public boolean saveGraph(File f, final SparseMultigraph<OrcaNode, OrcaLink> g, final String nsGuid) {
+	//public boolean saveGraph(File f, final SparseMultigraph<OrcaResource, OrcaStitch> g, final String nsGuid) {
+	public boolean saveRequest(File f, Request r, final String nsGuid) {
 		assert(f != null);
 
-		String ndl = convertGraphToNdl(g, nsGuid);
+		String ndl = convertGraphToNdl(r, nsGuid);
 		if (ndl == null){
 			System.out.println("saveGraph: ndl == null");
 			return false;
@@ -688,7 +661,7 @@ public class RequestSaver {
 	 * @param g
 	 * @param nsGuid
 	 * @return
-	 */
+	 *//*
 	public boolean saveGraph(String f, final SparseMultigraph<OrcaNode, OrcaLink> g, final String nsGuid) {
 		
 		f = convertGraphToNdl(g, nsGuid);
@@ -735,13 +708,13 @@ public class RequestSaver {
 		return null;
 	}
 	
-	/**
+	*//**
 	 * Do a reverse lookup on domain (NDL -> short name)
 	 * @param dom
 	 * @return
 	 */
 	public static String reverseLookupDomain(Resource dom) {
-		if (dom == null)
+		/*if (dom == null)
 			return null;
 		// strip off name space and "/Domain"
 		String domainName = StringUtils.removeStart(dom.getURI(), NdlCommons.ORCA_NS);
@@ -757,11 +730,12 @@ public class RequestSaver {
 		if (mapping == null)
 			mapping = reverseLookupDomain_(dom, domainMap, "/Domain/lun");
 		
-		return mapping;
+		return mapping;*/
+		return null;
 	}
 	
 	public static String reverseLookupDomain(String dom) {
-		if (dom == null)
+		/*if (dom == null)
 			return null;
 		// strip off name space and "/Domain"
 		String domainName = StringUtils.removeStart(dom, NdlCommons.ORCA_NS);
@@ -775,8 +749,10 @@ public class RequestSaver {
 		if (mapping == null) 
 			mapping = reverseLookupDomain_(dom, netDomainMap, "/Domain/vlan");
 		
-		return mapping;
+		return mapping;*/
+		return null;
 	}
+	
 	
 	/**
 	 * Do a reverse lookup on node type (NDL -> shortname )
@@ -784,13 +760,13 @@ public class RequestSaver {
 	public static String reverseNodeTypeLookup(Resource nt) {
 		if (nt == null)
 			return null;
-		for (Iterator<Map.Entry<String, Pair<String>>> it = nodeTypes.entrySet().iterator(); it.hasNext();) {
+		/*for (Iterator<Map.Entry<String, Pair<String>>> it = nodeTypes.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, Pair<String>> e = it.next();
 			// convert to namespace and type in a pair
 			// WARNING: this checks only the type, not the namespace.
 			if (nt.getLocalName().equals(e.getValue().getSecond()))
 				return e.getKey();
-		}
+		}*/
 		return null;
 	}
 	
@@ -803,4 +779,35 @@ public class RequestSaver {
 		// no longer needed
 		return s;
 	}
+	
+	
+	/**************************************  Helper Function ***************************************/
+	
+	/**
+	 * Convert netmask string to an integer (24-bit returned if no match)
+	 * @param nm
+	 * @return
+	 */
+	public static int netmaskStringToInt(String nm) {
+		int i = 1;
+		for(String s: netmaskConverter) {
+			if (s.equals(nm))
+				return i;
+			i++;
+		}
+		return 24;
+	}
+	
+	/**
+	 * Convert netmask int to string (255.255.255.0 returned if nm > 32 or nm < 1)
+	 * @param nm
+	 * @return
+	 */
+	public static String netmaskIntToString(int nm) {
+		if ((nm > 32) || (nm < 1)) 
+			return "255.255.255.0";
+		else
+			return netmaskConverter[nm - 1];
+	}
+	
 }

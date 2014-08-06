@@ -22,7 +22,6 @@ public class OrcaStorageNode extends OrcaNode {
 	
 	public OrcaStorageNode(String name) {
 		super(name);
-		setNodeType(STORAGE);
 	}
 	
 	public void setCapacity(long cap) {
@@ -38,20 +37,20 @@ public class OrcaStorageNode extends OrcaNode {
 	 * Create a detailed printout of properties
 	 * @return
 	 */
-	@Override
-	public String getViewerText() {
-		String viewText = "";
-		viewText += "Storage node: " + name;
-		viewText += "\nStorage reservation state: " + (state != null ? state : NOT_SPECIFIED);
-		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
-		viewText += "Capacity: " + capacity;
-		
-		viewText += "\n\nInterfaces: ";
-		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
-			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond();
-		}
-		return viewText;
-	}
+//	@Override
+//	public String getViewerText() {
+//		String viewText = "";
+//		viewText += "Storage node: " + name;
+//		viewText += "\nStorage reservation state: " + (state != null ? state : NOT_SPECIFIED);
+//		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
+//		viewText += "Capacity: " + capacity;
+//		
+//		viewText += "\n\nInterfaces: ";
+//		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
+//			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond();
+//		}
+//		return viewText;
+//	}
 	
 	public void setSharedNetwork() {
 		sharedNetworkStorage = true;
@@ -89,5 +88,11 @@ public class OrcaStorageNode extends OrcaNode {
 	
 	public String getMntPoint() {
 		return hasMntPoint;
+	}
+
+	@Override
+	public String getPrintText() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

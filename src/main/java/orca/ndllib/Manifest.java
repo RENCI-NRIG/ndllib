@@ -24,12 +24,14 @@ package orca.ndllib;
 
 import orca.ndllib.ndl.*;
 import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaResource;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 
 
@@ -43,14 +45,17 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
 public class Manifest extends NDLLIBCommon {
-	private static Manifest instance = new Manifest();
 	protected String manifestString;
 	private Date start = null, end = null, newEnd = null;
 
-	public static Manifest getInstance() {
-		return instance;
+	public Manifest(){
+		super();
+				
+		Set<OrcaResource> nodes = new HashSet<OrcaResource>(g.getVertices());
+		for (OrcaResource n: nodes)
+			g.removeVertex(n);
 	}
-
+	
 	public void setManifestString(String s) {
 		manifestString = s;
 	}
@@ -85,20 +90,7 @@ public class Manifest extends NDLLIBCommon {
 		newEnd = null;
 	}
 	
-	/**
-	 * clear the manifest
-	 */
-	@Override
-	public void clear() {
-		super.clear();
-		
-		// clear the graph, 
-		if (g == null)
-			return;
-		Set<OrcaNode> nodes = new HashSet<OrcaNode>(g.getVertices());
-		for (OrcaNode n: nodes)
-			g.removeVertex(n);
-	}
+	
 
 //	void deleteSlice(String name) {
 //		if ((name == null) || 

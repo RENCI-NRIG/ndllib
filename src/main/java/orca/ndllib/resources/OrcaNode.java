@@ -45,42 +45,70 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 import edu.uci.ics.jung.visualization.renderers.Checkmark;
 
-public class OrcaNode implements OrcaResource {
+public abstract class OrcaNode extends OrcaResource {
 
-	protected static final String NOT_SPECIFIED = "Not specified";
-	public static final String NODE_NETMASK="32";
-	protected String name;
-	protected String url;
-	protected String image = null;
-	protected String domain = null;
-	protected String group = null;
-	// Pair<String> first is IP, second is Netmask
-	protected HashMap<OrcaLink, Pair<String>> addresses;
-	protected HashMap<OrcaLink, String> macAddresses;
+	//protected static final String NOT_SPECIFIED = "Not specified";
+	//public static final String NODE_NETMASK="32";
 	
-	protected List<String> managementAccess = null;
 	
-	//protected final LayeredIcon icon;
-	
-	protected boolean isResource=false;
-	
-	protected Map<String, String> substrateInfo = new HashMap<String, String>();
+	protected class NetworkInterface{
+		private String ipAddress; 
+		private String netmask;
+		private String macAddress;
+		private String name;
+		
+		public String getName() {
+			return name;
+		}
 
-	// specific node type 
-	protected String nodeType = null;
-	// post-boot script
-	protected String postBootScript = null;
-	// reservation state
-	protected String state = null;
-	// reservation notice
-	protected String resNotice = null;
-	// list of open ports
-	protected String openPorts = null;
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public NetworkInterface(){
+			this.ipAddress = null;
+			this.netmask = null;
+			this.macAddress = null;
+			this.name = null;
+		}
+		
+		public NetworkInterface(String ipAddress, String netmask, String macAddress, String name){
+			this.ipAddress = ipAddress; 
+			this.netmask = netmask;
+			this.macAddress = macAddress;
+			this.name = name;
+		}
+
+		public String getIpAddress() {
+			return ipAddress;
+		}
+
+		public void setIpAddress(String ipAddress) {
+			this.ipAddress = ipAddress;
+		}
+
+		public String getNetmask() {
+			return netmask;
+		}
+
+		public void setNetmask(String netmask) {
+			this.netmask = netmask;
+		}
+
+		public String getMacAddress() {
+			return macAddress;
+		}
+
+		public void setMacAddress(String macAddress) {
+			this.macAddress = macAddress;
+		}
+		
+	}
 	
-	protected Set<OrcaNode> dependencies = new HashSet<OrcaNode>();
+
 	
-	// mapping from links to interfaces on those links (used for manifests)
-	protected Map<OrcaLink, String> interfaces = new HashMap<OrcaLink, String>();
+	//Node
+	protected Map<OrcaLink, NetworkInterface> interfaces = null;
 	
 	interface INodeCreator {
 		public OrcaNode create();
@@ -89,206 +117,87 @@ public class OrcaNode implements OrcaResource {
 
 	public String toStringLong() {
 		String ret =  name;
-		if (domain != null) 
-			ret += " in domain " + domain;
-		if (image != null)
-			ret += " with image " + image;
+//		if (domain != null) 
+//			ret += " in domain " + domain;
+//		if (image != null)
+//			ret += " with image " + image;
 		return ret;
 	}
 	
 	public String toString() {
 		return name;
 	}
-	
-	// Icon transformer for NDLLIB
-	//public static class OrcaNodeIconTransformer implements Transformer<OrcaNode, Icon> {
-
-	//	public Icon transform(OrcaNode node) {
-	//		return node.icon;
-	//	}
-	//}
-	
-	public boolean isResource() {
-		return isResource;
-	}
-	
-	public void setIsResource() {
-		isResource = true;
-	}
-	
-	
-	// Icon shape transformer for NDLLIB (to make sure icon clickable shape roughly matches the icon)
-	public static class OrcaNodeIconShapeTransformer implements Transformer<OrcaNode, Shape> {
-		private static final int ICON_HEIGHT = 30;
-		private static final int ICON_WIDTH = 50;
-
-				//		        private final Shape[] styles = {
-//		            new Rectangle(-20, -10, 40, 20),
-//		            new Ellipse2D.Double(-25, -10, 50, 20),
-//		            new Arc2D.Double(-30, -15, 60, 30, 30, 30,
-//		                Arc2D.PIE) };
-		        public Shape transform(OrcaNode i) {
-		            return new Ellipse2D.Double(-ICON_WIDTH/2, -ICON_HEIGHT/2, ICON_WIDTH, ICON_HEIGHT);
-		        }
-		    }
-
-	
-	// check mark for selected nodes
-	// boosted from JUNG Lens example
-   /* public static class PickWithIconListener implements ItemListener {
-        OrcaNodeIconTransformer imager;
-        Icon checked;
-        
-        public PickWithIconListener(OrcaNodeIconTransformer imager) {
-            this.imager = imager;
-            checked = new Checkmark(Color.red);
-        }
-
-        public void itemStateChanged(ItemEvent e) {
-            Icon icon = imager.transform((OrcaNode)e.getItem());
-            if(icon != null && icon instanceof LayeredIcon) {
-                if(e.getStateChange() == ItemEvent.SELECTED) {
-                    ((LayeredIcon)icon).add(checked);
-                } else {
-                    ((LayeredIcon)icon).remove(checked);
-                }
-            }
-        }
-    }*/
-	
+		
+//basic constructor
 	public OrcaNode(String name) {
 		this.name = name;
-		this.addresses = new HashMap<OrcaLink, Pair<String>>();
-		this.macAddresses = new HashMap<OrcaLink, String>();
-		//this.icon = new LayeredIcon(new ImageIcon(NDLLIBRequestState.class.getResource(OrcaNodeEnum.CE.getIconName())).getImage());
+		this.interfaces = new HashMap<OrcaLink, NetworkInterface>();
+		
+		this.domain = null;
+		this.dependencies = null;
+		this.state = null;
 	}
 
-	// inherit some properties from parent
+//constructor used if node has a parent: inherit some properties from parent
 	public OrcaNode(String name, OrcaNode parent) {
 		this.name = name;
-		this.addresses = new HashMap<OrcaLink, Pair<String>>();
-		this.macAddresses = new HashMap<OrcaLink, String>();
-		//this.icon = new LayeredIcon(new ImageIcon(NDLLIBRequestState.class.getResource(OrcaNodeEnum.CE.getIconName())).getImage());
+		this.interfaces = new HashMap<OrcaLink, NetworkInterface>();
+		
 		this.domain = parent.getDomain();
-		this.group = parent.getGroup();
-		this.image = parent.getImage();
-		this.url = parent.getUrl();
-		this.nodeType = parent.getNodeType();
 		this.dependencies = parent.getDependencies();
 		this.state = parent.state;
-	}
-	
-	/**
-	 * only subclasses can set the icon
-	 * @param name
-	 * @param icon
-	 */
-	protected OrcaNode(String name, LayeredIcon icon) {
-		this.name = name;
-		this.addresses = new HashMap<OrcaLink, Pair<String>>();
-		this.macAddresses = new HashMap<OrcaLink, String>();
-		//this.icon = icon;
-	}
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setUrl(String u) {
-		url = u;
-	}
-	
-	public String getUrl() {
-		return url;
-	}
-	
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
-	
-	public String getGroup() {
-		return group;
-	}
-	
-	public void setGroup(String d) {
-		group = d;
-	}
-	
-	public String getDomain() {
-		return domain;
-	}
-	
-	public void setDomainWithGlobalReset(String d) {
-		// reset reservation-level setting
-		Request.getInstance().resetDomainInReservation();
-		domain = d;
-	}
-	
-	public void setDomain(String d) {
-		domain = d;
-	}
-	
-	public void setNodeType(String t) {
-		nodeType = t;
-	}
-	
-	public String getNodeType() {
-		return nodeType;
 	}
 	
 	public void setMac(OrcaLink e, String mac) {
 		if (e == null)
 			return;
 		if (mac == null) { 
-			macAddresses.remove(e);
+			interfaces.remove(e);
 			return;
 		}
-		macAddresses.put(e, mac);
+		if(interfaces.get(e) == null)
+			interfaces.put(e, new NetworkInterface());
+		
+		interfaces.get(e).setMacAddress(mac);
 	}
 	
 	public String getMac(OrcaLink e) {
-		if ((e == null) || (macAddresses.get(e) == null))
+		if ((e == null) || (interfaces.get(e).getMacAddress() == null))
 			return null;
-		return macAddresses.get(e);
+		return interfaces.get(e).getMacAddress() ;
 	}
 	
 	
-	public void setIp(OrcaLink e, String addr, String nm) {
+	public void setIp(OrcaLink e, String addr, String netmask) {
 		if (e == null)
 			return;
-		if ((addr == null) || (nm == null)) {
-			addresses.remove(e);
+		//if(interfaces.get(fol) == null)
+		//	interfaces.put(fol, new NetworkInterface());
+		
+		
+		if ((addr == null) || (netmask == null)) {
+			interfaces.get(e).setIpAddress(addr);
+			interfaces.get(e).setNetmask(netmask);
 			return;
 		}
-		if (nm == null)
-			nm = NODE_NETMASK;
-		addresses.put(e, new Pair<String>(addr, nm));
 	}
 	
 	public String getIp(OrcaLink e) {
-		if ((e == null) || (addresses.get(e) == null))
+		if ((e == null) || (interfaces.get(e) == null))
 			return null;
-		return addresses.get(e).getFirst();
+		return interfaces.get(e).getIpAddress();
 	}
 	
-	public String getNm(OrcaLink e) {
-		if ((e == null) || (addresses.get(e) == null))
+	public String getNetmask(OrcaLink e) {
+		if ((e == null) || (interfaces.get(e) == null))
 			return null;
-		return addresses.get(e).getSecond();
+		return interfaces.get(e).getNetmask();
 	}
 	
 	public void removeIp(OrcaLink e) {
 		if (e == null)
 			return;
-		addresses.remove(e);
+		this.setIp(e, null, null);
 	}
 	
 	public void addDependency(OrcaNode n) {
@@ -326,17 +235,9 @@ public class OrcaNode implements OrcaResource {
 		return dependencies;
 	}
 	
-	public void setPostBootScript(String s) {
-		postBootScript = s;
-	}
-	
-	public String getPostBootScript() {
-		return postBootScript;
-	}
-	
 	public String getInterfaceName(OrcaLink l) {
 		if (l != null)
-			return interfaces.get(l);
+			return interfaces.get(l).getName();
 		return null;
 	}
 	
@@ -344,101 +245,64 @@ public class OrcaNode implements OrcaResource {
 		if ((l == null) || (ifName == null))
 			return;
 		
-		interfaces.put(l, ifName);
+		interfaces.get(l).setName(ifName); 
 	}
 	
-	public void setManagementAccess(List<String> s) {
-		managementAccess = s;
-	}
+//	public void setManagementAccess(List<String> s) {
+//		managementAccess = s;
+//	}
+//	
+//	// all available access options
+//	public List<String> getManagementAccess() {
+//		return managementAccess;
+//	}
+//	
+//	// if ssh is available
+//	public String getSSHManagementAccess() {
+//		for (String service: managementAccess) {
+//			if (service.startsWith("ssh://root")) {
+//				return service;
+//			}
+//		}
+//		return null;
+//	}
 	
-	// all available access options
-	public List<String> getManagementAccess() {
-		return managementAccess;
-	}
-	
-	// if ssh is available
-	public String getSSHManagementAccess() {
-		for (String service: managementAccess) {
-			if (service.startsWith("ssh://root")) {
-				return service;
-			}
-		}
-		return null;
-	}
-	
-	public void setState(String s) {
-		state = s;
-	}
-	
-	public String getState() {
-		return state;
-	}
-	
-	public void setReservationNotice(String n) {
-		resNotice = n;
-	}
-	
-	public String getReservationNotice() {
-		return resNotice;
-	}
-	
-	public String getPortsList() {
-		return openPorts;
-	}
-	
-	public boolean setPortsList(String list) {
-		
-		if ((list == null) || (list.trim().length() == 0))
-			return true;
-		
-		String chkRegex = "(\\s*\\d+\\s*)(,(\\s*\\d+\\s*))*";
-		
-		if (list.matches(chkRegex)) { 
-			for(String port: list.split(",")) {
-				int portI = Integer.decode(port.trim());
-				if (portI > 65535)
-					return false;
-			}
-			openPorts = list;
-			return true;
-		}
-		return false;
-	}
+
 	
 	/** 
 	 * Create a detailed printout of properties
 	 * @return
 	 */
-	public String getViewerText() {
-		String viewText = "";
-		viewText += "Node name: " + name;
-		viewText += "\nNode reservation state: " + (state != null ? state : NOT_SPECIFIED);
-		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
-//		viewText += "\nNode Type: " + node.getNodeType();
-//		viewText += "\nImage: " + node.getImage();
-//		viewText += "\nDomain: " + domain;
-		viewText += "\n\nPost Boot Script: \n" + (postBootScript == null ? NOT_SPECIFIED : postBootScript);
-		viewText += "\n\nManagement access: \n";
-		for (String service: getManagementAccess()) {
-			viewText += service + "\n";
-		}
-		if (getManagementAccess().size() == 0) {
-			viewText += NOT_SPECIFIED + "\n";
-		}
-		viewText += "\n\nInterfaces: ";
-		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
-			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond() + " " + 
-			(macAddresses.get(e.getKey()) != null ? macAddresses.get(e.getKey()) : "");
-		}
-		
-		if (substrateInfo.size() > 0) {
-			viewText += "\n\nSubstrate information: ";
-			for(Map.Entry<String, String> e: substrateInfo.entrySet()) {
-				viewText += "\n\t" + e.getKey() + ": " + e.getValue();
-			}
-		}
-		return viewText;
-	}
+//	public String getViewerText() {
+//		String viewText = "";
+//		viewText += "Node name: " + name;
+//		viewText += "\nNode reservation state: " + (state != null ? state : NOT_SPECIFIED);
+//		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
+////		viewText += "\nNode Type: " + node.getNodeType();
+////		viewText += "\nImage: " + node.getImage();
+////		viewText += "\nDomain: " + domain;
+//		viewText += "\n\nPost Boot Script: \n" + (postBootScript == null ? NOT_SPECIFIED : postBootScript);
+//		viewText += "\n\nManagement access: \n";
+//		for (String service: getManagementAccess()) {
+//			viewText += service + "\n";
+//		}
+//		if (getManagementAccess().size() == 0) {
+//			viewText += NOT_SPECIFIED + "\n";
+//		}
+//		viewText += "\n\nInterfaces: ";
+//		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
+//			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond() + " " + 
+//			(macAddresses.get(e.getKey()) != null ? macAddresses.get(e.getKey()) : "");
+//		}
+//		
+//		if (substrateInfo.size() > 0) {
+//			viewText += "\n\nSubstrate information: ";
+//			for(Map.Entry<String, String> e: substrateInfo.entrySet()) {
+//				viewText += "\n\t" + e.getKey() + ": " + e.getValue();
+//			}
+//		}
+//		return viewText;
+//	}
 	
 	/**
 	 * Node factory for requests
@@ -464,15 +328,31 @@ public class OrcaNode implements OrcaResource {
         }       
     }
 
-    /**
-     * Substrate info is just an associative array. 
-     * Describes some information about the substrate of the resource
-     */
-    public void setSubstrateInfo(String t, String o) {
-    	substrateInfo.put(t, o);
-    }
-    
-    public String getSubstrateInfo(String t) {
-    	return substrateInfo.get(t);
-    }
+	public void setDomainWithGlobalReset(String reverseLookupDomain) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setNodeType(String reverseNodeTypeLookup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean setPortsList(String portListString) {
+		// TODO Auto-generated method stub
+		return true;
+		
+	}
+
+	public void setImage(String imName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setPostBootScript(String script) {
+		// TODO Auto-generated method stub
+		
+	}
+
+ 
 }
