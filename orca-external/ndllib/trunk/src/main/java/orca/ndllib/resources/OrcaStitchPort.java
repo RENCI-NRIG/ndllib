@@ -80,6 +80,10 @@ public class OrcaStitchPort extends OrcaNode {
 //		return viewText;
 //	}
 
+	public OrcaStitch stitch(OrcaResource r){
+		return null;
+	}
+	
 	@Override
 	public String getPrintText() {
 		// TODO Auto-generated method stub

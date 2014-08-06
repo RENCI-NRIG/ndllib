@@ -13,6 +13,7 @@ import com.hp.hpl.jena.ontology.Individual;
  *
  */
 public class ModifySaver {
+	/*
 	private NdlGenerator ngen = null;
 	private Individual modRes = null;
 	private String outputFormat = null;
@@ -48,12 +49,12 @@ public class ModifySaver {
 			return getFormattedOutput(RequestSaver.defaultFormat);
 	}
 
-	/**
+	*//**
 	 * Create a modify request in a specific namespace (null is allowed - NDLLIBD will be used)
 	 * This call is optional. Calling addNodesToGroup and removeNodeFromGroup will automatically
 	 * make this call if it has not been made.
 	 * @param nsGuid
-	 */
+	 *//*
 	public void createModifyRequest(String nsGuid) {
 		// this should never run in parallel anyway
 		synchronized(instance) {
@@ -74,11 +75,11 @@ public class ModifySaver {
 		}
 	}
 	
-	/**
+	*//**
 	 * Add a count of nodes to a group
 	 * @param groupUrl
 	 * @param count
-	 */
+	 *//*
 	public void addNodesToGroup(String groupUrl, Integer count) {
 		if (ngen == null)
 			createModifyRequest(null);
@@ -93,11 +94,11 @@ public class ModifySaver {
 		}
 	}
 	
-	/**
+	*//**
 	 * Remove a specific node from a specific group
 	 * @param groupUrl
 	 * @param nodeUrl
-	 */
+	 *//*
 	public void removeNodeFromGroup(String groupUrl, String nodeUrl) {
 		if (ngen == null)
 			createModifyRequest(null);
@@ -112,22 +113,22 @@ public class ModifySaver {
 		}
 	}
 	
-	/**
+	*//**
 	 * Return modify request in specified format
 	 * @return
-	 */
+	 *//*
 	public String getModifyRequest() {
 		return getFormattedOutput(outputFormat);
 	}
 	
-	/**
+	*//**
 	 * clear up the modify saver
-	 */
+	 *//*
 	public void clear() {
 		if (ngen != null) {
 			ngen.done();
 			ngen = null;
 		}
-	}
+	}*/
 	
 }

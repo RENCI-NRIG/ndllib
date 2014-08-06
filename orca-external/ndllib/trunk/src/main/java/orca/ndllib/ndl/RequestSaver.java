@@ -65,7 +65,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestSaver {
 	
-	
+/*	
 	private static final String EUCALYPTUS_NS = "eucalyptus";
 	private static final String EXOGENI_NS = "exogeni";
 	public static final String BAREMETAL = "ExoGENI Bare-metal";
@@ -170,7 +170,7 @@ public class RequestSaver {
 	}
 	
 
-	/*
+	
 	private void addLinkStorageDependency(OrcaNode n, OrcaLink e) throws NdlException {
 		
 		// if the other end is storage, need to add dependency
@@ -195,8 +195,8 @@ public class RequestSaver {
 		}
 		
 	}
-	*/
-	/**
+	
+	*//**
 	 * Link node to edge, create interface and process IP address 
 	 * @param n
 	 * @param e
@@ -386,7 +386,7 @@ public class RequestSaver {
 			}
 		}
 	}
-	*/
+	
 	private void setNodeTypeOnInstance(String type, Individual ni) throws NdlException {
 		if (BAREMETAL.equals(type))
 			ngen.addBareMetalDomainProperty(ni);
@@ -398,11 +398,11 @@ public class RequestSaver {
 		}
 	}
 	
-	/**
+	*//**
 	 * Save graph using NDL
 	 * @param f
 	 * @param requestGraph
-	 */
+	 *//*
 	//public String convertGraphToNdl(SparseMultigraph<OrcaResource, OrcaStitch> g, String nsGuid) {
 	public String convertGraphToNdl(Request r, String nsGuid) {
 		String res = null;
@@ -619,13 +619,13 @@ public class RequestSaver {
 		return res;
 	}
 	
-	/**
+	*//**
 	 * Save to file
 	 * @param f
 	 * @param g
 	 * @param nsGuid
 	 * @return
-	 */
+	 *//*
 	//public boolean saveGraph(File f, final SparseMultigraph<OrcaResource, OrcaStitch> g, final String nsGuid) {
 	public boolean saveRequest(File f, Request r, final String nsGuid) {
 		assert(f != null);
@@ -655,7 +655,7 @@ public class RequestSaver {
 		return false;
 	}
 
-	/**
+	*//**
 	 * Save to string
 	 * @param f
 	 * @param g
@@ -712,9 +712,9 @@ public class RequestSaver {
 	 * Do a reverse lookup on domain (NDL -> short name)
 	 * @param dom
 	 * @return
-	 */
+	 *//*
 	public static String reverseLookupDomain(Resource dom) {
-		/*if (dom == null)
+		if (dom == null)
 			return null;
 		// strip off name space and "/Domain"
 		String domainName = StringUtils.removeStart(dom.getURI(), NdlCommons.ORCA_NS);
@@ -730,12 +730,12 @@ public class RequestSaver {
 		if (mapping == null)
 			mapping = reverseLookupDomain_(dom, domainMap, "/Domain/lun");
 		
-		return mapping;*/
+		return mapping;
 		return null;
 	}
 	
 	public static String reverseLookupDomain(String dom) {
-		/*if (dom == null)
+		if (dom == null)
 			return null;
 		// strip off name space and "/Domain"
 		String domainName = StringUtils.removeStart(dom, NdlCommons.ORCA_NS);
@@ -749,45 +749,45 @@ public class RequestSaver {
 		if (mapping == null) 
 			mapping = reverseLookupDomain_(dom, netDomainMap, "/Domain/vlan");
 		
-		return mapping;*/
+		return mapping;
 		return null;
 	}
 	
 	
-	/**
+	*//**
 	 * Do a reverse lookup on node type (NDL -> shortname )
-	 */
+	 *//*
 	public static String reverseNodeTypeLookup(Resource nt) {
 		if (nt == null)
 			return null;
-		/*for (Iterator<Map.Entry<String, Pair<String>>> it = nodeTypes.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<Map.Entry<String, Pair<String>>> it = nodeTypes.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, Pair<String>> e = it.next();
 			// convert to namespace and type in a pair
 			// WARNING: this checks only the type, not the namespace.
 			if (nt.getLocalName().equals(e.getValue().getSecond()))
 				return e.getKey();
-		}*/
+		}
 		return null;
 	}
 	
-	/**
+	*//**
 	 * Post boot scripts need to be sanitized (deprecated)
 	 * @param s
 	 * @return
-	 */
+	 *//*
 	public static String sanitizePostBootScript(String s) {
 		// no longer needed
 		return s;
 	}
 	
 	
-	/**************************************  Helper Function ***************************************/
+	*//**************************************  Helper Function ***************************************//*
 	
-	/**
+	*//**
 	 * Convert netmask string to an integer (24-bit returned if no match)
 	 * @param nm
 	 * @return
-	 */
+	 *//*
 	public static int netmaskStringToInt(String nm) {
 		int i = 1;
 		for(String s: netmaskConverter) {
@@ -798,16 +798,16 @@ public class RequestSaver {
 		return 24;
 	}
 	
-	/**
+	*//**
 	 * Convert netmask int to string (255.255.255.0 returned if nm > 32 or nm < 1)
 	 * @param nm
 	 * @return
-	 */
+	 *//*
 	public static String netmaskIntToString(int nm) {
 		if ((nm > 32) || (nm < 1)) 
 			return "255.255.255.0";
 		else
 			return netmaskConverter[nm - 1];
-	}
+	}*/
 	
 }

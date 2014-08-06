@@ -144,7 +144,7 @@ public abstract class OrcaNode extends OrcaResource {
 		this.interfaces = new HashMap<OrcaLink, NetworkInterface>();
 		
 		this.domain = parent.getDomain();
-		this.dependencies = parent.getDependencies();
+		//this.dependencies = parent.getDependencies();
 		this.state = parent.state;
 	}
 	
@@ -211,7 +211,7 @@ public abstract class OrcaNode extends OrcaResource {
 	}
 	
 	public void clearDependencies() {
-		dependencies = new HashSet<OrcaNode>();
+		dependencies = new HashSet<OrcaResource>();
 	}
 	
 	public boolean isDependency(OrcaNode n) {
@@ -226,12 +226,12 @@ public abstract class OrcaNode extends OrcaResource {
 	 */
 	public Set<String> getDependencyNames() { 
 		Set<String> ret = new HashSet<String>();
-		for(OrcaNode n: dependencies) 
+		for(OrcaResource n: dependencies) 
 			ret.add(n.getName());
 		return ret;
 	}
 	
-	public Set<OrcaNode> getDependencies() {
+	public Set<OrcaResource> getDependencies() {
 		return dependencies;
 	}
 	
