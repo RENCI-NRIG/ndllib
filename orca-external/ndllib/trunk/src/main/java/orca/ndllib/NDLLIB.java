@@ -61,7 +61,7 @@ public class NDLLIB {
 //			+ "\nDeveloped using Jena Semantic Web Framework, JUNG Java Universal Network/Graph Framework and Kiwi Swing toolkit. \nSplitButton adopted from implementation by Edward Scholl (edscholl@atwistedweb.com)"
 //			+ "\n\nCopyright 2011-2013 RENCI/UNC Chapel Hill";
 
-	protected Logger logger;
+	protected static Logger logger;
 	//private String[] controllerUrls;
 	//private String selectedControllerUrl;
 
@@ -83,9 +83,9 @@ public class NDLLIB {
 		return logger;
 	}
 
-//	public static Logger logger() {
-//		return NDLLIB.getInstance().getLogger();
-//	}
+	public static Logger logger() {
+		return logger;
+	}
 
 
 
@@ -109,14 +109,14 @@ public class NDLLIB {
 
 	public static void non_gui_save(File f) {
 
-		Request.getInstance().setSaveFile(f);
-
-		if (Request.getInstance().getSaveFile() != null) {
-			RequestSaver.getInstance().saveGraph(
-					Request.getInstance().getSaveFile(),
-					Request.getInstance().g,
-					Request.getInstance().nsGuid);
-		} 
+//		Request.getInstance().setSaveFile(f);
+//
+//		if (Request.getInstance().getSaveFile() != null) {
+//			RequestSaver.getInstance().saveGraph(
+//					Request.getInstance().getSaveFile(),
+//					Request.getInstance().g,
+//					Request.getInstance().nsGuid);
+//		} 
 	}
 
 	/**
@@ -253,18 +253,6 @@ public class NDLLIB {
 		}
 	}
 
-	//public String getSelectedController() {
-	//	return selectedControllerUrl;
-	//}
 
-	private void getCustomInstancePreferences() {
-		String[] customInstances = getPreference(PrefsEnum.CUSTOM_INSTANCE_LIST)
-				.split(",");
-
-		for (String instance : customInstances)
-			if (instance.startsWith("Euca") || instance.startsWith("EC2")) {
-				RequestSaver.addCustomType(instance);
-			}
-	}
 
 }

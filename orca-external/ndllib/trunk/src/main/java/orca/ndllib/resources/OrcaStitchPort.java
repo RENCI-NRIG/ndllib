@@ -36,8 +36,6 @@ public class OrcaStitchPort extends OrcaNode {
 	
 	public OrcaStitchPort(String name) {
 		super(name);
-		setDomain(STITCHING_DOMAIN_SHORT_NAME);
-		setNodeType(STITCHING_PORT);
 	}
 
 	public void setLabel(String l) {
@@ -66,19 +64,25 @@ public class OrcaStitchPort extends OrcaNode {
 	 * Create a detailed printout of properties
 	 * @return
 	 */
+//	@Override
+//	public String getViewerText() {
+//		String viewText = "";
+//		viewText += "Stitch port: " + name;
+//		viewText += "\nPort id: " + port;
+//		if (label != null)
+//			viewText += "\nLabel/Tag: " + label;
+//		if (interfaces.size() > 0) {
+//			viewText += "\nInterfaces: ";
+//			for(Entry<OrcaLink, String> e: interfaces.entrySet()) {
+//				viewText += "\n    " + e.getKey().getName() + " : " + e.getValue();
+//			}
+//		}
+//		return viewText;
+//	}
+
 	@Override
-	public String getViewerText() {
-		String viewText = "";
-		viewText += "Stitch port: " + name;
-		viewText += "\nPort id: " + port;
-		if (label != null)
-			viewText += "\nLabel/Tag: " + label;
-		if (interfaces.size() > 0) {
-			viewText += "\nInterfaces: ";
-			for(Entry<OrcaLink, String> e: interfaces.entrySet()) {
-				viewText += "\n    " + e.getKey().getName() + " : " + e.getValue();
-			}
-		}
-		return viewText;
+	public String getPrintText() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

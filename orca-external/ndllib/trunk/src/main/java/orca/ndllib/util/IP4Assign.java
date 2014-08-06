@@ -59,10 +59,10 @@ public class IP4Assign {
 	 * Get the p-to-p mask
 	 * @return
 	 */
-	public String getPPMask() {
+	/*public String getPPMask() {
 		return RequestSaver.netmaskIntToString(ppMaskSize);
 	}
-	
+	*/
 	public int getPPIntMask() {
 		return ppMaskSize;
 	}
@@ -71,10 +71,11 @@ public class IP4Assign {
 	 * Get the mp mask
 	 * @return
 	 */
+	/*
 	public String getMPMask() {
 		return RequestSaver.netmaskIntToString(mpMaskSize);
 	}
-
+	*/
 	public int getMPIntMask() {
 		return mpMaskSize;
 	}
@@ -132,8 +133,8 @@ public class IP4Assign {
 	public static void main(String[] argv) {
 		IP4Assign ipa = new IP4Assign();
 		
-		System.out.println(ipa.getMPMask());
-		System.out.println(ipa.getPPMask());
+		//System.out.println(ipa.getMPMask());
+		//System.out.println(ipa.getPPMask());
 		
 		for (int i = 0; i < 200; i++ ) {
 			String[] ret = ipa.getPPAddresses();
