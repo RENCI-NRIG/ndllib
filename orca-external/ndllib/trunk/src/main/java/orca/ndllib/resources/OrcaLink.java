@@ -35,7 +35,8 @@ public abstract class OrcaLink extends OrcaResource {
     protected String realName = null;
     
 	
-    public OrcaLink(String name) {
+    public OrcaLink(Request request, String name) {
+    	super(request);
         this.name = name;
     }
 

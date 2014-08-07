@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
+import orca.ndllib.Request;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -78,6 +79,10 @@ public class OrcaComputeNode extends OrcaNode {
 
 	// list of open ports
 	protected String openPorts = null;
+
+	public OrcaComputeNode(Request request, String name){
+		super(request,name);
+	}
 	
 	//get image properties
 	public String getImageUrl(){
@@ -99,9 +104,7 @@ public class OrcaComputeNode extends OrcaNode {
 	public String setgetPostBootScript(){
 		return postBootScript;
 	}
-	public OrcaComputeNode(String name) {
-		super(name);
-	}
+
 
 	public int getNodeCount() {
 		return nodeCount;
@@ -127,9 +130,20 @@ public class OrcaComputeNode extends OrcaNode {
 		return splittable;
 	}
 
-	
+		
 	public OrcaStitch stitch(OrcaResource r){
-		return null;
+		OrcaStitch stitch = null;
+		if (r instanceof OrcaLink){
+			stitch = new OrcaStitchNode2Link();		
+		} else {
+			//Can't stitch computenode to r
+			//Should throw exception
+			System.out.println("Error: Cannot stitch OrcaComputeNode to " + r.getClass().getName());
+			return null;
+		}
+		request.addStitch(this,r,stitch);
+		
+		return stitch;
 	}
 	
 	

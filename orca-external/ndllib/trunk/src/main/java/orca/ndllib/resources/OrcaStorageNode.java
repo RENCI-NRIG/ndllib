@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
+import orca.ndllib.Request;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -20,8 +21,8 @@ public class OrcaStorageNode extends OrcaNode {
 	protected boolean doFormat = true;
 	protected String hasFSType = "ext4", hasFSParam = "-F -b 2048", hasMntPoint = "/mnt/target"; 
 	
-	public OrcaStorageNode(String name) {
-		super(name);
+	public OrcaStorageNode(Request request, String name) {
+		super(request, name);
 	}
 	
 	public void setCapacity(long cap) {
@@ -89,12 +90,23 @@ public class OrcaStorageNode extends OrcaNode {
 	public String getMntPoint() {
 		return hasMntPoint;
 	}
-
+	
+	
 	public OrcaStitch stitch(OrcaResource r){
-		return null;
+		OrcaStitch stitch = null;
+		if (r instanceof OrcaLink){
+			stitch = new OrcaStitchNode2Link();		
+		} else {
+			//Can't stitch storage to r
+			//Should throw exception
+			System.out.println("Error: Cannot stitch OrcaStorageNode to " + r.getClass().getName());
+			return null;
+		}
+		request.addStitch(this,r,stitch);
+
+		return stitch;
 	}
-	
-	
+
 	@Override
 	public String getPrintText() {
 		// TODO Auto-generated method stub

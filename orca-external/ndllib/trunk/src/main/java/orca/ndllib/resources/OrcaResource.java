@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import orca.ndllib.Request;
+
 
 /**
  * A generic resource with a state and a notice
@@ -13,7 +15,7 @@ import java.util.Set;
  *
  */
 public abstract class OrcaResource implements OrcaRequestResource,OrcaManifestResource{
-	
+	protected Request request;
 
 	protected Set<OrcaResource> dependencies = new HashSet<OrcaResource>(); 
 	protected Set<OrcaStitch> stitches = new HashSet<OrcaStitch>(); 
@@ -30,7 +32,9 @@ public abstract class OrcaResource implements OrcaRequestResource,OrcaManifestRe
 	
 	protected String domain; 
 	
-	
+	public OrcaResource(Request request){
+		this.request = request; 
+	}
 	
 	//abstact methods 
 	public abstract String getPrintText();
