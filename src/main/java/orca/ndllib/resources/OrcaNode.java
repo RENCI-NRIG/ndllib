@@ -129,24 +129,14 @@ public abstract class OrcaNode extends OrcaResource {
 	}
 		
 //basic constructor
-	public OrcaNode(String name) {
-		this.name = name;
-		this.interfaces = new HashMap<OrcaLink, NetworkInterface>();
-		
+	public OrcaNode(Request request, String name) {
+		super(request);
+		this.name = name; //name should be unique... i think
 		this.domain = null;
 		this.dependencies = null;
 		this.state = null;
 	}
 
-//constructor used if node has a parent: inherit some properties from parent
-	public OrcaNode(String name, OrcaNode parent) {
-		this.name = name;
-		this.interfaces = new HashMap<OrcaLink, NetworkInterface>();
-		
-		this.domain = parent.getDomain();
-		//this.dependencies = parent.getDependencies();
-		this.state = parent.state;
-	}
 	
 	public void setMac(OrcaLink e, String mac) {
 		if (e == null)

@@ -4,6 +4,7 @@ import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 
+import orca.ndllib.Request;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
 /*
@@ -34,8 +35,8 @@ public class OrcaStitchPort extends OrcaNode {
 	protected String label;
 	protected String port;
 	
-	public OrcaStitchPort(String name) {
-		super(name);
+	public OrcaStitchPort(Request request, String name) {
+		super(request,name);
 	}
 
 	public void setLabel(String l) {
@@ -80,9 +81,22 @@ public class OrcaStitchPort extends OrcaNode {
 //		return viewText;
 //	}
 
+	
 	public OrcaStitch stitch(OrcaResource r){
-		return null;
+		OrcaStitch stitch = null;
+		if (r instanceof OrcaLink){
+			stitch = new OrcaStitchNode2Link();		
+		} else {
+			//Can't stitch computenode to r
+			//Should throw exception
+			System.out.println("Error: Cannot stitch OrcaStitchPort to " + r.getClass().getName());
+			return null;
+		}
+		request.addStitch(this,r,stitch);
+		
+		return stitch;
 	}
+	
 	
 	@Override
 	public String getPrintText() {

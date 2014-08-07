@@ -60,8 +60,8 @@ public class OrcaCrossconnect extends OrcaLink {
 	protected long bandwidth;
 	
 	
-	public OrcaCrossconnect(String name) {
-		super(name);
+	public OrcaCrossconnect(Request request, String name) {
+		super(request,name);
 	}
 
 	public void setLabel(String l) {
@@ -129,10 +129,23 @@ public class OrcaCrossconnect extends OrcaLink {
 		return false;
     }
     
-    
+
+	
 	public OrcaStitch stitch(OrcaResource r){
-		return null;
+		OrcaStitch stitch = null;
+		if (r instanceof OrcaLink){
+			stitch = new OrcaStitchNode2Link();		
+		} else {
+			//Can't stitch computenode to r
+			//Should throw exception
+			System.out.println("Error: Cannot stitch OrcaCrossconnectNode to " + r.getClass().getName());
+			return null;
+		}
+		request.addStitch(this,r,stitch);
+		
+		return stitch;
 	}
+	
 	
 	@Override
 	public String getPrintText() {

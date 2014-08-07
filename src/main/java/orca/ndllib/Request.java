@@ -31,6 +31,7 @@ import orca.ndllib.resources.OrcaLink;
 import orca.ndllib.resources.OrcaNode;
 import orca.ndllib.resources.OrcaReservationTerm;
 import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.OrcaStitch;
 import orca.ndllib.resources.OrcaStitchPort;
 import orca.ndllib.resources.OrcaStorageNode;
 
@@ -60,6 +61,7 @@ import java.util.Set;
 //import com.hyperrealm.kiwi.ui.KTextArea;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 //import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
+
 
 
 
@@ -133,20 +135,33 @@ public class Request extends NDLLIBCommon  {
 		saveFile = null;
 	}
 	
-	public OrcaComputeNode addComputeNode(){
-		return null;
+	/*************************************   Add/Delete/Get resources  ************************************/
+	
+	
+	public OrcaComputeNode addComputeNode(String name){
+		OrcaComputeNode node = new OrcaComputeNode(this,name);
+		g.addVertex(node);
+		return node;
 	}
-	public OrcaStorageNode addStorageNode(){
-		return null;
+	public OrcaStorageNode addStorageNode(String name){
+		OrcaStorageNode node = new OrcaStorageNode(this,name);
+		g.addVertex(node);
+		return node;
 	}
-	public OrcaStitchPort addStitchPort(){
-		return null;
+	public OrcaStitchPort addStitchPort(String name){
+		OrcaStitchPort node = new OrcaStitchPort(this,name);
+		g.addVertex(node);
+		return node;
 	}
-	public OrcaLink addLink(){
-		return null;
+	public OrcaLink addLink(String name){
+		OrcaBroadcastLink link = new OrcaBroadcastLink(this,name);
+		g.addVertex(link);
+		return link;
 	}
-	public OrcaBroadcastLink addBroadcastLink(){
-		return null;
+	public OrcaBroadcastLink addBroadcastLink(String name){
+		OrcaBroadcastLink link = new OrcaBroadcastLink(this,name);
+		g.addVertex(link);
+		return link;
 	}
 	
 	
@@ -165,7 +180,13 @@ public class Request extends NDLLIBCommon  {
 		
 	}
 	
+	public void addStitch(OrcaResource a, OrcaResource b, OrcaStitch s){
+		g.addEdge(s, a, b);
+	}
 	
+	public void clear(){
+		//reset the whole request
+	}
 	
 	/*************************************   Request level properties:  domain,term,user, etc. ************************************/
 	
@@ -180,26 +201,6 @@ public class Request extends NDLLIBCommon  {
 	public void setNsGuid(String g) {
 		nsGuid = g;
 	}
-	
-	/**
-	 * Change domain reservation. Reset node domain reservations to system select.
-	 * @param d
-	 */
-	public void setDomainInReservation(String d) {
-		// if the value is changing
-		// set it for all nodes
-		if ((resDomainName == null) && ( d == null))
-			return;
-		if ((resDomainName != null) && (resDomainName.equals(d)))
-			return;
-		// reset all node domains
-		for(OrcaResource n: g.getVertices()) {
-			n.setDomain(null);
-		}
-		resDomainName = d;
-	}
-	
-
 	
 	public void setOfUserEmail(String ue) {
 		ofUserEmail = ue;
@@ -240,43 +241,7 @@ public class Request extends NDLLIBCommon  {
 		return null;
 	}
 
-//	public void saveRequestToIRods() {
-//		IRodsICommands irods = new IRodsICommands();
-//		String ndl = RequestSaver.getInstance().convertGraphToNdl(g, nsGuid);
-//		if ((ndl == null) ||
-//				(ndl.length() == 0)) {
-//			KMessageDialog kmd = new KMessageDialog(NDLLIB.getInstance().getFrame());
-//			kmd.setMessage("Unable to convert graph to NDL.");
-//			kmd.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//			kmd.setVisible(true);
-//			return;
-//		}
-//		try {
-//			// convert if needed
-//			if (NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("rspec")) {
-//				String rspec = NDLConverter.callConverter(NDLConverter.RSPEC3_TO_NDL, new Object[]{ndl, sliceIdField.getText()});
-//				irods.saveFile(IRodsICommands.substituteRequestName(), rspec);
-//			} else if (NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT).equalsIgnoreCase("ndl"))
-//				irods.saveFile(IRodsICommands.substituteRequestName(), ndl);
-//			else {
-//				ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//				ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//				ed.setException("Exception encountered while saving request to iRods: ", 
-//						new Exception("unknown format " + NDLLIB.getInstance().getPreference(PrefsEnum.IRODS_FORMAT)));
-//				ed.setVisible(true);
-//			}
-//		} catch (IRodsException ie) {
-//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//			ed.setException("Exception encountered while saving request to iRods: ", ie);
-//			ed.setVisible(true);
-//		} catch (Exception e) {
-//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//			ed.setException("Exception encountered while saving request to iRods: ", e);
-//			ed.setVisible(true);
-//		}
-//	}
+
 	
 	
 	/*************************************   Higher level Functionality:  autoip, etc. ************************************/
@@ -284,4 +249,12 @@ public class Request extends NDLLIBCommon  {
 	public boolean autoAssignIPAddresses() {
 		return true;
 	}
+	
+	/*************************************   debugging ************************************/
+	public String getRequestDebugString(){
+		String rtnStr = "";
+		rtnStr += g.toString();
+		return rtnStr;
+	}
+	
 }
