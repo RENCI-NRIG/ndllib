@@ -37,6 +37,8 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 /**
  * holds common state for  panes
  * @author ibaldin
@@ -45,8 +47,23 @@ import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 public abstract class NDLLIBCommon {
 	SparseMultigraph<OrcaResource, OrcaStitch> g = new SparseMultigraph<OrcaResource, OrcaStitch>();
 	
+	protected static Logger logger;
+	
+	protected NDLLIBCommon(){
+		logger = Logger.getLogger(NDLLIBCommon.class.getCanonicalName());
+		logger.setLevel(Level.DEBUG);
+	}
+	
 	// where are we saving
 	String saveDirectory = null;
+	
+	public Logger getLogger() {
+		return logger;
+	}
+
+	public static Logger logger() {
+		return logger;
+	}
 	
 	private SparseMultigraph<OrcaResource, OrcaStitch> getGraph() {
 		return g;
