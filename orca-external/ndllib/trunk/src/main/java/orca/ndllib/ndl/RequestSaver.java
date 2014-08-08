@@ -65,7 +65,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestSaver {
 	
-/*	
+	
 	private static final String EUCALYPTUS_NS = "eucalyptus";
 	private static final String EXOGENI_NS = "exogeni";
 	public static final String BAREMETAL = "ExoGENI Bare-metal";
@@ -137,7 +137,7 @@ public class RequestSaver {
 		//nodeTypes = Collections.unmodifiableMap(nt);
 		nodeTypes = nt;
 	}
-	
+	/*
 	private RequestSaver() {
 		
 	}
@@ -808,6 +808,6 @@ public class RequestSaver {
 			return "255.255.255.0";
 		else
 			return netmaskConverter[nm - 1];
-	}*/
-	
+	}
+	*/
 }

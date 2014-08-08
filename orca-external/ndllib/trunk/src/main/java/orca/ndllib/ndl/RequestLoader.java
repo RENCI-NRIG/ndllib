@@ -36,14 +36,7 @@ import java.util.Set;
 
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
-import orca.ndllib.resources.OrcaCrossconnect;
-import orca.ndllib.resources.OrcaLink;
-import orca.ndllib.resources.OrcaNode;
-import orca.ndllib.resources.OrcaComputeNode;
-import orca.ndllib.resources.OrcaReservationTerm;
-import orca.ndllib.resources.OrcaStitch;
-import orca.ndllib.resources.OrcaStitchPort;
-import orca.ndllib.resources.OrcaStorageNode;
+import orca.ndllib.resources.*;
 import orca.ndl.INdlRequestModelListener;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlRequestParser;
@@ -57,11 +50,14 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 
 
+
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class RequestLoader{ // implements INdlRequestModelListener {
-	/*private Request request;
+public class RequestLoader implements INdlRequestModelListener {
+	 
+	 
+	private Request request;
 	
 	private OrcaReservationTerm term = new OrcaReservationTerm();
 	private String reservationDomain = null;
@@ -91,11 +87,11 @@ public class RequestLoader{ // implements INdlRequestModelListener {
     
     
 
-	*//**
+	/**
 	 * Load from file
 	 * @param f
 	 * @return
-	 *//*
+	 */
 	public boolean loadGraph(File f) {
 		BufferedReader bin = null; 
 		try {
@@ -113,17 +109,18 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 			bin.close();
 			
 			NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
-			NDLLIB.logger().debug("Parsing request");
+			request.logger().debug("Parsing request");
 			nrp.processRequest();
 			
 			nrp.freeModel();
 			
 		} catch (Exception e) {
+			System.out.println("error loading graph");
 //			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
 //			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while loading file " + f.getName() + ":", e);
 //			ed.setVisible(true);
-			NDLLIB.logger().error(e);
+			request.logger().error(e);
 			e.printStackTrace();
 			return false;
 		} 
@@ -131,17 +128,19 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 		return true;
 	}
 	
-	*//**
+	/**
 	 * Load from string
 	 * @param f
 	 * @return
-	 *//*
+	 */
 	public boolean loadGraph(String f) {
 		try {
+			System.out.println("loadGraph:1");
 			NdlRequestParser nrp = new NdlRequestParser(f, this);
-			NDLLIB.logger().debug("Parsing request");
+			System.out.println("loadGraph:2");
+			//request.logger().debug("Parsing request");
 			nrp.processRequest();
-			
+			System.out.println("loadGraph:3");
 			nrp.freeModel();
 			
 		} catch (Exception e) {
@@ -149,7 +148,8 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 //			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
 //			ed.setException("Exception encountered while loading graph from string:", e);
 //			ed.setVisible(true);
-			NDLLIB.logger().error(e);
+			request.logger().error(e);
+			System.out.println("error loading graph");
 			return false;
 		} 
 		
@@ -165,7 +165,9 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 	}
 
 	public void ndlReservation(Resource i, final OntModel m) {
-		NDLLIB.logger().debug("Reservation: " + i);
+		System.out.println("ndlReservation");
+		
+		/*request.logger().debug("Reservation: " + i);
 		
 		// try to extract the guid out of the URL
 		String u = i.getURI();
@@ -176,7 +178,7 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 		if (i != null) {
 			reservationDomain = RequestSaver.reverseLookupDomain(NdlCommons.getDomain(i));
 			this.request.setOFVersion(NdlCommons.getOpenFlowVersion(i));
-		}
+		}*/
 	}
 
 	public void ndlReservationEnd(Literal e, OntModel m, Date end) {
@@ -193,9 +195,13 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 	}
 
 	public void ndlNode(Resource ce, OntModel om, Resource ceClass, List<Resource> interfaces) {
-		NDLLIB.logger().debug("Node: " + ce + " of class " + ceClass);
+		//request.logger().debug("Node: " + ce + " of class " + ceClass);
+	
+		System.out.println("ndlNode: ");
+		/*
 		if (ce == null)
-			return;
+			return;ndlReservation
+		
 		OrcaNode newNode;
 		
 		if (ceClass.equals(NdlCommons.computeElementClass))
@@ -271,16 +277,17 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 		nodes.put(ce.getURI(), newNode);
 		
 		// add nodes to the graph
-		this.request.getGraph().addVertex(newNode);
+		this.request.getGraph().addVertex(newNode);*/
 	}
 
-	*//**
+	/**
 	 * For now deals only with p-to-p connections
-	 *//*
+	 */
 	public void ndlNetworkConnection(Resource l, OntModel om, 
 			long bandwidth, long latency, List<Resource> interfaces) {
-		
-		NDLLIB.logger().debug("NetworkConnection: " + l);
+		System.out.println("ndlNetworkConnection: ");
+		/*
+		request.logger().debug("NetworkConnection: " + l);
 		// System.out.println("Found connection " + l + " connecting " + interfaces + " with bandwidth " + bandwidth);
 		if (l == null)
 			return;
@@ -323,14 +330,16 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 				}
 			}
 			
-		}
+		}*/
 	}
 
 	public void ndlInterface(Resource intf, OntModel om, Resource conn, Resource node, String ip, String mask) {
 	
+		System.out.println("ndlInterface");
+		//System.out.println("Interface " + l + " has IP/netmask" + ip + "/" + mask);
 		
-		// System.out.println("Interface " + l + " has IP/netmask" + ip + "/" + mask);
-		NDLLIB.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
+		/*
+		request.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
 		if (intf == null)
 			return;
 		OrcaNode on = null;
@@ -385,11 +394,13 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 				
 			}
 				
-		}
+		}*/
 	}
 	
 	public void ndlSlice(Resource sl, OntModel m) {
-		NDLLIB.logger().debug("Slice: " + sl);
+		System.out.println("ndlSlice");
+		
+		/*request.logger().debug("Slice: " + sl);
 		// check that this is an OpenFlow slice and get its details
 		if (sl.hasProperty(NdlCommons.RDF_TYPE, NdlCommons.ofSliceClass)) {
 			Resource ofCtrl = NdlCommons.getOfCtrl(sl);
@@ -407,7 +418,7 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 					this.request.setOfSlicePass(null);
 					this.request.setOfUserEmail(null);
 			}
-		}	
+		}	*/
 	}
 
 	public void ndlReservationResources(List<Resource> res, OntModel m) {
@@ -415,10 +426,10 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 	}
 	
 	public void ndlParseComplete() {
-		NDLLIB.logger().debug("Done parsing.");
+		request.logger().debug("Done parsing.");
 		// set term etc
 		//this.request.setTerm(term);
-		this.request.setDomainInReservation(reservationDomain);
+		//this.request.setDomainInReservation(reservationDomain);
 	}
 
 	public void ndlNodeDependencies(Resource ni, OntModel m, Set<Resource> dependencies) {
@@ -432,13 +443,15 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 		}
 	}
 
-	*//**
+	/**
 	 * Process a broadcast link
-	 *//*
+	 */
 	public void ndlBroadcastConnection(Resource bl, OntModel om,
 			long bandwidth, List<Resource> interfaces) {
 		
-		NDLLIB.logger().debug("BroadcastConnection: " + bl);
+		System.out.println("ndlBroadcastConnection");
+		/*
+		request.logger().debug("BroadcastConnection: " + bl);
 
 		if (bl == null)
 			return;
@@ -460,7 +473,7 @@ public class RequestLoader{ // implements INdlRequestModelListener {
 				this.request.getGraph().addEdge(ol, new Pair<OrcaNode>(ifNode, oc), EdgeType.UNDIRECTED);
 			}
 		}
-		links.put(bl.getURI(), oc);
+		links.put(bl.getURI(), oc);*/
 		
-	}*/
+	}
 }
