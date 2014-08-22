@@ -71,6 +71,7 @@ import java.util.Set;
 
 
 
+
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -230,9 +231,11 @@ public class Request extends NDLLIBCommon  {
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
 	public void loadRequest(String file){
-	
+		RequestLoader loader = new RequestLoader(this);
+		loader.loadGraph(new File(file));
 	}
-
+	
+	
 	public void saveRequest(String file){
 		
 	}
@@ -252,7 +255,7 @@ public class Request extends NDLLIBCommon  {
 	
 	/*************************************   debugging ************************************/
 	public String getRequestDebugString(){
-		String rtnStr = "";
+		String rtnStr = "getRequestDebugString: ";
 		rtnStr += g.toString();
 		return rtnStr;
 	}
