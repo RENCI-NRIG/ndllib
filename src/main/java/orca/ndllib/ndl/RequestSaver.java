@@ -244,20 +244,9 @@ public class RequestSaver {
 				}
 */
 				
-/*  I think this is for request level binding.  This is redundant and confusing.   
-				// decide whether we have a global domain */
-				boolean globalDomain = false;
-/*
-				// is domain specified in the reservation?
-				if (request.getDomainInReservation() != null) {
-					globalDomain = true;
-					Individual domI = ngen.declareDomain(domainMap.get(request.getDomainInReservation()));
-					ngen.addDomainToIndividual(domI, reservation);
-				}
-*/
+
 	
-				// shove invidividual nodes onto the reservation/crossconnects are vertices, but not 'nodes'
-				// so require special handling
+				
 				Individual ni;
 				//Handle stitchports
 				for (OrcaStitchPort sp: request.getStitchPorts()){
@@ -271,7 +260,7 @@ public class RequestSaver {
 							snode.getCapacity(),
 							snode.getFSType(), snode.getFSParam(), snode.getMntPoint(), 
 							snode.getDoFormat());
-					if (!globalDomain && (snode.getDomain() != null)) {
+					if (snode.getDomain() != null) {
 						Individual domI = ngen.declareDomain(domainMap.get(snode.getDomain()));
 						ngen.addNodeToDomain(domI, ni);
 					}
@@ -322,25 +311,13 @@ public class RequestSaver {
 						ngen.addNodeToDomain(domI, ni);
 					}
 
-/* are these needed anymore?  i think all ports are always open */
-					/*// open ports
-					if (cn.getPortsList() != null) {
-						// Say it's a TCPProxy with proxied port
-						String[] ports = cn.getPortsList().split(",");
-						int pi = 0;
-						for (String port: ports) {
-							Individual prx = ngen.declareTCPProxy("prx-" + cn.getName().replaceAll("[ \t#:/]", "-") + "-" + pi++);
-							ngen.addProxyToIndividual(prx, ni);
-							ngen.addPortToProxy(port.trim(), prx);
-						}
-					}*/
-
 					// post boot script
 					if ((cn.getPostBootScript() != null) && (cn.getPostBootScript().length() > 0)) {
 						ngen.addPostBootScriptToCE(cn.getPostBootScript(), ni);
 					}
 				}
-		/*		
+				
+				/*
 				// node dependencies (done afterwards to be sure all nodes are declared)
 				for (OrcaResource resource: request.getResources()) {
 					Individual ni = ngen.getRequestIndividual(resource.getName());
@@ -350,7 +327,8 @@ public class RequestSaver {
 							ngen.addDependOnToIndividual(depI, ni);
 						}
 					}
-				}*/
+				}
+				*/
 				
 				
 				// crossconnects are vertices in the graph, but are actually a kind of link
@@ -390,11 +368,25 @@ public class RequestSaver {
 
 					// TODO: latency
 
-					for(OrcaStitch s: e.getStitches()){
-						//processStitch(s);
-					}
 					//processNodeAndLink(pn.getFirst(), e, ei);
 					//processNodeAndLink(pn.getSecond(), e, ei);
+				}
+				
+				//Process stitches
+				for (OrcaStitch stitch: request.getStitches()){
+					request.logger().debug("processing stitch: " + stitch);
+					
+					
+					if (stitch instanceof OrcaStitchNode2Link){
+						OrcaStitchNode2Link stitch_n2l = (OrcaStitchNode2Link)stitch;
+						Individual ei = ngen.declareNetworkConnection(stitch_n2l.getLink().getName());
+						ngen.addResourceToReservation(reservation, ei);
+						
+						processNodeAndLink(stitch_n2l, ei);
+					} else {
+						request.logger().error("Error: unkown stitch type");
+					}
+					
 				}
 				
 				
@@ -470,18 +462,20 @@ public class RequestSaver {
 		
 	}
 	
-	*//**
+	/**
 	 * Link node to edge, create interface and process IP address 
 	 * @param n
 	 * @param e
 	 * @param edgeI
 	 * @throws NdlException
-	 *//*
-	private void processNodeAndLink(OrcaNode n, OrcaLink e, Individual edgeI) throws NdlException {
-
+	 */
+	private void processNodeAndLink(OrcaStitchNode2Link s, Individual edgeI) throws NdlException {
+		OrcaNode n = s.getNode();  
+		OrcaLink e = s.getLink();
+ 		
 		Individual intI;
 		
-		addLinkStorageDependency(n, e);
+		//addLinkStorageDependency(n, e);
 		
 		if (n instanceof OrcaStitchPort) {
 			OrcaStitchPort sp = (OrcaStitchPort)n;
@@ -490,8 +484,9 @@ public class RequestSaver {
 				throw new NdlException("URL and label must be specified in StitchPort");
 			intI = ngen.declareExistingInterface(sp.getPort());
 			ngen.addLabelToIndividual(intI, sp.getLabel());
-		} else 
+		} else {
 			intI = ngen.declareInterface(e.getName()+"-"+n.getName());
+		}
 		// add to link
 		ngen.addInterfaceToIndividual(intI, edgeI);
 
@@ -501,15 +496,16 @@ public class RequestSaver {
 		ngen.addInterfaceToIndividual(intI, nodeI);
 		
 		// see if there is an IP address for this link on this node
-		if (n.getIp(e) != null) {
+		if (s.getIpAddress() != null) {
 			// create IP object, attach to interface
-			Individual ipInd = ngen.addUniqueIPToIndividual(n.getIp(e), e.getName()+"-"+n.getName(), intI);
-			if (n.getNetmask(e) != null)
-				ngen.addNetmaskToIP(ipInd, netmaskIntToString(Integer.parseInt(n.getNetmask(e))));
+			Individual ipInd = ngen.addUniqueIPToIndividual(s.getIpAddress(), e.getName()+"-"+n.getName(), intI);
+			if (s.getNetmask() != null){
+				ngen.addNetmaskToIP(ipInd, s.getNetmask());
+			}
 		}
 	}
 	
-	*//**
+	/**
 	 * Special handling for node group internal vlan
 	 * @param ong
 	 * @throws NdlException
@@ -676,7 +672,7 @@ public class RequestSaver {
 	public SparseMultigraph<OrcaNode, OrcaLink> loadGraph(File f) {
 		return null;
 	}
-	
+*/	
 	
 	// use different maps to try to do a reverse lookup
 	private static String reverseLookupDomain_(Resource dom, Map<String, String> m, String suffix) {
@@ -710,11 +706,11 @@ public class RequestSaver {
 		return null;
 	}
 	
-	*//**
+	/**
 	 * Do a reverse lookup on domain (NDL -> short name)
 	 * @param dom
 	 * @return
-	 *//*
+	 */
 	public static String reverseLookupDomain(Resource dom) {
 		if (dom == null)
 			return null;
@@ -733,7 +729,7 @@ public class RequestSaver {
 			mapping = reverseLookupDomain_(dom, domainMap, "/Domain/lun");
 		
 		return mapping;
-		return null;
+		//return null;
 	}
 	
 	public static String reverseLookupDomain(String dom) {
@@ -752,13 +748,13 @@ public class RequestSaver {
 			mapping = reverseLookupDomain_(dom, netDomainMap, "/Domain/vlan");
 		
 		return mapping;
-		return null;
+		//return null;
 	}
 	
 	
-	*//**
+	/**
 	 * Do a reverse lookup on node type (NDL -> shortname )
-	 *//*
+	 */
 	public static String reverseNodeTypeLookup(Resource nt) {
 		if (nt == null)
 			return null;
@@ -772,16 +768,16 @@ public class RequestSaver {
 		return null;
 	}
 	
-	*//**
+	/**
 	 * Post boot scripts need to be sanitized (deprecated)
 	 * @param s
 	 * @return
-	 *//*
+	 */
 	public static String sanitizePostBootScript(String s) {
 		// no longer needed
 		return s;
 	}
-	*/
+	
 	
 	/**************************************  Helper Function ***************************************/
 	

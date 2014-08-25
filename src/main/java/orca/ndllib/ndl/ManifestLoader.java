@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 
 import orca.ndllib.NDLLIB;
-import orca.ndllib.Manifest;
 import orca.ndllib.Request;
 import orca.ndllib.resources.OrcaCrossconnect;
 import orca.ndllib.resources.OrcaLink;

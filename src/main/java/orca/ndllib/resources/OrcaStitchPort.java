@@ -85,7 +85,7 @@ public class OrcaStitchPort extends OrcaNode {
 	public OrcaStitch stitch(OrcaResource r){
 		OrcaStitch stitch = null;
 		if (r instanceof OrcaLink){
-			stitch = new OrcaStitchNode2Link();		
+			stitch = new OrcaStitchNode2Link(this,(OrcaLink)r);		
 		} else {
 			//Can't stitch computenode to r
 			//Should throw exception

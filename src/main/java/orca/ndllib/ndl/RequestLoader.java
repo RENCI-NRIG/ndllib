@@ -204,6 +204,7 @@ public class RequestLoader implements INdlRequestModelListener {
 		} else { 
 			if (ceClass.equals(NdlCommons.serverCloudClass)) {
 				OrcaComputeNode newNodeGroup = this.request.addComputeNode(ce.getLocalName());
+				newComputeNode = newNodeGroup;
 				int ceCount = NdlCommons.getNumCE(ce);
 				if (ceCount > 0)
 					newNodeGroup.setNodeCount(ceCount);
@@ -222,20 +223,27 @@ public class RequestLoader implements INdlRequestModelListener {
 				newNode = this.request.addComputeNode(ce.getLocalName());
 		}
 
-		//Resource domain = NdlCommons.getDomain(ce);
-		//if (domain != null)
-		//	newNode.setDomainWithGlobalReset(RequestSaver.reverseLookupDomain(domain));
-		
-		//Resource ceType = NdlCommons.getSpecificCE(ce);
-		//if (ceType != null)
-		//	newNode.setNodeType(RequestSaver.reverseNodeTypeLookup(ceType));
-
-		// get proxied ports
-		List<NdlCommons.ProxyFields> portList = NdlCommons.getNodeProxiedPorts(ce);
-		String portListString = "";
-		for (NdlCommons.ProxyFields pf: portList) {
-			portListString += pf.proxiedPort + ",";
+		request.logger().debug("about to load domain");
+		Resource domain = NdlCommons.getDomain(ce);
+		if (domain != null){
+			request.logger().debug("load domain: " + RequestSaver.reverseLookupDomain(domain));
+			newNode.setDomain(RequestSaver.reverseLookupDomain(domain));
 		}
+			
+		
+		if (ceClass.equals(NdlCommons.computeElementClass) || ceClass.equals(NdlCommons.serverCloudClass)){
+			Resource ceType = NdlCommons.getSpecificCE(ce);
+			if (ceType != null){
+				newComputeNode.setNodeType(RequestSaver.reverseNodeTypeLookup(ceType));
+			}
+		}
+		
+		// get proxied ports
+		//List<NdlCommons.ProxyFields> portList = NdlCommons.getNodeProxiedPorts(ce);
+		//String portListString = "";
+		//for (NdlCommons.ProxyFields pf: portList) {
+		//	portListString += pf.proxiedPort + ",";
+		//}
 		
 		//*******  PROBABLY DON'T NEED PORTS ANYMORE... THEY SHOULD ALL BE SET TO OPEN
 		//if (portListString.length() > 0) {
@@ -245,25 +253,34 @@ public class RequestLoader implements INdlRequestModelListener {
 		//*************
 		
 		// process interfaces
-		for (Iterator<Resource> it = interfaces.iterator(); it.hasNext();) {
-			Resource intR = it.next();
-			interfaceToNode.put(intR.getURI(), newNode);
-		}
+		//for (Iterator<Resource> it = interfaces.iterator(); it.hasNext();) {
+		//	Resource intR = it.next();
+		//	interfaceToNode.put(intR.getURI(), newNode);
+		//}
 
 		
-		if (ceClass.equals(NdlCommons.computeElementClass)){
+		//process image
+		request.logger().debug("about to load image");
+		if (ceClass.equals(NdlCommons.computeElementClass) || ceClass.equals(NdlCommons.serverCloudClass)){
+			request.logger().debug("about to load domain: it is a compute element");
 			// disk image
 			Resource di = NdlCommons.getDiskImage(ce);
 			if (di != null) {
+				request.logger().debug("about to load domain: it has a image");
 				try {
 					String imageURL = NdlCommons.getIndividualsImageURL(ce);
 					String imageHash = NdlCommons.getIndividualsImageHash(ce);
 					//String imName = this.request.addImage(new OrcaImage(di.getLocalName(), 
 					//		new URL(imageURL), imageHash), null);
-					String imName = imageURL + imageHash;  //FIX ME: not right 
+					//String imName = imageURL + imageHash;  //FIX ME: not right
+					String imName = newComputeNode.getName() + "-image"; //FIX ME: not right:  why do we even have an image name???
+					request.logger().debug("about to load domain: imageURL " + imageURL);
+					request.logger().debug("about to load domain: imageHash " + imageHash);
+					request.logger().debug("about to load domain: imName " + imName);
 					newComputeNode.setImage(imageURL,imageHash,imName);
 				} catch (Exception e) {
 					// FIXME: ?
+					request.logger().debug("about to load domain: hit an exception");
 					;
 				}
 			}
@@ -298,6 +315,9 @@ public class RequestLoader implements INdlRequestModelListener {
 		ol.setBandwidth(bandwidth);
 		ol.setLatency(latency);
 		ol.setLabel(NdlCommons.getLayerLabelLiteral(l));
+		
+		
+		
 		
 /*		// find what nodes it connects (should be two)
 		Iterator<Resource> it = interfaces.iterator(); 
@@ -353,7 +373,17 @@ public class RequestLoader implements INdlRequestModelListener {
 		request.logger().debug("onode: " + onode);
 		request.logger().debug("olink: " + olink);
 		
-		OrcaStitch stitch = onode.stitch(olink);
+		OrcaStitchNode2Link stitch = (OrcaStitchNode2Link)onode.stitch(olink);
+		
+		stitch.setIpAddress(ip);  
+		stitch.setNetmask(mask);
+		
+		request.logger().debug("ip: " + ip);
+		request.logger().debug("mask: " + mask);
+		
+		request.logger().debug("NdlCommons.getAddressIP(intf): " + NdlCommons.getAddressMAC(intf));
+		request.logger().debug("NdlCommons.getAddressIP(conn): " + NdlCommons.getAddressIP(conn));
+		request.logger().debug("NdlCommons.getAddressIP(node): " + NdlCommons.getAddressNetmask(node));
 		
 		/* 
 		if (intf == null)
