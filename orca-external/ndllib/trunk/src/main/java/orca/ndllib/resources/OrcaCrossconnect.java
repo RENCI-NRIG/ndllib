@@ -133,8 +133,8 @@ public class OrcaCrossconnect extends OrcaLink {
 	
 	public OrcaStitch stitch(OrcaResource r){
 		OrcaStitch stitch = null;
-		if (r instanceof OrcaLink){
-			stitch = new OrcaStitchNode2Link();		
+		if (r instanceof OrcaNode){
+			stitch = new OrcaStitchNode2Link((OrcaNode)r,this);		
 		} else {
 			//Can't stitch computenode to r
 			//Should throw exception

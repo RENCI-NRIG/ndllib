@@ -82,6 +82,15 @@ public abstract class NDLLIBCommon {
 		return g.getVertices();
 	}
 	
+	public Collection<OrcaStitch> getStitches(){
+		ArrayList<OrcaStitch> stitches = new ArrayList<OrcaStitch>();
+		
+		for (OrcaStitch stitch: g.getEdges()) {
+			stitches.add((OrcaStitch)stitch);
+		}
+		return stitches;
+	}
+	
 	public Collection<OrcaLink> getLinks(){
 		ArrayList<OrcaLink> links = new ArrayList<OrcaLink>();
 		

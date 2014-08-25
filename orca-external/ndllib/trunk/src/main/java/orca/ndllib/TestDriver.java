@@ -22,7 +22,8 @@ public class TestDriver {
 	public static void main(String [] args){
     	System.out.println("ndllib TestDriver: START");
     	//testLoad();
-    	testSave();
+    	//testSave();
+    	testLoadAndSave();
     	System.out.println("ndllib TestDriver: END");
     	
 	}
@@ -63,7 +64,7 @@ public class TestDriver {
 		r.logger().debug("logger test");
 		
 		r.loadRequest("/home/geni-orca/test-requests/all-types.rdf");
-		r.loadRequest("/home/geni-orca/test-requests/test.rdf");
+		//r.loadRequest("/home/geni-orca/test-requests/test.rdf");
 	
 		r.logger().debug(r.getRequestDebugString());
 		for (OrcaNode node : r.getNodes()){
@@ -96,7 +97,32 @@ public class TestDriver {
 		
 		r.saveRequest("/home/geni-orca/test-requests/test-save.rdf");
 		
+	}
+	
+	public static void testLoadAndSave(){
+		Request r = new Request();
+		
+		
+		r.loadRequest("/home/geni-orca/test-requests/test-load.rdf");
+		
+		printRequest2Log(r);
+		
+		r.saveRequest("/home/geni-orca/test-requests/test-save.rdf");
 		
 		
 	}
+	
+	public static void printRequest2Log(Request r){
+		r.logger.debug("******************** START printReqest2Log *********************");
+		//r.logger().debug(r.getRequestDebugString());
+		for (OrcaNode node : r.getNodes()){
+			r.logger.debug("PRUTH:" + node);
+		}
+		
+		for (OrcaLink link : r.getLinks()){
+			r.logger.debug("PRUTH:" + link);
+		}
+		r.logger.debug("******************** END printReqest2Log *********************");
+	}
+	
 }
