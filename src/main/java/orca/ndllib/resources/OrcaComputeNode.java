@@ -70,11 +70,15 @@ public class OrcaComputeNode extends OrcaNode {
 	protected boolean splittable = false;
 
 	protected Image image = null;
-	protected String domain = null;
 	protected String group = null;
 	protected String nodeType = null;
 	protected String postBootScript = null;
 		
+	public void setPostBootScript(String postBootScript) {
+		this.postBootScript = postBootScript;
+	}
+
+
 	protected List<String> managementAccess = null;
 
 	// list of open ports
@@ -84,9 +88,25 @@ public class OrcaComputeNode extends OrcaNode {
 		super(request,name);
 	}
 	
+	
+	public void setImage(String url, String hash, String shortName){
+		image = new Image(url, hash, shortName);
+	}
+	
+	public void setDomain(String domain){
+		this.domain = domain;
+	}
+	
+	
 	//get image properties
 	public String getImageUrl(){
-		return image.getImageURL();
+		String url = null;
+		try{
+			url = image.getImageURL();
+		} catch (Exception e){
+			url = null;
+		}
+		return url;
 	}
 	
 	public String getImageHash(){

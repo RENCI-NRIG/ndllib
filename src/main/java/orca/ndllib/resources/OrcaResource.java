@@ -1,5 +1,6 @@
 package orca.ndllib.resources;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +32,7 @@ public abstract class OrcaResource implements OrcaRequestResource,OrcaManifestRe
 	protected String resNotice = null;
 	
 	protected String domain; 
+	
 	
 	public OrcaResource(Request request){
 		this.request = request; 
@@ -71,6 +73,11 @@ public abstract class OrcaResource implements OrcaRequestResource,OrcaManifestRe
 	public void setDomain(String d) {
 		domain = d;
 	}
+	
+	public Collection<OrcaStitch> getStitches() {
+		return stitches;
+	}
+	
 	
 	/**
 	 * Substrate info is just an associative array. 

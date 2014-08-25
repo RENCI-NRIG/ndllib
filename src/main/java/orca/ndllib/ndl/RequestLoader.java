@@ -116,10 +116,6 @@ public class RequestLoader implements INdlRequestModelListener {
 			
 		} catch (Exception e) {
 			System.out.println("error loading graph");
-//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//			ed.setException("Exception encountered while loading file " + f.getName() + ":", e);
-//			ed.setVisible(true);
 			request.logger().error(e);
 			e.printStackTrace();
 			return false;
@@ -201,10 +197,11 @@ public class RequestLoader implements INdlRequestModelListener {
 			return;
 		
 		OrcaNode newNode;
-		
-		if (ceClass.equals(NdlCommons.computeElementClass))
+		OrcaComputeNode newComputeNode = null;
+		if (ceClass.equals(NdlCommons.computeElementClass)){
 			newNode = this.request.addComputeNode(ce.getLocalName());
-		else { 
+			newComputeNode = (OrcaComputeNode)newNode;
+		} else { 
 			if (ceClass.equals(NdlCommons.serverCloudClass)) {
 				OrcaComputeNode newNodeGroup = this.request.addComputeNode(ce.getLocalName());
 				int ceCount = NdlCommons.getNumCE(ce);
@@ -239,10 +236,13 @@ public class RequestLoader implements INdlRequestModelListener {
 		for (NdlCommons.ProxyFields pf: portList) {
 			portListString += pf.proxiedPort + ",";
 		}
-		if (portListString.length() > 0) {
-			portListString = portListString.substring(0, portListString.length() - 1);
-			newNode.setPortsList(portListString);
-		}
+		
+		//*******  PROBABLY DON'T NEED PORTS ANYMORE... THEY SHOULD ALL BE SET TO OPEN
+		//if (portListString.length() > 0) {
+		//	portListString = portListString.substring(0, portListString.length() - 1);
+		//	newNode.setPortsList(portListString);
+		//}
+		//*************
 		
 		// process interfaces
 		for (Iterator<Resource> it = interfaces.iterator(); it.hasNext();) {
@@ -250,28 +250,32 @@ public class RequestLoader implements INdlRequestModelListener {
 			interfaceToNode.put(intR.getURI(), newNode);
 		}
 
-		// disk image
-		Resource di = NdlCommons.getDiskImage(ce);
-		if (di != null) {
-			try {
-				String imageURL = NdlCommons.getIndividualsImageURL(ce);
-				String imageHash = NdlCommons.getIndividualsImageHash(ce);
-				//String imName = this.request.addImage(new OrcaImage(di.getLocalName(), 
-				//		new URL(imageURL), imageHash), null);
-				String imName = imageURL + imageHash;  //FIX ME: not right 
-				newNode.setImage(imName);
-			} catch (Exception e) {
-				// FIXME: ?
-				;
+		
+		if (ceClass.equals(NdlCommons.computeElementClass)){
+			// disk image
+			Resource di = NdlCommons.getDiskImage(ce);
+			if (di != null) {
+				try {
+					String imageURL = NdlCommons.getIndividualsImageURL(ce);
+					String imageHash = NdlCommons.getIndividualsImageHash(ce);
+					//String imName = this.request.addImage(new OrcaImage(di.getLocalName(), 
+					//		new URL(imageURL), imageHash), null);
+					String imName = imageURL + imageHash;  //FIX ME: not right 
+					newComputeNode.setImage(imageURL,imageHash,imName);
+				} catch (Exception e) {
+					// FIXME: ?
+					;
+				}
+			}
+
+
+			// post boot script
+			String script = NdlCommons.getPostBootScript(ce);
+			if ((script != null) && (script.length() > 0)) {
+				newComputeNode.setPostBootScript(script);
 			}
 		}
-		
-		// post boot script
-		String script = NdlCommons.getPostBootScript(ce);
-		if ((script != null) && (script.length() > 0)) {
-			newNode.setPostBootScript(script);
-		}
-		
+
 		nodes.put(ce.getURI(), newNode);
 		
 		// add nodes to the graph

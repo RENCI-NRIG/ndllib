@@ -318,31 +318,10 @@ public abstract class OrcaNode extends OrcaResource {
         }       
     }
 
-	public void setDomainWithGlobalReset(String reverseLookupDomain) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
-	public void setNodeType(String reverseNodeTypeLookup) {
-		// TODO Auto-generated method stub
-		
-	}
 
-	public boolean setPortsList(String portListString) {
-		// TODO Auto-generated method stub
-		return true;
-		
-	}
 
-	public void setImage(String imName) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setPostBootScript(String script) {
-		// TODO Auto-generated method stub
-		
-	}
 
  
 }

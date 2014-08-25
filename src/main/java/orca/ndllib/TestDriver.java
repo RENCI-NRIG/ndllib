@@ -21,7 +21,8 @@ import orca.ndllib.resources.OrcaStorageNode;
 public class TestDriver {
 	public static void main(String [] args){
     	System.out.println("ndllib TestDriver: START");
-    	testLoad();
+    	//testLoad();
+    	testSave();
     	System.out.println("ndllib TestDriver: END");
     	
 	}
@@ -62,7 +63,7 @@ public class TestDriver {
 		r.logger().debug("logger test");
 		
 		r.loadRequest("/home/geni-orca/test-requests/all-types.rdf");
-		//r.loadRequest("/home/geni-orca/test-requests/test.rdf");
+		r.loadRequest("/home/geni-orca/test-requests/test.rdf");
 	
 		r.logger().debug(r.getRequestDebugString());
 		for (OrcaNode node : r.getNodes()){
@@ -74,4 +75,28 @@ public class TestDriver {
 		}
 	}
 	
+	public static void testSave(){
+		Request r = new Request();
+		
+		OrcaComputeNode cn = r.addComputeNode("Node42");
+		cn.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
+		cn.setNodeType("XO Large");
+		cn.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
+		cn.setPostBootScript("post boot script");
+		
+		r.logger().debug(r.getRequestDebugString());
+		for (OrcaNode node : r.getNodes()){
+			r.logger.debug("PRUTH:" + node);
+		}
+		
+		for (OrcaLink link : r.getLinks()){
+			r.logger.debug("PRUTH:" + link);
+		}
+		
+		
+		r.saveRequest("/home/geni-orca/test-requests/test-save.rdf");
+		
+		
+		
+	}
 }

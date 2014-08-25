@@ -82,7 +82,7 @@ public class OrcaCrossconnect extends OrcaLink {
 	public long getBandwidth() {
 		return bandwidth;
 	}
-	
+		
 	/** 
 	 * Create a detailed printout of properties
 	 * @return
