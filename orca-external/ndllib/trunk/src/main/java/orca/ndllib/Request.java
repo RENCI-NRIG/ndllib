@@ -237,6 +237,8 @@ public class Request extends NDLLIBCommon  {
 	
 	
 	public void saveRequest(String file){
+		RequestSaver saver = new RequestSaver(this);
+		saver.saveRequest(file);
 		
 	}
 	
@@ -258,6 +260,12 @@ public class Request extends NDLLIBCommon  {
 		String rtnStr = "getRequestDebugString: ";
 		rtnStr += g.toString();
 		return rtnStr;
+	}
+
+
+	public Object getDomainInReservation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

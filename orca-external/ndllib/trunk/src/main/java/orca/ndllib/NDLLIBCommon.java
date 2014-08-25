@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import orca.ndllib.ndl.*;
+import orca.ndllib.resources.OrcaBroadcastLink;
 import orca.ndllib.resources.OrcaComputeNode;
 import orca.ndllib.resources.OrcaCrossconnect;
 import orca.ndllib.resources.OrcaLink;
@@ -103,7 +104,17 @@ public abstract class NDLLIBCommon {
 		return crossconnects;
 	}
 	
-
+	public Collection<OrcaBroadcastLink> getBroadcastLinks(){
+		ArrayList<OrcaBroadcastLink> broadcastlinks = new ArrayList<OrcaBroadcastLink>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof OrcaBroadcastLink){
+				broadcastlinks.add((OrcaBroadcastLink)resource);
+			}
+		}
+		return broadcastlinks;
+	}
+	
 	public Collection<OrcaNode> getNodes(){
 		ArrayList<OrcaNode> nodes = new ArrayList<OrcaNode>();
 		
