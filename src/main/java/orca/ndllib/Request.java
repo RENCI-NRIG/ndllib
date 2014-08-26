@@ -26,7 +26,6 @@ package orca.ndllib;
 import orca.ndllib.ndl.*;
 import orca.ndllib.resources.OrcaBroadcastLink;
 import orca.ndllib.resources.OrcaComputeNode;
-import orca.ndllib.resources.OrcaCrossconnect;
 import orca.ndllib.resources.OrcaLink;
 import orca.ndllib.resources.OrcaNode;
 import orca.ndllib.resources.OrcaReservationTerm;

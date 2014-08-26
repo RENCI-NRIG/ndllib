@@ -34,6 +34,7 @@ import java.util.BitSet;
  * 
  */
 public class IP4Assign_v2 {
+	/*
 	private TreeMap<Integer, Integer> managedSubnetTreeMap; // for searching if
 															// subnet overlapps
 															// with any managed
@@ -494,6 +495,6 @@ public class IP4Assign_v2 {
 			return new JsonPrimitive(src.toJsonString());
 
 		}
-	}
+	}*/
 
 }

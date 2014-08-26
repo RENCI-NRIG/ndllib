@@ -40,7 +40,6 @@ import java.util.Map;
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
 import orca.ndllib.resources.OrcaBroadcastLink;
-import orca.ndllib.resources.OrcaCrossconnect;
 import orca.ndllib.resources.OrcaLink;
 import orca.ndllib.resources.OrcaNode;
 import orca.ndllib.resources.OrcaComputeNode;
@@ -331,27 +330,12 @@ public class RequestSaver {
 				*/
 				
 				
-				// crossconnects are vertices in the graph, but are actually a kind of link
-				for (OrcaCrossconnect oc: request.getCrossconnects()) {
-					Individual bl;
-					bl = ngen.declareBroadcastConnection(oc.getName());
-					ngen.addResourceToReservation(reservation, bl);
-						
-					if (oc.getBandwidth() > 0)
-						ngen.addBandwidthToConnection(bl, oc.getBandwidth());
-						
-					if (oc.getLabel() != null) 
-						ngen.addLabelToIndividual(bl, oc.getLabel());
-						
-					ngen.addLayerToConnection(bl, "ethernet", "EthernetNetworkElement");
-						
-					// add incident nodes' interfaces
-					processCrossconnect(oc, bl);
-				}
+
 				
 
 				// edges, nodes, IP addresses oh my!
 				for (OrcaBroadcastLink e: request.getBroadcastLinks()) {
+					request.logger().debug("saving OrcaBroadcastLink");
 					//checkLinkSanity(e);
 
 					Individual ei = ngen.declareNetworkConnection(e.getName());
@@ -378,9 +362,10 @@ public class RequestSaver {
 					
 					
 					if (stitch instanceof OrcaStitchNode2Link){
+						request.logger().debug("processing OrcaStitchNode2Link: " + stitch);
 						OrcaStitchNode2Link stitch_n2l = (OrcaStitchNode2Link)stitch;
-						Individual ei = ngen.declareNetworkConnection(stitch_n2l.getLink().getName());
-						ngen.addResourceToReservation(reservation, ei);
+						request.logger().debug("processing stitch for link: " + stitch_n2l.getLink().getName());
+						Individual ei = ngen.getRequestIndividual(stitch_n2l.getLink().getName());
 						
 						processNodeAndLink(stitch_n2l, ei);
 					} else {
@@ -613,6 +598,8 @@ public class RequestSaver {
 		}
 	}
 	*/
+	
+	/*  I think this is not needed 
 	private void processCrossconnect(OrcaCrossconnect oc, Individual blI) throws NdlException {
 		
 		//addCrossConnectStorageDependency(oc);
@@ -654,6 +641,7 @@ public class RequestSaver {
 			}
 		}
 	}
+	*/
 	
 	private void setNodeTypeOnInstance(String type, Individual ni) throws NdlException {
 		if (BAREMETAL.equals(type))

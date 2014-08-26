@@ -37,7 +37,6 @@ import java.util.Set;
 
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
-import orca.ndllib.resources.OrcaCrossconnect;
 import orca.ndllib.resources.OrcaLink;
 import orca.ndllib.resources.OrcaNode;
 import orca.ndllib.resources.OrcaComputeNode;
