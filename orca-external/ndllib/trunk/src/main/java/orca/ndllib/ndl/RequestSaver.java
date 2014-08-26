@@ -338,7 +338,7 @@ public class RequestSaver {
 					request.logger().debug("saving OrcaBroadcastLink");
 					//checkLinkSanity(e);
 
-					Individual ei = ngen.declareNetworkConnection(e.getName());
+					Individual ei = ngen.declareBroadcastConnection(e.getName());
 					ngen.addResourceToReservation(reservation, ei);
 
 					if (e.getBandwidth() > 0)
