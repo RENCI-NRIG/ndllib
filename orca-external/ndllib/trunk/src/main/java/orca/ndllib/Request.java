@@ -44,33 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-//import orca.ndllib.NDLLIB.PrefsEnum;
-//import orca.ndllib.irods.IRodsException;
-//import orca.ndllib.irods.IRodsICommands;
-////import orca.ndllib.ndl.AdLoader;
-////import orca.ndllib.ndl.RequestSaver;
-//import orca.ndllib.ui.ChooserWithNewDialog;
-////import orca.ndllib.ui.TextAreaDialog;
-//import orca.ndllib.util.IP4Assign;
-////import orca.ndllib.xmlrpc.NDLConverter;
-//import orca.ndllib.xmlrpc.OrcaSMXMLRPCProxy;
-////import orca.ndl.NdlAbstractDelegationParser;
-////import orca.ndl.NdlException;
-
-//import com.hyperrealm.kiwi.ui.KTextArea;
-//import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
-//import com.hyperrealm.kiwi.ui.dialog.KMessageDialog;
-
-
-
-
-
-
-
-
-
-
-
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -83,6 +56,7 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 /**
  * Singleton class that holds shared NDLLIB request state. Since dialogs are all modal, no need for locking for now.
  * @author ibaldin
+ * @author pruth
  *
  */
 public class Request extends NDLLIBCommon  {
@@ -177,7 +151,10 @@ public class Request extends NDLLIBCommon  {
 	}
 	
 	public void deleteResource(OrcaResource r){
-		
+		for (OrcaStitch s: r.getStitches()){
+			g.removeEdge(s);
+		}
+		g.removeVertex(r);
 	}
 	
 	public void addStitch(OrcaResource a, OrcaResource b, OrcaStitch s){

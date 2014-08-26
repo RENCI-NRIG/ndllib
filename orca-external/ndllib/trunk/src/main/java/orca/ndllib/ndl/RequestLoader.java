@@ -55,38 +55,14 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestLoader implements INdlRequestModelListener {
-	 
-	 
+	
 	private Request request;
-	
 	private OrcaReservationTerm term = new OrcaReservationTerm();
-	private String reservationDomain = null;
-	private Map<String, OrcaNode> nodes = new HashMap<String, OrcaNode>();
-	private Map<String, Object> links = new HashMap<String, Object>();
-	private Map<String, OrcaNode> interfaceToNode = new HashMap<String, OrcaNode>();
 
-	
 	public RequestLoader(Request request){
 		this.request = request;
 	}
     
-	
-    public Map<String, OrcaNode> getNodes(){
-	return nodes;
-    }
-    
-    public Map<String, Object> getLinks(){
-	return links;
-    }
-
-    public Map<String, OrcaNode> getInterfaceToNode(){
-	return interfaceToNode;
-    }
-    
-    
-    
-    
-
 	/**
 	 * Load from file
 	 * @param f
@@ -131,19 +107,11 @@ public class RequestLoader implements INdlRequestModelListener {
 	 */
 	public boolean loadGraph(String f) {
 		try {
-			System.out.println("loadGraph:1");
 			NdlRequestParser nrp = new NdlRequestParser(f, this);
-			System.out.println("loadGraph:2");
-			//request.logger().debug("Parsing request");
 			nrp.processRequest();
-			System.out.println("loadGraph:3");
 			nrp.freeModel();
 			
 		} catch (Exception e) {
-//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//			ed.setException("Exception encountered while loading graph from string:", e);
-//			ed.setVisible(true);
 			request.logger().error(e);
 			System.out.println("error loading graph");
 			return false;
@@ -151,26 +119,19 @@ public class RequestLoader implements INdlRequestModelListener {
 		
 		return true;
 	}
-	
-	// sometimes getLocalName is not good enough
-	private String getTrueName(Resource r) {
-		if (r == null)
-			return null;
-		
-		return StringUtils.removeStart(r.getURI(), NdlCommons.ORCA_NS);
-	}
+
 
 	public void ndlReservation(Resource i, final OntModel m) {
 		
 		request.logger().debug("Reservation: " + i);
-		/*
+		
 		// try to extract the guid out of the URL
 		String u = i.getURI();
 		String guid = StringUtils.removeEnd(StringUtils.removeStart(u, NdlCommons.ORCA_NS), "#");
 		
 		this.request.setNsGuid(guid);
 		
-		if (i != null) {
+		/*if (i != null) {
 			reservationDomain = RequestSaver.reverseLookupDomain(NdlCommons.getDomain(i));
 			this.request.setOFVersion(NdlCommons.getOpenFlowVersion(i));
 		}*/
@@ -237,28 +198,7 @@ public class RequestLoader implements INdlRequestModelListener {
 				newComputeNode.setNodeType(RequestSaver.reverseNodeTypeLookup(ceType));
 			}
 		}
-		
-		// get proxied ports
-		//List<NdlCommons.ProxyFields> portList = NdlCommons.getNodeProxiedPorts(ce);
-		//String portListString = "";
-		//for (NdlCommons.ProxyFields pf: portList) {
-		//	portListString += pf.proxiedPort + ",";
-		//}
-		
-		//*******  PROBABLY DON'T NEED PORTS ANYMORE... THEY SHOULD ALL BE SET TO OPEN
-		//if (portListString.length() > 0) {
-		//	portListString = portListString.substring(0, portListString.length() - 1);
-		//	newNode.setPortsList(portListString);
-		//}
-		//*************
-		
-		// process interfaces
-		//for (Iterator<Resource> it = interfaces.iterator(); it.hasNext();) {
-		//	Resource intR = it.next();
-		//	interfaceToNode.put(intR.getURI(), newNode);
-		//}
 
-		
 		//process image
 		request.logger().debug("about to load image");
 		if (ceClass.equals(NdlCommons.computeElementClass) || ceClass.equals(NdlCommons.serverCloudClass)){
@@ -274,9 +214,6 @@ public class RequestLoader implements INdlRequestModelListener {
 					//		new URL(imageURL), imageHash), null);
 					//String imName = imageURL + imageHash;  //FIX ME: not right
 					String imName = newComputeNode.getName() + "-image"; //FIX ME: not right:  why do we even have an image name???
-					request.logger().debug("about to load domain: imageURL " + imageURL);
-					request.logger().debug("about to load domain: imageHash " + imageHash);
-					request.logger().debug("about to load domain: imName " + imName);
 					newComputeNode.setImage(imageURL,imageHash,imName);
 				} catch (Exception e) {
 					// FIXME: ?
@@ -285,18 +222,12 @@ public class RequestLoader implements INdlRequestModelListener {
 				}
 			}
 
-
 			// post boot script
 			String script = NdlCommons.getPostBootScript(ce);
 			if ((script != null) && (script.length() > 0)) {
 				newComputeNode.setPostBootScript(script);
 			}
 		}
-
-		nodes.put(ce.getURI(), newNode);
-		
-		// add nodes to the graph
-		//this.request.getGraph().addVertex(newNode);
 	}
 
 	/**
@@ -315,132 +246,19 @@ public class RequestLoader implements INdlRequestModelListener {
 		ol.setBandwidth(bandwidth);
 		ol.setLatency(latency);
 		ol.setLabel(NdlCommons.getLayerLabelLiteral(l));
-		
-		
-		
-		
-/*		// find what nodes it connects (should be two)
-		Iterator<Resource> it = interfaces.iterator(); 
-		
-		if (interfaces.size() == 2) {
-			OrcaLink ol = this.request.addLink(l.getLocalName());
-			ol.setBandwidth(bandwidth);
-			ol.setLatency(latency);
-			ol.setLabel(NdlCommons.getLayerLabelLiteral(l));
-			
-			// point-to-point link
-			// the ends
-			Resource if1 = it.next(), if2 = it.next();
-			
-			if ((if1 != null) && (if2 != null)) {
-				OrcaNode if1Node = interfaceToNode.get(if1.getURI());
-				OrcaNode if2Node = interfaceToNode.get(if2.getURI());
-				
-				// have to be there
-				if ((if1Node != null) && (if2Node != null)) {
-					this.request.getGraph().addEdge(ol, new Pair<OrcaNode>(if1Node, if2Node), EdgeType.UNDIRECTED);
-				}
-			}
-			// for now save only p-to-p links
-			links.put(l.getURI(), ol);
-		} else {
-			// multi-point link or internal vlan of a node group
-			// no more internal VLANs - use Broadcast links instead
-			if (interfaces.size() == 1) {
-				// node group w/ internal vlan
-				OrcaNode ifNode = interfaceToNode.get(it.next().getURI());
-				if (ifNode instanceof OrcaNodeGroup) {
-					OrcaNodeGroup ong = (OrcaNodeGroup)ifNode;
-					ong.setInternalVlan(true);
-					ong.setInternalVlanBw(bandwidth);
-					ong.setInternalVlanLabel(NdlCommons.getLayerLabelLiteral(l));
-				}
-			}
-			
-		}*/
 	}
 
 	public void ndlInterface(Resource intf, OntModel om, Resource conn, Resource node, String ip, String mask) {
 	
 		request.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
-		  
-		request.logger().debug("node: " + node.getLocalName());
-		request.logger().debug("link: " + conn.getLocalName());
-		
+
 		OrcaResource onode = this.request.getResourceByName(node.getLocalName());
 		OrcaResource olink = this.request.getResourceByName(conn.getLocalName());
-		
-		request.logger().debug("onode: " + onode);
-		request.logger().debug("olink: " + olink);
-		
 		OrcaStitchNode2Link stitch = (OrcaStitchNode2Link)onode.stitch(olink);
 		
 		stitch.setIpAddress(ip);  
 		stitch.setNetmask(mask);
-		
-		request.logger().debug("ip: " + ip);
-		request.logger().debug("mask: " + mask);
-		
-		request.logger().debug("NdlCommons.getAddressIP(intf): " + NdlCommons.getAddressMAC(intf));
-		request.logger().debug("NdlCommons.getAddressIP(conn): " + NdlCommons.getAddressIP(conn));
-		request.logger().debug("NdlCommons.getAddressIP(node): " + NdlCommons.getAddressNetmask(node));
-		
-		/* 
-		if (intf == null)
-			return;
-		OrcaNode on = null;
-		OrcaLink ol = null;
-		OrcaCrossconnect oc = null;
-		if (node != null)
-			on = nodes.get(node.getURI());
-		
-		if (conn != null) {
-			Object tmp = links.get(conn.getURI());
-			if (tmp != null) {
-				if (tmp instanceof OrcaLink)
-					ol = (OrcaLink)tmp;
-				if (tmp instanceof OrcaCrossconnect) {
-					oc = (OrcaCrossconnect)tmp;
-				}
-			}
-		}
-		
-		if (on != null) {
-			if (on instanceof OrcaStitchPort) {
-				OrcaStitchPort sp = (OrcaStitchPort)on;
-				sp.setPort(intf.toString());
-				sp.setLabel(NdlCommons.getLayerLabelLiteral(intf));
-			}
-			if (on instanceof OrcaStorageNode) {
-				// this is for shared network storage /ib 07/08/2013
-				return;
-			}
-			// point-to-point
-			if (ol != null) {
-				on.setIp(ol, ip, "" + RequestSaver.netmaskStringToInt(mask));
-				on.setInterfaceName(ol, getTrueName(intf));
-			}
-			// or broadcast
-			if (oc != null) {
-				OrcaStitch fol = this.request.getGraph().findEdge(on, oc); 
-				
-				if (fol != null) {
-					on.setIp(fol, ip, "" + RequestSaver.netmaskStringToInt(mask)); 
-					on.setInterfaceName(ol, getTrueName(conn) + getTrueName(intf));
-				}
-			}
-			else {
-				// this could be a disconnected node group
-				 no more internal vlans
-				if (on instanceof OrcaNodeGroup) {
-					OrcaNodeGroup ong = (OrcaNodeGroup)on;
-					if (ong.getInternalVlan())
-						ong.setInternalIp(ip, "" + RequestSaver.netmaskStringToInt(mask));
-				}
-				
-			}
-				
-		}*/
+	
 	}
 	
 	public void ndlSlice(Resource sl, OntModel m) {
@@ -497,36 +315,11 @@ public class RequestLoader implements INdlRequestModelListener {
 	public void ndlBroadcastConnection(Resource bl, OntModel om,
 			long bandwidth, List<Resource> interfaces) {
 		
-		
 		request.logger().debug("BroadcastConnection: " + bl);
 		
 		OrcaLink ol = this.request.addLink(bl.getLocalName());
 		ol.setBandwidth(bandwidth);
 		//ol.setLatency(latency);
-		ol.setLabel(NdlCommons.getLayerLabelLiteral(bl));
-		
-		/*
-		if (bl == null)
-			return;
-		
-		// find what nodes it connects
-		Iterator<Resource> it = interfaces.iterator(); 
-		
-		OrcaCrossconnect oc = new OrcaCrossconnect(bl.getLocalName());
-		
-		oc.setBandwidth(bandwidth);
-		oc.setLabel(NdlCommons.getLayerLabelLiteral(bl));
-		
-		int count = 0;
-		while(it.hasNext()) {
-			OrcaLink ol = new OrcaLink(bl.getLocalName() + count++);
-			Resource iff = it.next();
-			OrcaNode ifNode = interfaceToNode.get(iff.getURI());
-			if (ifNode != null) {
-				this.request.getGraph().addEdge(ol, new Pair<OrcaNode>(ifNode, oc), EdgeType.UNDIRECTED);
-			}
-		}
-		links.put(bl.getURI(), oc);*/
-		
+		ol.setLabel(NdlCommons.getLayerLabelLiteral(bl));	
 	}
 }
