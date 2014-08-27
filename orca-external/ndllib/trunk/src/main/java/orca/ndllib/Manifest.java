@@ -28,11 +28,15 @@ import orca.ndllib.resources.manifest.Interface;
 import orca.ndllib.resources.request.Node;
 import orca.ndllib.resources.request.RequestResource;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+
+
 
 
 
@@ -50,7 +54,6 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
 public class Manifest extends NDLLIBCommon {
-	protected String manifestString;
 	private Date start = null, end = null, newEnd = null;
 
 	public Manifest(){
@@ -61,14 +64,27 @@ public class Manifest extends NDLLIBCommon {
 			g.removeVertex(n);
 	}
 	
-	public void setManifestString(String s) {
-		manifestString = s;
+	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
+	
+	public void load(String file){
+		ManifestLoader loader = new ManifestLoader(this);
+		loader.loadGraph(new File(file));
+		
 	}
 	
-	public String getManifestString() {
-		return manifestString;
+	public String getRDFString(){
+		return null;
+	}
+
+	/*************************************   debugging ************************************/
+	public String getDebugString(){
+		String rtnStr = "getDebugString: ";
+		rtnStr += g.toString();
+		return rtnStr;
 	}
 	
+	
+
 	public void setManifestTerm(Date s, Date e) {
 		start = s;
 		end = e;
