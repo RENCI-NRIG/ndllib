@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.resources;
+package orca.ndllib.resources.request;
 
 import java.util.Date;
 
@@ -29,7 +29,7 @@ import java.util.Date;
  * @author ibaldin
  *
  */
-public class OrcaReservationTerm {
+public class RequestReservationTerm {
 	// null start date means immediate reservation
 	protected Date start = null;
 	protected int dDays, dHours, dMins;
@@ -37,13 +37,13 @@ public class OrcaReservationTerm {
 	/**
 	 * Default is starting now for 24 hours
 	 */
-	public OrcaReservationTerm() {
+	public RequestReservationTerm() {
 		dDays = 0;
 		dHours = 24;
 		dMins = 0;
 	}
 	
-	public OrcaReservationTerm(int d, int h, int m) {
+	public RequestReservationTerm(int d, int h, int m) {
 		dDays = d;
 		dHours = h;
 		dMins = m;
@@ -51,7 +51,7 @@ public class OrcaReservationTerm {
 			dHours = 24;
 	}
 	
-	public OrcaReservationTerm(Date s, int d, int h, int m) {
+	public RequestReservationTerm(Date s, int d, int h, int m) {
 		start = s;
 		dDays = d;
 		dHours = h;

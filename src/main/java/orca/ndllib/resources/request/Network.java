@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.resources;
+package orca.ndllib.resources.request;
 
 import orca.ndllib.Request;
 
@@ -28,21 +28,21 @@ import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.graph.util.Pair;
 
-public abstract class OrcaLink extends OrcaResource {
+public abstract class Network extends RequestResource {
     protected long bandwidth;
     protected long latency;
     protected String label = null;
     protected String realName = null;
     
 	
-    public OrcaLink(Request request, String name) {
+    public Network(Request request, String name) {
     	super(request);
         this.name = name;
     }
 
     interface ILinkCreator {
-    	public OrcaLink create(String prefix);
-    	public OrcaLink create(String nm, long bw);
+    	public Network create(String prefix);
+    	public Network create(String nm, long bw);
     	public void reset();
     }
     
@@ -85,14 +85,14 @@ public abstract class OrcaLink extends OrcaResource {
     
   
     
-    public static class OrcaLinkFactory implements Factory<OrcaLink> {
+    public static class OrcaLinkFactory implements Factory<Network> {
        private ILinkCreator inc = null;
         
         public OrcaLinkFactory(ILinkCreator i) {
         	inc = i;
         }
         
-        public OrcaLink create() {
+        public Network create() {
         	if (inc == null)
         		return null;
         	synchronized(inc) {

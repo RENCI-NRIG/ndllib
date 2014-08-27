@@ -25,14 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import orca.ndllib.ndl.*;
-import orca.ndllib.resources.OrcaBroadcastLink;
-import orca.ndllib.resources.OrcaComputeNode;
-import orca.ndllib.resources.OrcaLink;
-import orca.ndllib.resources.OrcaNode;
+import orca.ndllib.resources.OrcaInterface;
 import orca.ndllib.resources.OrcaResource;
-import orca.ndllib.resources.OrcaStitch;
-import orca.ndllib.resources.OrcaStitchPort;
-import orca.ndllib.resources.OrcaStorageNode;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -45,7 +39,7 @@ import org.apache.log4j.Logger;
  *
  */
 public abstract class NDLLIBCommon {
-	SparseMultigraph<OrcaResource, OrcaStitch> g = new SparseMultigraph<OrcaResource, OrcaStitch>();
+	SparseMultigraph<OrcaResource, OrcaInterface> g = new SparseMultigraph<OrcaResource, OrcaInterface>();
 	
 	protected static Logger logger;
 	
@@ -65,7 +59,7 @@ public abstract class NDLLIBCommon {
 		return logger;
 	}
 	
-	private SparseMultigraph<OrcaResource, OrcaStitch> getGraph() {
+	private SparseMultigraph<OrcaResource, OrcaInterface> getGraph() {
 		return g;
 	}
 
@@ -81,81 +75,9 @@ public abstract class NDLLIBCommon {
 		return g.getVertices();
 	}
 	
-	public Collection<OrcaStitch> getStitches(){
-		ArrayList<OrcaStitch> stitches = new ArrayList<OrcaStitch>();
-		
-		for (OrcaStitch stitch: g.getEdges()) {
-			stitches.add((OrcaStitch)stitch);
-		}
-		return stitches;
-	}
 	
-	public Collection<OrcaLink> getLinks(){
-		ArrayList<OrcaLink> links = new ArrayList<OrcaLink>();
-		
-		for (OrcaResource resource: g.getVertices()) {
-			if(resource instanceof OrcaLink){
-				links.add((OrcaLink)resource);
-			}
-		}
-		return links;
-	}
-		
+	
 
-	
-	public Collection<OrcaBroadcastLink> getBroadcastLinks(){
-		ArrayList<OrcaBroadcastLink> broadcastlinks = new ArrayList<OrcaBroadcastLink>();
-		
-		for (OrcaResource resource: g.getVertices()) {
-			if(resource instanceof OrcaBroadcastLink){
-				broadcastlinks.add((OrcaBroadcastLink)resource);
-			}
-		}
-		return broadcastlinks;
-	}
-	
-	public Collection<OrcaNode> getNodes(){
-		ArrayList<OrcaNode> nodes = new ArrayList<OrcaNode>();
-		
-		for (OrcaResource resource: g.getVertices()) {
-			if(resource instanceof OrcaNode){
-				nodes.add((OrcaNode)resource);
-			}
-		}
-		return nodes;
-	}
-	
-	public Collection<OrcaComputeNode> getComputeNodes(){
-		ArrayList<OrcaComputeNode> nodes = new ArrayList<OrcaComputeNode>();
-		
-		for (OrcaResource resource: g.getVertices()) {
-			if(resource instanceof OrcaComputeNode){
-				nodes.add((OrcaComputeNode)resource);
-			}
-		}
-		return nodes;
-	}
-	
-	public Collection<OrcaStorageNode> getStorageNodes(){
-		ArrayList<OrcaStorageNode> nodes = new ArrayList<OrcaStorageNode>();
-		
-		for (OrcaResource resource: g.getVertices()) {
-			if(resource instanceof OrcaStorageNode){
-				nodes.add((OrcaStorageNode)resource);
-			}
-		}
-		return nodes;
-	}	
-	public Collection<OrcaStitchPort> getStitchPorts(){
-		ArrayList<OrcaStitchPort> nodes = new ArrayList<OrcaStitchPort>();
-		
-		for (OrcaResource resource: g.getVertices()) {
-			if(resource instanceof OrcaStitchPort){
-				nodes.add((OrcaStitchPort)resource);
-			}
-		}
-		return nodes;
-	}	
 
 }
 	

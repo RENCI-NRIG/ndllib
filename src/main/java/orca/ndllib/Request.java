@@ -24,15 +24,17 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
-import orca.ndllib.resources.OrcaBroadcastLink;
-import orca.ndllib.resources.OrcaComputeNode;
-import orca.ndllib.resources.OrcaLink;
-import orca.ndllib.resources.OrcaNode;
-import orca.ndllib.resources.OrcaReservationTerm;
+import orca.ndllib.resources.OrcaInterface;
 import orca.ndllib.resources.OrcaResource;
-import orca.ndllib.resources.OrcaStitch;
-import orca.ndllib.resources.OrcaStitchPort;
-import orca.ndllib.resources.OrcaStorageNode;
+import orca.ndllib.resources.request.BroadcastNetwork;
+import orca.ndllib.resources.request.ComputeNode;
+import orca.ndllib.resources.request.Network;
+import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.request.RequestReservationTerm;
+import orca.ndllib.resources.request.RequestResource;
+import orca.ndllib.resources.request.Interface;
+import orca.ndllib.resources.request.StitchPort;
+import orca.ndllib.resources.request.StorageNode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,7 +81,7 @@ public class Request extends NDLLIBCommon  {
 	File saveFile = null;
 	
 	// Reservation details
-	private OrcaReservationTerm term;
+	private RequestReservationTerm term;
 	private String resDomainName = null;
 	
 	// save the guid of the namespace of the request if it was loaded
@@ -100,7 +102,7 @@ public class Request extends NDLLIBCommon  {
 		for (OrcaResource r: resources)
 			g.removeVertex(r);
 		resDomainName = null;
-		term = new OrcaReservationTerm();
+		term = new RequestReservationTerm();
 		ofNeededVersion = null;
 		ofUserEmail = null;
 		ofSlicePass = null;
@@ -112,66 +114,79 @@ public class Request extends NDLLIBCommon  {
 	/*************************************   Add/Delete/Get resources  ************************************/
 	
 	
-	public OrcaComputeNode addComputeNode(String name){
-		OrcaComputeNode node = new OrcaComputeNode(this,name);
+	public ComputeNode addComputeNode(String name){
+		ComputeNode node = new ComputeNode(this,name);
 		g.addVertex(node);
 		return node;
 	}
-	public OrcaStorageNode addStorageNode(String name){
-		OrcaStorageNode node = new OrcaStorageNode(this,name);
+	public StorageNode addStorageNode(String name){
+		StorageNode node = new StorageNode(this,name);
 		g.addVertex(node);
 		return node;
 	}
-	public OrcaStitchPort addStitchPort(String name){
-		OrcaStitchPort node = new OrcaStitchPort(this,name);
+	public StitchPort addStitchPort(String name){
+		StitchPort node = new StitchPort(this,name);
 		g.addVertex(node);
 		return node;
 	}
-	public OrcaLink addLink(String name){
-		OrcaBroadcastLink link = new OrcaBroadcastLink(this,name);
+	public Network addLink(String name){
+		BroadcastNetwork link = new BroadcastNetwork(this,name);
 		g.addVertex(link);
 		return link;
 	}
-	public OrcaBroadcastLink addBroadcastLink(String name){
-		OrcaBroadcastLink link = new OrcaBroadcastLink(this,name);
+	public BroadcastNetwork addBroadcastLink(String name){
+		BroadcastNetwork link = new BroadcastNetwork(this,name);
 		g.addVertex(link);
 		return link;
 	}
 	
 	
-	public OrcaResource getResourceByName(String nm){
+	public RequestResource getResourceByName(String nm){
 		if (nm == null)
 			return null;
 		
 		for (OrcaResource n: g.getVertices()) {
-			if (nm.equals(n.getName()))
-				return n;
+			if (nm.equals(n.getName()) && n instanceof RequestResource)
+				return (RequestResource)n;
 		}
 		return null;
 	}
 	
-	public void deleteResource(OrcaResource r){
-		for (OrcaStitch s: r.getStitches()){
+	public void deleteResource(RequestResource r){
+		for (Interface s: r.getStitches()){
 			g.removeEdge(s);
 		}
 		g.removeVertex(r);
 	}
 	
-	public void addStitch(OrcaResource a, OrcaResource b, OrcaStitch s){
+	public void addStitch(RequestResource a, RequestResource b, Interface s){
 		g.addEdge(s, a, b);
+	}
+	
+	public Collection<Interface> getStitches(){
+		ArrayList<Interface> stitches = new ArrayList<Interface>();
+		
+		for (OrcaInterface stitch: g.getEdges()) {
+			if (stitch instanceof Interface){
+				stitches.add((Interface)stitch);
+			}
+		}
+		return stitches;
 	}
 	
 	public void clear(){
 		//reset the whole request
 	}
 	
+	
+	
 	/*************************************   Request level properties:  domain,term,user, etc. ************************************/
 	
-	public OrcaReservationTerm getTerm() {
+	public RequestReservationTerm getTerm() {
 		return term;
 	}
 	
-	public void setTerm(OrcaReservationTerm t) {
+	public void setTerm(RequestReservationTerm t) {
 		term = t;
 	}
 	
@@ -202,6 +217,74 @@ public class Request extends NDLLIBCommon  {
 	public String getOfCtrlUrl() {
 		return ofCtrlUrl;
 	}
+	
+	/**************************************  Add/remove resources *******************************/
+	public Collection<Network> getLinks(){
+		ArrayList<Network> links = new ArrayList<Network>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof Network){
+				links.add((Network)resource);
+			}
+		}
+		return links;
+	}
+		
+
+	
+	public Collection<BroadcastNetwork> getBroadcastLinks(){
+		ArrayList<BroadcastNetwork> broadcastlinks = new ArrayList<BroadcastNetwork>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof BroadcastNetwork){
+				broadcastlinks.add((BroadcastNetwork)resource);
+			}
+		}
+		return broadcastlinks;
+	}
+	
+	public Collection<Node> getNodes(){
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof Node){
+				nodes.add((Node)resource);
+			}
+		}
+		return nodes;
+	}
+	
+	public Collection<ComputeNode> getComputeNodes(){
+		ArrayList<ComputeNode> nodes = new ArrayList<ComputeNode>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof ComputeNode){
+				nodes.add((ComputeNode)resource);
+			}
+		}
+		return nodes;
+	}
+	
+	public Collection<StorageNode> getStorageNodes(){
+		ArrayList<StorageNode> nodes = new ArrayList<StorageNode>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof StorageNode){
+				nodes.add((StorageNode)resource);
+			}
+		}
+		return nodes;
+	}	
+	public Collection<StitchPort> getStitchPorts(){
+		ArrayList<StitchPort> nodes = new ArrayList<StitchPort>();
+		
+		for (OrcaResource resource: g.getVertices()) {
+			if(resource instanceof StitchPort){
+				nodes.add((StitchPort)resource);
+			}
+		}
+		return nodes;
+	}	
 	
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/

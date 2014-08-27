@@ -1,4 +1,4 @@
-package orca.ndllib.resources;
+package orca.ndllib.resources.request;
 
 import java.util.Map.Entry;
 
@@ -29,13 +29,13 @@ import edu.uci.ics.jung.visualization.LayeredIcon;
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-public class OrcaStitchPort extends OrcaNode {
+public class StitchPort extends Node {
 	private static final String STITCHING_PORT = "Stitching port";
 	public static final String STITCHING_DOMAIN_SHORT_NAME = "Stitching domain";
 	protected String label;
 	protected String port;
 	
-	public OrcaStitchPort(Request request, String name) {
+	public StitchPort(Request request, String name) {
 		super(request,name);
 	}
 
@@ -82,10 +82,10 @@ public class OrcaStitchPort extends OrcaNode {
 //	}
 
 	
-	public OrcaStitch stitch(OrcaResource r){
-		OrcaStitch stitch = null;
-		if (r instanceof OrcaLink){
-			stitch = new OrcaStitchNode2Link(this,(OrcaLink)r);		
+	public Interface stitch(RequestResource r){
+		Interface stitch = null;
+		if (r instanceof Network){
+			stitch = new InterfaceNode2Net(this,(Network)r);		
 		} else {
 			//Can't stitch computenode to r
 			//Should throw exception

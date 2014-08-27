@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.resources;
+package orca.ndllib.resources.request;
 
 import java.awt.Color;
 import java.awt.Shape;
@@ -45,7 +45,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 import edu.uci.ics.jung.visualization.renderers.Checkmark;
 
-public abstract class OrcaNode extends OrcaResource {
+public abstract class Node extends RequestResource {
 
 	//protected static final String NOT_SPECIFIED = "Not specified";
 	//public static final String NODE_NETMASK="32";
@@ -108,10 +108,10 @@ public abstract class OrcaNode extends OrcaResource {
 
 	
 	//Node
-	protected Map<OrcaLink, NetworkInterface> interfaces = null;
+	protected Map<Network, NetworkInterface> interfaces = null;
 	
 	interface INodeCreator {
-		public OrcaNode create();
+		public Node create();
 		public void reset();
 	}
 
@@ -129,7 +129,7 @@ public abstract class OrcaNode extends OrcaResource {
 	}
 		
 //basic constructor
-	public OrcaNode(Request request, String name) {
+	public Node(Request request, String name) {
 		super(request);
 		this.name = name; //name should be unique... i think
 		this.domain = null;
@@ -138,7 +138,7 @@ public abstract class OrcaNode extends OrcaResource {
 	}
 
 	
-	public void setMac(OrcaLink e, String mac) {
+	public void setMac(Network e, String mac) {
 		if (e == null)
 			return;
 		if (mac == null) { 
@@ -151,14 +151,14 @@ public abstract class OrcaNode extends OrcaResource {
 		interfaces.get(e).setMacAddress(mac);
 	}
 	
-	public String getMac(OrcaLink e) {
+	public String getMac(Network e) {
 		if ((e == null) || (interfaces.get(e).getMacAddress() == null))
 			return null;
 		return interfaces.get(e).getMacAddress() ;
 	}
 	
 	
-	public void setIp(OrcaLink e, String addr, String netmask) {
+	public void setIp(Network e, String addr, String netmask) {
 		if (e == null)
 			return;
 		//if(interfaces.get(fol) == null)
@@ -172,39 +172,39 @@ public abstract class OrcaNode extends OrcaResource {
 		}
 	}
 	
-	public String getIp(OrcaLink e) {
+	public String getIp(Network e) {
 		if ((e == null) || (interfaces.get(e) == null))
 			return null;
 		return interfaces.get(e).getIpAddress();
 	}
 	
-	public String getNetmask(OrcaLink e) {
+	public String getNetmask(Network e) {
 		if ((e == null) || (interfaces.get(e) == null))
 			return null;
 		return interfaces.get(e).getNetmask();
 	}
 	
-	public void removeIp(OrcaLink e) {
+	public void removeIp(Network e) {
 		if (e == null)
 			return;
 		this.setIp(e, null, null);
 	}
 	
-	public void addDependency(OrcaNode n) {
+	public void addDependency(Node n) {
 		if (n != null) 
 			dependencies.add(n);
 	}
 	
-	public void removeDependency(OrcaNode n) {
+	public void removeDependency(Node n) {
 		if (n != null)
 			dependencies.remove(n);
 	}
 	
 	public void clearDependencies() {
-		dependencies = new HashSet<OrcaResource>();
+		dependencies = new HashSet<RequestResource>();
 	}
 	
-	public boolean isDependency(OrcaNode n) {
+	public boolean isDependency(Node n) {
 		if (n == null)
 			return false;
 		return dependencies.contains(n);
@@ -216,22 +216,22 @@ public abstract class OrcaNode extends OrcaResource {
 	 */
 	public Set<String> getDependencyNames() { 
 		Set<String> ret = new HashSet<String>();
-		for(OrcaResource n: dependencies) 
+		for(RequestResource n: dependencies) 
 			ret.add(n.getName());
 		return ret;
 	}
 	
-	public Set<OrcaResource> getDependencies() {
+	public Set<RequestResource> getDependencies() {
 		return dependencies;
 	}
 	
-	public String getInterfaceName(OrcaLink l) {
+	public String getInterfaceName(Network l) {
 		if (l != null)
 			return interfaces.get(l).getName();
 		return null;
 	}
 	
-	public void setInterfaceName(OrcaLink l, String ifName) {
+	public void setInterfaceName(Network l, String ifName) {
 		if ((l == null) || (ifName == null))
 			return;
 		
@@ -299,7 +299,7 @@ public abstract class OrcaNode extends OrcaResource {
 	 * @author ibaldin
 	 *
 	 */
-    public static class OrcaNodeFactory implements Factory<OrcaNode> {
+    public static class OrcaNodeFactory implements Factory<Node> {
         private INodeCreator inc = null;
         
         public OrcaNodeFactory(INodeCreator i) {
@@ -309,7 +309,7 @@ public abstract class OrcaNode extends OrcaResource {
         /**
          * Create a node or a cloud based on some setting
          */
-        public OrcaNode create() {
+        public Node create() {
         	if (inc == null)
         		return null;
         	synchronized(inc) {

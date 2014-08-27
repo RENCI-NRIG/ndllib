@@ -20,7 +20,7 @@
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-package orca.ndllib.resources;
+package orca.ndllib.resources.request;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +31,7 @@ import orca.ndllib.Request;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
-public class OrcaComputeNode extends OrcaNode {
+public class ComputeNode extends Node {
 	protected class Image{
 		String imageURL;
 		String imageHash;
@@ -84,7 +84,7 @@ public class OrcaComputeNode extends OrcaNode {
 	// list of open ports
 	protected String openPorts = null;
 
-	public OrcaComputeNode(Request request, String name){
+	public ComputeNode(Request request, String name){
 		super(request,name);
 	}
 	
@@ -151,10 +151,10 @@ public class OrcaComputeNode extends OrcaNode {
 	}
 
 		
-	public OrcaStitch stitch(OrcaResource r){
-		OrcaStitch stitch = null;
-		if (r instanceof OrcaLink){
-			stitch = new OrcaStitchNode2Link(this,(OrcaLink)r);
+	public Interface stitch(RequestResource r){
+		Interface stitch = null;
+		if (r instanceof Network){
+			stitch = new InterfaceNode2Net(this,(Network)r);
 		} else {
 			//Can't stitch computenode to r
 			//Should throw exception
