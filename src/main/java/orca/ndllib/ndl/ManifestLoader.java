@@ -83,11 +83,13 @@ public class ManifestLoader implements INdlManifestModelListener,INdlRequestMode
 	
 	
 	public ManifestLoader(Manifest manifest){
+		manifest.logger().debug("new ManifestLoader");
 		this.manifest = manifest;
 		mode = ManifestLoader.REQUEST_MODE;
 	}
 	
 	public boolean loadGraph(File f) {
+		manifest.logger().debug("About to load graph");
 		BufferedReader bin = null; 
 		StringBuilder sb = null;
 		try {
@@ -105,6 +107,7 @@ public class ManifestLoader implements INdlManifestModelListener,INdlRequestMode
 			bin.close();
 
 		} catch (Exception e) {
+			manifest.logger().debug("Exception loading graph: " + e);
 			return false;
 		} 
 		
@@ -120,19 +123,21 @@ public class ManifestLoader implements INdlManifestModelListener,INdlRequestMode
 			// some interfaces belong only to nodes, and no connections
 			// for now do less strict checking so we can get IP info
 			// 07/2012/ib
+			manifest.logger().debug("About to parse request part of manifest");
 			mode = ManifestLoader.REQUEST_MODE;
 			nrp.doLessStrictChecking();
 			nrp.processRequest();
 			nrp.freeModel();
 			
 			// parse as manifest
-			//mode = ManifestLoader.MANIFEST_MODE;
-			//NdlManifestParser nmp = new NdlManifestParser(s, this);
-			//nmp.processManifest();	
-			//nmp.freeModel();			
+			mode = ManifestLoader.MANIFEST_MODE;
+			NdlManifestParser nmp = new NdlManifestParser(s, this);
+			nmp.processManifest();	
+			nmp.freeModel();			
 			//manifest.setManifestTerm(creationTime, expirationTime);
 			
 		} catch (Exception e) {
+			manifest.logger().debug("Excpetion: parsing request part of manifest" + e);
 			return false;
 		} 
 		return true;
@@ -171,16 +176,6 @@ public class ManifestLoader implements INdlManifestModelListener,INdlRequestMode
 		}
 		
 		
-	}
-	private Object ndlManifest_Node(Resource ce, OntModel om, Resource ceClass,
-			List<Resource> interfaces) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	private Object ndlRequest_Node(Resource ce, OntModel om, Resource ceClass,
-			List<Resource> interfaces) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	public void ndlParseComplete() {
 		if(mode == ManifestLoader.REQUEST_MODE){
@@ -325,144 +320,157 @@ public class ManifestLoader implements INdlManifestModelListener,INdlRequestMode
 	private void ndlManifest_Interface(Resource l, OntModel om, Resource conn,
 			Resource node, String ip, String mask) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_Interface");
 	}
 	private void ndlManifest_NetworkConnection(Resource l, OntModel om,
 			long bandwidth, long latency, List<Resource> interfaces) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_NetworkConnection: ****************\n " + l.toString() + "\n\ninterfaces: " + interfaces + "\n*******************");
 	}
 	private void ndlManifest_ParseComplete() {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_ParseComplete");
 	}
 	private void ndlManifest_Reservation(Resource i, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_Reservation");
 	}
 	private void ndlManifest_ReservationTermDuration(Resource d, OntModel m,
 			int years, int months, int days, int hours, int minutes, int seconds) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_ReservationTermDuration");
 	}
 	private void ndlManifest_ReservationResources(List<Resource> r, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_ReservationResources");
 	}
 	private void ndlManifest_ReservationStart(Literal s, OntModel m, Date start) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_ReservationStart");
 	}
 	private void ndlManifest_ReservationEnd(Literal e, OntModel m, Date end) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_ReservationEnd");
 	}
 	private void ndlManifest_NodeDependencies(Resource ni, OntModel m,
 			Set<Resource> dependencies) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_NodeDependencies");
 	}
 	private void ndlManifest_Slice(Resource sl, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_Slice");
 	}
 	private void ndlManifest_BroadcastConnection(Resource bl, OntModel om,
 			long bandwidth, List<Resource> interfaces) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_BroadcastConnection");
 	}
 	private void ndlManifest_Manifest(Resource i, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_Manifest");
 	}
 	private void ndlManifest_LinkConnection(Resource l, OntModel m,
 			List<Resource> interfaces, Resource parent) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_LinkConnection: " + l +  "\nparent: " + parent + "\n\ninterfaces: "+ interfaces);
 	}	
 	private void ndlManifest_CrossConnect(Resource c, OntModel m, long bw,
 			String label, List<Resource> interfaces, Resource parent) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlManifest_CrossConnect");
 	}	
 	private void ndlManifest_NetworkConnectionPath(Resource c, OntModel m,
 			List<List<Resource>> path, List<Resource> roots) {
 		// TODO Auto-generated method stub
-		
-	}
+		manifest.logger().debug("ndlManifest_NetworkConnectionPath");
 	
+	}
+	private Object ndlManifest_Node(Resource ce, OntModel om, Resource ceClass,
+			List<Resource> interfaces) {
+		// TODO Auto-generated method stub
+		manifest.logger().debug("ndlManifest_Node");
+		return null;
+	}	
 	
 	
 	/* Callbacks for request mode */
 	private void ndlRequest_NetworkConnection(Resource l, OntModel om,
 			long bandwidth, long latency, List<Resource> interfaces) {
 		// TODO Auto-generated method stub
+		manifest.logger().debug("ndlRequest_NetworkConnection: ****************\n " + l.toString() + "\n\ninterfaces: " + interfaces + "\n*******************");
 		
 	}
 	private void ndlRequest_Interface(Resource l, OntModel om, Resource conn,
 			Resource node, String ip, String mask) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_Interface");
 	}
 	private void ndlRequest_ParseComplete() {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_ParseComplete");
 	}
 	private void ndlRequest_Reservation(Resource i, OntModel m) {
 		// TODO Auto-generated method stub
+		manifest.logger().debug("ndlRequest_Reservation");
 		
 	}
 	private void ndlRequest_ReservationTermDuration(Resource d, OntModel m,
 			int years, int months, int days, int hours, int minutes, int seconds) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_ReservationTermDuration");
 	}	
 	private void ndlRequest_ReservationResources(List<Resource> r, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_ReservationResources");
 	}
 	private void ndlRequest_ReservationStart(Literal s, OntModel m, Date start) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_ReservationStart");
 	}
 	private void ndlRequest_ReservationEnd(Literal e, OntModel m, Date end) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_ReservationEnd");
 	}
 	private void ndlRequest_NodeDependencies(Resource ni, OntModel m,
 			Set<Resource> dependencies) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_NodeDependencies");
 	}		
 	private void ndlRequest_Slice(Resource sl, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_Slice");
 	}
 	private void ndlRequest_BroadcastConnection(Resource bl, OntModel om,
 			long bandwidth, List<Resource> interfaces) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_BroadcastConnection");
 	}	
 	private void ndlRequest_Manifest(Resource i, OntModel m) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_Manifest");
 	}	
 	private void ndlRequest_LinkConnection(Resource l, OntModel m,
 			List<Resource> interfaces, Resource parent) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_LinkConnection");
 	}
 	private void ndlRequest_CrossConnect(Resource c, OntModel m, long bw,
 			String label, List<Resource> interfaces, Resource parent) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_CrossConnect");
 	}
 	private void ndlRequest_NetworkConnectionPath(Resource c, OntModel m,
 			List<List<Resource>> path, List<Resource> roots) {
 		// TODO Auto-generated method stub
-		
+		manifest.logger().debug("ndlRequest_NetworkConnectionPath");
 	}
-
+	private Object ndlRequest_Node(Resource ce, OntModel om, Resource ceClass,
+			List<Resource> interfaces) {
+		// TODO Auto-generated method stub
+		manifest.logger().debug("ndlRequest_Node");
+		return null;
+	}
 
 
 

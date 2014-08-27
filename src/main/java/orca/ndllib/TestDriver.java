@@ -23,7 +23,8 @@ public class TestDriver {
     	System.out.println("ndllib TestDriver: START");
     	//testLoad();
     	//testSave();
-    	testLoadAndSave();
+    	//testLoadAndSave();
+    	testLoadManifest();
     	System.out.println("ndllib TestDriver: END");
     	
 	}
@@ -112,6 +113,26 @@ public class TestDriver {
 		
 	}
 	
+	public static void testLoadManifest(){
+		Manifest m = new Manifest();
+		m.logger().debug("testLoadManifest");
+		m.load("/home/geni-orca/test-requests/test-load-manifest.rdf");
+		m.logger().debug(m.getDebugString());
+	}
+	
+	public static void printManifest2Log(Manifest m){
+		m.logger.debug("******************** START printManifest2Log *********************");
+		//r.logger().debug(r.getRequestDebugString());
+		/*for (Node node : m.getNodes()){
+			m.logger.debug("PRUTH:" + node);
+		}
+		
+		for (Network link : m.getLinks()){
+			m.logger.debug("PRUTH:" + link);
+		}*/
+		m.logger.debug("******************** END printManifest2Log *********************");
+	}
+	
 	public static void printRequest2Log(Request r){
 		r.logger.debug("******************** START printReqest2Log *********************");
 		//r.logger().debug(r.getRequestDebugString());
@@ -125,9 +146,6 @@ public class TestDriver {
 		r.logger.debug("******************** END printReqest2Log *********************");
 	}
 	
-	public static void testLoadManifest(){
-		Manifest m = new Manifest();
-		
-	}
+
 	
 }
