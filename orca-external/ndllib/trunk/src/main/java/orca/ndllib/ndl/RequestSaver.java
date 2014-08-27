@@ -39,15 +39,15 @@ import java.util.Map;
 
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
-import orca.ndllib.resources.OrcaBroadcastLink;
-import orca.ndllib.resources.OrcaLink;
-import orca.ndllib.resources.OrcaNode;
-import orca.ndllib.resources.OrcaComputeNode;
-import orca.ndllib.resources.OrcaResource;
-import orca.ndllib.resources.OrcaStitch;
-import orca.ndllib.resources.OrcaStitchNode2Link;
-import orca.ndllib.resources.OrcaStitchPort;
-import orca.ndllib.resources.OrcaStorageNode;
+import orca.ndllib.resources.request.BroadcastNetwork;
+import orca.ndllib.resources.request.ComputeNode;
+import orca.ndllib.resources.request.Network;
+import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.request.RequestResource;
+import orca.ndllib.resources.request.Interface;
+import orca.ndllib.resources.request.InterfaceNode2Net;
+import orca.ndllib.resources.request.StitchPort;
+import orca.ndllib.resources.request.StorageNode;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlException;
 import orca.ndl.NdlGenerator;
@@ -57,6 +57,7 @@ import org.apache.commons.lang.StringUtils;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Resource;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
+
 
 
 
@@ -105,7 +106,7 @@ public class RequestSaver {
 		dm.put("UH (Houston, TX USA) XO Rack", "uhvmsite.rdf#uhvmsite");
 		dm.put("NCSU (Raleigh, NC USA) XO Rack", "ncsuvmsite.rdf#ncsuvmsite");
 		dm.put("UvA (Amsterdam, The Netherlands) XO Rack", "uvanlvmsite.rdf#uvanlvmsite");
-		dm.put(OrcaStitchPort.STITCHING_DOMAIN_SHORT_NAME, "orca.rdf#Stitching");
+		dm.put(StitchPort.STITCHING_DOMAIN_SHORT_NAME, "orca.rdf#Stitching");
 
 		domainMap = Collections.unmodifiableMap(dm);
 	}
@@ -246,13 +247,13 @@ public class RequestSaver {
 
 			Individual ni;
 			//Handle stitchports
-			for (OrcaStitchPort sp: request.getStitchPorts()){
+			for (StitchPort sp: request.getStitchPorts()){
 				ni = ngen.declareStitchingNode(sp.getName());
 				ngen.addResourceToReservation(reservation, ni);
 			}
 
 			//Handle storage nodes
-			for (OrcaStorageNode snode: request.getStorageNodes()){
+			for (StorageNode snode: request.getStorageNodes()){
 				ni = ngen.declareISCSIStorageNode(snode.getName(), 
 						snode.getCapacity(),
 						snode.getFSType(), snode.getFSParam(), snode.getMntPoint(), 
@@ -274,7 +275,7 @@ public class RequestSaver {
 			* want it to. 
 			*  
 			*/ 
-			for (OrcaComputeNode cn: request.getComputeNodes()){
+			for (ComputeNode cn: request.getComputeNodes()){
 				// nodes and nodegroups
 				if (cn.getNodeCount() > 0){
 					if (cn.getSplittable())
@@ -344,7 +345,7 @@ public class RequestSaver {
 			* to the network  
 			*  
 			*/ 
-			for (OrcaBroadcastLink e: request.getBroadcastLinks()) {
+			for (BroadcastNetwork e: request.getBroadcastLinks()) {
 				request.logger().debug("saving OrcaBroadcastLink");
 				//checkLinkSanity(e);
 				
@@ -364,9 +365,9 @@ public class RequestSaver {
 			}
 
 			//Process stitches
-			for (OrcaStitch stitch: request.getStitches()){
-				if (stitch instanceof OrcaStitchNode2Link){
-					OrcaStitchNode2Link stitch_n2l = (OrcaStitchNode2Link)stitch;
+			for (Interface stitch: request.getStitches()){
+				if (stitch instanceof InterfaceNode2Net){
+					InterfaceNode2Net stitch_n2l = (InterfaceNode2Net)stitch;
 					Individual ei = ngen.getRequestIndividual(stitch_n2l.getLink().getName());
 					processNodeAndLink(stitch_n2l, ei);
 				} else {
@@ -434,16 +435,16 @@ public class RequestSaver {
 	 * @param edgeI
 	 * @throws NdlException
 	 */
-	private void processNodeAndLink(OrcaStitchNode2Link s, Individual edgeI) throws NdlException {
-		OrcaNode n = s.getNode();  
-		OrcaLink e = s.getLink();
+	private void processNodeAndLink(InterfaceNode2Net s, Individual edgeI) throws NdlException {
+		Node n = s.getNode();  
+		Network e = s.getLink();
  		
 		Individual intI;
 		
 		//addLinkStorageDependency(n, e);
 		
-		if (n instanceof OrcaStitchPort) {
-			OrcaStitchPort sp = (OrcaStitchPort)n;
+		if (n instanceof StitchPort) {
+			StitchPort sp = (StitchPort)n;
 			if ((sp.getPort() == null) || (sp.getPort().length() == 0) || 
 					(sp.getLabel() == null) || (sp.getLabel().length() == 0))
 				throw new NdlException("URL and label must be specified in StitchPort");
@@ -556,8 +557,8 @@ public class RequestSaver {
 	/**************************************  Helper Function ***************************************/	
 	
 	// use different maps to try to do a reverse lookup
-	private static String reverseLookupDomain_(Resource dom, Map<String, String> m, String suffix) {
-		String domainName = StringUtils.removeStart(dom.getURI(), NdlCommons.ORCA_NS);
+	private static String reverseLookupDomain_(Resource domain, Map<String, String> m, String suffix) {
+		String domainName = StringUtils.removeStart(domain.getURI(), NdlCommons.ORCA_NS);
 		if (domainName == null)
 			return null;
 		
@@ -589,25 +590,25 @@ public class RequestSaver {
 	
 	/**
 	 * Do a reverse lookup on domain (NDL -> short name)
-	 * @param dom
+	 * @param domain
 	 * @return
 	 */
-	public static String reverseLookupDomain(Resource dom) {
-		if (dom == null)
+	public static String reverseLookupDomain(Resource domain) {
+		if (domain == null)
 			return null;
 		// strip off name space and "/Domain"
-		String domainName = StringUtils.removeStart(dom.getURI(), NdlCommons.ORCA_NS);
+		String domainName = StringUtils.removeStart(domain.getURI(), NdlCommons.ORCA_NS);
 		if (domainName == null)
 			return null;
 		
 		// try vm domain, then net domain
-		String mapping = reverseLookupDomain_(dom, domainMap, "/Domain");
+		String mapping = reverseLookupDomain_(domain, domainMap, "/Domain");
 		if (mapping == null)
-			mapping = reverseLookupDomain_(dom, domainMap, "/Domain/vm");
+			mapping = reverseLookupDomain_(domain, domainMap, "/Domain/vm");
 		if (mapping == null) 
-			mapping = reverseLookupDomain_(dom, netDomainMap, "/Domain/vlan");
+			mapping = reverseLookupDomain_(domain, netDomainMap, "/Domain/vlan");
 		if (mapping == null)
-			mapping = reverseLookupDomain_(dom, domainMap, "/Domain/lun");
+			mapping = reverseLookupDomain_(domain, domainMap, "/Domain/lun");
 		
 		return mapping;
 		//return null;

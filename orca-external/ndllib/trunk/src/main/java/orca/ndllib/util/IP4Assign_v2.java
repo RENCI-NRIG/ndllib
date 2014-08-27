@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import com.google.common.net.InetAddresses;
 
-import orca.ndllib.resources.*;
+import orca.ndllib.resources.request.*;
 import orca.ndllib.util.*;
 import orca.ndl.*;
 

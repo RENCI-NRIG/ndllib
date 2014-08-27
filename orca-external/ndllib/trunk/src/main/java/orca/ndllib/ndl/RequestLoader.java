@@ -36,7 +36,14 @@ import java.util.Set;
 
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
-import orca.ndllib.resources.*;
+import orca.ndllib.resources.request.ComputeNode;
+import orca.ndllib.resources.request.InterfaceNode2Net;
+import orca.ndllib.resources.request.Network;
+import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.request.RequestReservationTerm;
+import orca.ndllib.resources.request.RequestResource;
+import orca.ndllib.resources.request.StitchPort;
+import orca.ndllib.resources.request.StorageNode;
 import orca.ndl.INdlRequestModelListener;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlRequestParser;
@@ -46,10 +53,6 @@ import org.apache.commons.lang.StringUtils;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
-//import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
-
-
-
 
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -57,7 +60,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class RequestLoader implements INdlRequestModelListener {
 	
 	private Request request;
-	private OrcaReservationTerm term = new OrcaReservationTerm();
+	private RequestReservationTerm term = new RequestReservationTerm();
 
 	public RequestLoader(Request request){
 		this.request = request;
@@ -157,14 +160,14 @@ public class RequestLoader implements INdlRequestModelListener {
 		if (ce == null)
 			return;
 		
-		OrcaNode newNode;
-		OrcaComputeNode newComputeNode = null;
+		Node newNode;
+		ComputeNode newComputeNode = null;
 		if (ceClass.equals(NdlCommons.computeElementClass)){
 			newNode = this.request.addComputeNode(ce.getLocalName());
-			newComputeNode = (OrcaComputeNode)newNode;
+			newComputeNode = (ComputeNode)newNode;
 		} else { 
 			if (ceClass.equals(NdlCommons.serverCloudClass)) {
-				OrcaComputeNode newNodeGroup = this.request.addComputeNode(ce.getLocalName());
+				ComputeNode newNodeGroup = this.request.addComputeNode(ce.getLocalName());
 				newComputeNode = newNodeGroup;
 				int ceCount = NdlCommons.getNumCE(ce);
 				if (ceCount > 0)
@@ -173,11 +176,11 @@ public class RequestLoader implements INdlRequestModelListener {
 				newNode = newNodeGroup;
 			} else if (NdlCommons.isStitchingNode(ce)) {
 				// stitching node
-				OrcaStitchPort sp = this.request.addStitchPort(ce.getLocalName());
+				StitchPort sp = this.request.addStitchPort(ce.getLocalName());
 				newNode = sp;
 			} else if (NdlCommons.isNetworkStorage(ce)) {
 				// storage node
-				OrcaStorageNode snode = this.request.addStorageNode(ce.getLocalName());
+				StorageNode snode = this.request.addStorageNode(ce.getLocalName());
 				snode.setCapacity(NdlCommons.getResourceStorageCapacity(ce));
 				newNode = snode;
 			} else // default just a node
@@ -242,7 +245,7 @@ public class RequestLoader implements INdlRequestModelListener {
 		if (l == null)
 			return;
 		
-		OrcaLink ol = this.request.addLink(l.getLocalName());
+		Network ol = this.request.addLink(l.getLocalName());
 		ol.setBandwidth(bandwidth);
 		ol.setLatency(latency);
 		ol.setLabel(NdlCommons.getLayerLabelLiteral(l));
@@ -252,9 +255,9 @@ public class RequestLoader implements INdlRequestModelListener {
 	
 		request.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
 
-		OrcaResource onode = this.request.getResourceByName(node.getLocalName());
-		OrcaResource olink = this.request.getResourceByName(conn.getLocalName());
-		OrcaStitchNode2Link stitch = (OrcaStitchNode2Link)onode.stitch(olink);
+		RequestResource onode = this.request.getResourceByName(node.getLocalName());
+		RequestResource olink = this.request.getResourceByName(conn.getLocalName());
+		InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
 		
 		stitch.setIpAddress(ip);  
 		stitch.setNetmask(mask);
@@ -317,7 +320,7 @@ public class RequestLoader implements INdlRequestModelListener {
 		
 		request.logger().debug("BroadcastConnection: " + bl);
 		
-		OrcaLink ol = this.request.addLink(bl.getLocalName());
+		Network ol = this.request.addLink(bl.getLocalName());
 		ol.setBandwidth(bandwidth);
 		//ol.setLatency(latency);
 		ol.setLabel(NdlCommons.getLayerLabelLiteral(bl));	

@@ -1,4 +1,4 @@
-package orca.ndllib.resources;
+package orca.ndllib.resources.request;
 
 import java.util.Map;
 
@@ -13,7 +13,7 @@ import edu.uci.ics.jung.visualization.LayeredIcon;
  * @author ibaldin
  *
  */
-public class OrcaStorageNode extends OrcaNode {
+public class StorageNode extends Node {
 	private static final String STORAGE = "Storage";
 	protected long capacity = 0;
 	// is this a storage on shared or dedicated network?
@@ -21,7 +21,7 @@ public class OrcaStorageNode extends OrcaNode {
 	protected boolean doFormat = true;
 	protected String hasFSType = "ext4", hasFSParam = "-F -b 2048", hasMntPoint = "/mnt/target"; 
 	
-	public OrcaStorageNode(Request request, String name) {
+	public StorageNode(Request request, String name) {
 		super(request, name);
 	}
 	
@@ -92,10 +92,10 @@ public class OrcaStorageNode extends OrcaNode {
 	}
 	
 	
-	public OrcaStitch stitch(OrcaResource r){
-		OrcaStitch stitch = null;
-		if (r instanceof OrcaLink){
-			stitch = new OrcaStitchNode2Link(this,(OrcaLink)r);		
+	public Interface stitch(RequestResource r){
+		Interface stitch = null;
+		if (r instanceof Network){
+			stitch = new InterfaceNode2Net(this,(Network)r);		
 		} else {
 			//Can't stitch storage to r
 			//Should throw exception

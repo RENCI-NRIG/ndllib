@@ -23,14 +23,19 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
-import orca.ndllib.resources.OrcaNode;
 import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.manifest.Interface;
+import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.request.RequestResource;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+
+
 
 
 
@@ -148,6 +153,12 @@ public class Manifest extends NDLLIBCommon {
 			return m.substring(ind);
 		else
 			return null;
+	}
+
+	public void addStitch(orca.ndllib.resources.manifest.Node orcaComputeNode,
+			orca.ndllib.resources.manifest.ManifestResource r, Interface stitch) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 //	void queryManifest() {
