@@ -23,6 +23,7 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
+import orca.ndllib.resources.OrcaInterface;
 import orca.ndllib.resources.OrcaResource;
 import orca.ndllib.resources.manifest.Interface;
 import orca.ndllib.resources.request.Node;
@@ -30,6 +31,7 @@ import orca.ndllib.resources.request.RequestResource;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -45,8 +47,11 @@ import java.util.Set;
 
 
 
+
+
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
@@ -56,19 +61,32 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 public class Manifest extends NDLLIBCommon {
 	private Date start = null, end = null, newEnd = null;
 
+	SparseMultigraph<OrcaResource, OrcaInterface> manifestGraph = new SparseMultigraph<OrcaResource, OrcaInterface>();
+	
 	public Manifest(){
 		super();
 				
-		Set<OrcaResource> nodes = new HashSet<OrcaResource>(g.getVertices());
+		Set<OrcaResource> nodes = new HashSet<OrcaResource>(manifestGraph.getVertices());
 		for (OrcaResource n: nodes)
-			g.removeVertex(n);
+			manifestGraph.removeVertex(n);
 	}
+	
+	
+	//public Collection<OrcaResource> getRequestResources(){
+	//	return requestGraph.getVertices();
+	//}
+
+	
+	private SparseMultigraph<OrcaResource, OrcaInterface> getManifestGraph() {
+		return manifestGraph;
+	}
+	
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
 	public void load(String file){
-		ManifestLoader loader = new ManifestLoader(this);
-		loader.loadGraph(new File(file));
+		ManifestLoader mloader = new ManifestLoader(this);
+		mloader.loadGraph(new File(file));
 		
 	}
 	
@@ -76,10 +94,13 @@ public class Manifest extends NDLLIBCommon {
 		return null;
 	}
 
+	
+	
+	
 	/*************************************   debugging ************************************/
 	public String getDebugString(){
 		String rtnStr = "getDebugString: ";
-		rtnStr += g.toString();
+		rtnStr += "ManifestGraph:\n" + manifestGraph.toString();
 		return rtnStr;
 	}
 	

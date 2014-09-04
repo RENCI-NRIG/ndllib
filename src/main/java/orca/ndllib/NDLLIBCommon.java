@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  *
  */
 public abstract class NDLLIBCommon {
-	SparseMultigraph<OrcaResource, OrcaInterface> g = new SparseMultigraph<OrcaResource, OrcaInterface>();
+	
 	
 	protected static Logger logger;
 	
@@ -59,9 +59,7 @@ public abstract class NDLLIBCommon {
 		return logger;
 	}
 	
-	private SparseMultigraph<OrcaResource, OrcaInterface> getGraph() {
-		return g;
-	}
+	
 
 	public void setSaveDir(String s) {
 		saveDirectory = s;
@@ -71,10 +69,7 @@ public abstract class NDLLIBCommon {
 		return saveDirectory;
 	}
 	
-	public Collection<OrcaResource> getResources(){
-		return g.getVertices();
-	}
-	
+
 	
 	
 

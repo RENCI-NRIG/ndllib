@@ -109,7 +109,7 @@ public abstract class Node extends ManifestResource {
 
 	
 	//Node
-	protected Map<Link, NetworkInterface> interfaces = null;
+	protected Map<LinkConnection, NetworkInterface> interfaces = null;
 	
 	interface INodeCreator {
 		public Node create();
@@ -139,7 +139,7 @@ public abstract class Node extends ManifestResource {
 	}
 
 	
-	public void setMac(Link e, String mac) {
+	public void setMac(LinkConnection e, String mac) {
 		if (e == null)
 			return;
 		if (mac == null) { 
@@ -152,14 +152,14 @@ public abstract class Node extends ManifestResource {
 		interfaces.get(e).setMacAddress(mac);
 	}
 	
-	public String getMac(Link e) {
+	public String getMac(LinkConnection e) {
 		if ((e == null) || (interfaces.get(e).getMacAddress() == null))
 			return null;
 		return interfaces.get(e).getMacAddress() ;
 	}
 	
 	
-	public void setIp(Link e, String addr, String netmask) {
+	public void setIp(LinkConnection e, String addr, String netmask) {
 		if (e == null)
 			return;
 		//if(interfaces.get(fol) == null)
@@ -173,19 +173,19 @@ public abstract class Node extends ManifestResource {
 		}
 	}
 	
-	public String getIp(Link e) {
+	public String getIp(LinkConnection e) {
 		if ((e == null) || (interfaces.get(e) == null))
 			return null;
 		return interfaces.get(e).getIpAddress();
 	}
 	
-	public String getNetmask(Link e) {
+	public String getNetmask(LinkConnection e) {
 		if ((e == null) || (interfaces.get(e) == null))
 			return null;
 		return interfaces.get(e).getNetmask();
 	}
 	
-	public void removeIp(Link e) {
+	public void removeIp(LinkConnection e) {
 		if (e == null)
 			return;
 		this.setIp(e, null, null);
@@ -226,13 +226,13 @@ public abstract class Node extends ManifestResource {
 		return dependencies;
 	}
 	
-	public String getInterfaceName(Link l) {
+	public String getInterfaceName(LinkConnection l) {
 		if (l != null)
 			return interfaces.get(l).getName();
 		return null;
 	}
 	
-	public void setInterfaceName(Link l, String ifName) {
+	public void setInterfaceName(LinkConnection l, String ifName) {
 		if ((l == null) || (ifName == null))
 			return;
 		

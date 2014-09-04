@@ -7,7 +7,7 @@ package orca.ndllib.resources.manifest;
  * @author geni-orca
  *
  */
-public class InterfaceNode2Link extends Interface{
+public class InterfaceNode2NetworkConnection extends Interface{
 	//private OrcaNode a;  -- from OrcaStitch
 	//private OrcaLink b;  -- from OrcaStitch
 
@@ -15,7 +15,7 @@ public class InterfaceNode2Link extends Interface{
 	private String netmask;
 	private String macAddress;
 	
-	public InterfaceNode2Link(Node n, Link l){
+	public InterfaceNode2NetworkConnection(Node n, LinkConnection l){
 		super(n,l);
 	}
 	
@@ -25,10 +25,10 @@ public class InterfaceNode2Link extends Interface{
 	public void setNode(Node node) {
 		this.a = node;
 	}
-	public Link getLink() {
-		return (Link)b;
+	public LinkConnection getLink() {
+		return (LinkConnection)b;
 	}
-	public void setLink(Link link) {
+	public void setLink(LinkConnection link) {
 		this.b = link;
 	}
 	public String getIpAddress() {
