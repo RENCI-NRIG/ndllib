@@ -29,21 +29,21 @@ import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.graph.util.Pair;
 
-public abstract class Link extends ManifestResource {
+public abstract class LinkConnection extends ManifestResource {
     protected long bandwidth;
     protected long latency;
     protected String label = null;
     protected String realName = null;
     
 	
-    public Link(Manifest manifest, String name) {
+    public LinkConnection(Manifest manifest, String name) {
     	super(manifest);
         this.name = name;
     }
 
     interface ILinkCreator {
-    	public Link create(String prefix);
-    	public Link create(String nm, long bw);
+    	public LinkConnection create(String prefix);
+    	public LinkConnection create(String nm, long bw);
     	public void reset();
     }
     
@@ -86,14 +86,14 @@ public abstract class Link extends ManifestResource {
     
   
     
-    public static class OrcaLinkFactory implements Factory<Link> {
+    public static class OrcaLinkFactory implements Factory<LinkConnection> {
        private ILinkCreator inc = null;
         
         public OrcaLinkFactory(ILinkCreator i) {
         	inc = i;
         }
         
-        public Link create() {
+        public LinkConnection create() {
         	if (inc == null)
         		return null;
         	synchronized(inc) {

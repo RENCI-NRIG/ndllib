@@ -89,6 +89,7 @@ public class RequestLoader implements INdlRequestModelListener {
 			
 			NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
 			request.logger().debug("Parsing request");
+			nrp.doLessStrictChecking(); //TODO: Should be removed...
 			nrp.processRequest();
 			
 			nrp.freeModel();
@@ -255,13 +256,26 @@ public class RequestLoader implements INdlRequestModelListener {
 	
 		request.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
 
-		RequestResource onode = this.request.getResourceByName(node.getLocalName());
-		RequestResource olink = this.request.getResourceByName(conn.getLocalName());
-		InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
+		RequestResource onode = null;
+		if(node != null){
+			onode = this.request.getResourceByName(node.getLocalName());
+		} else {
+			request.logger().warn("ndlInterface with null node: " + intf);
+		}
+		RequestResource olink = null;
+		if(conn != null){
+			olink = this.request.getResourceByName(conn.getLocalName());
+		} else{
+			request.logger().warn("ndlInterface with null connection: " + intf);
+		}
 		
-		stitch.setIpAddress(ip);  
-		stitch.setNetmask(mask);
-	
+		if(onode != null){
+			InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
+			stitch.setIpAddress(ip);  
+			stitch.setNetmask(mask);
+		} else {
+			request.logger().warn("ndlInterface with null missing node:  Interface: " + intf + ", Node: " + node);	
+		}
 	}
 	
 	public void ndlSlice(Resource sl, OntModel m) {

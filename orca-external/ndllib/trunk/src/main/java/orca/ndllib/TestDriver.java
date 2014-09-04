@@ -31,7 +31,7 @@ public class TestDriver {
 	
 	public static  void test1(){
 		System.out.println("ndllib TestDriver: test1");
-		Request r = new Request();
+		Slice r = new Slice();
 		
 		
 		ComputeNode   cn = r.addComputeNode("ComputeNode0");
@@ -45,7 +45,7 @@ public class TestDriver {
 		sp.stitch(bl);
 		
 		System.out.println("Output:");
-		System.out.println("Request: \n" + r.getRequestDebugString());
+		System.out.println("Request: \n" + r.getRequestString());
 		
 		System.out.println("\nNodes:");
 		System.out.println("ComputeNode:  " + cn);
@@ -60,25 +60,24 @@ public class TestDriver {
 	
 	public static void testLoad(){
 		//r.logger("ndllib TestDriver: testLoad");
-		Request r = new Request();
+		Slice s = new Slice();
 		
-		r.logger().debug("logger test");
+		s.logger().debug("logger test");
 		
-		r.loadRequest("/home/geni-orca/test-requests/all-types.rdf");
-		//r.loadRequest("/home/geni-orca/test-requests/test.rdf");
+		//s.load("/home/geni-orca/test-requests/all-types.rdf");
+		s.load("/home/geni-orca/test-requests/test.rdf");
 	
-		r.logger().debug(r.getRequestDebugString());
-		for (Node node : r.getNodes()){
-			r.logger.debug("PRUTH:" + node);
-		}
+		s.logger().debug("******************** START REQUEST *********************");
+		s.logger().debug(s.getRequestString());
 		
-		for (Network link : r.getLinks()){
-			r.logger.debug("PRUTH:" + link);
-		}
+		s.logger().debug("******************** START MANIFEST *********************");
+		s.logger().debug(s.getManifestString());
+		
+		s.logger().debug("******************** END PRINTING *********************");
 	}
 	
 	public static void testSave(){
-		Request r = new Request();
+		Slice r = new Slice();
 		
 		ComputeNode cn = r.addComputeNode("Node42");
 		cn.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
@@ -86,42 +85,49 @@ public class TestDriver {
 		cn.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
 		cn.setPostBootScript("post boot script");
 		
-		r.logger().debug(r.getRequestDebugString());
-		for (Node node : r.getNodes()){
+		r.logger().debug(r.getRequestString());
+		for (Node node : r.getRequestNodes()){
 			r.logger.debug("PRUTH:" + node);
 		}
 		
-		for (Network link : r.getLinks()){
+		for (Network link : r.getRequestLinks()){
 			r.logger.debug("PRUTH:" + link);
 		}
 		
 		
-		r.saveRequest("/home/geni-orca/test-requests/test-save.rdf");
+		r.save("/home/geni-orca/test-requests/test-save.rdf");
 		
 	}
 	
 	public static void testLoadAndSave(){
-		Request r = new Request();
+		Slice s = new Slice();
 		
 		
-		r.loadRequest("/home/geni-orca/test-requests/test-load.rdf");
+		s.load("/home/geni-orca/test-requests/test-load-request.rdf");
 		
-		printRequest2Log(r);
+		printRequest2Log(s);
 		
-		r.saveRequest("/home/geni-orca/test-requests/test-save.rdf");
+		s.save("/home/geni-orca/test-requests/test-save-request.rdf");
 		
 		
 	}
 	
 	public static void testLoadManifest(){
-		Manifest m = new Manifest();
-		m.logger().debug("testLoadManifest");
-		m.load("/home/geni-orca/test-requests/test-load-manifest.rdf");
-		m.logger().debug(m.getDebugString());
+		Slice s = new Slice();
+		s.logger().debug("testLoadManifest");
+		s.load("/home/geni-orca/test-requests/test-load-manifest.rdf");
+		
+		s.logger().debug("******************** START REQUEST *********************");
+		s.logger().debug(s.getRequestString());
+		
+		s.logger().debug("******************** START MANIFEST *********************");
+		s.logger().debug(s.getManifestString());
+		
+		s.logger().debug("******************** END PRINTING *********************");
 	}
 	
-	public static void printManifest2Log(Manifest m){
-		m.logger.debug("******************** START printManifest2Log *********************");
+	public static void printManifest2Log(Slice s){
+		s.logger.debug("******************** START printManifest2Log *********************");
 		//r.logger().debug(r.getRequestDebugString());
 		/*for (Node node : m.getNodes()){
 			m.logger.debug("PRUTH:" + node);
@@ -130,20 +136,20 @@ public class TestDriver {
 		for (Network link : m.getLinks()){
 			m.logger.debug("PRUTH:" + link);
 		}*/
-		m.logger.debug("******************** END printManifest2Log *********************");
+		s.logger.debug("******************** END printManifest2Log *********************");
 	}
 	
-	public static void printRequest2Log(Request r){
-		r.logger.debug("******************** START printReqest2Log *********************");
+	public static void printRequest2Log(Slice s){
+		s.logger.debug("******************** START printReqest2Log *********************");
 		//r.logger().debug(r.getRequestDebugString());
-		for (Node node : r.getNodes()){
-			r.logger.debug("PRUTH:" + node);
+		for (Node node : s.getRequestNodes()){
+			s.logger.debug("PRUTH:" + node);
 		}
 		
-		for (Network link : r.getLinks()){
-			r.logger.debug("PRUTH:" + link);
+		for (Network link : s.getRequestLinks()){
+			s.logger.debug("PRUTH:" + link);
 		}
-		r.logger.debug("******************** END printReqest2Log *********************");
+		s.logger.debug("******************** END printReqest2Log *********************");
 	}
 	
 

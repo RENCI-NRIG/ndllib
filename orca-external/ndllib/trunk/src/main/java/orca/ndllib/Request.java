@@ -48,6 +48,7 @@ import java.util.Set;
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -62,6 +63,8 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
  *
  */
 public class Request extends NDLLIBCommon  {
+	SparseMultigraph<OrcaResource, OrcaInterface> g = new SparseMultigraph<OrcaResource, OrcaInterface>();
+	
 	private static final String IMAGE_NAME_SUFFIX = "-req";
 	public static final String NO_GLOBAL_IMAGE = "None";
 	public static final String NO_DOMAIN_SELECT = "System select";
@@ -111,8 +114,17 @@ public class Request extends NDLLIBCommon  {
 		saveFile = null;
 	}
 	
+	public Collection<OrcaResource> getResources(){
+		return g.getVertices();
+	}
+	
+	protected SparseMultigraph<OrcaResource, OrcaInterface> getGraph() {
+		return g;
+	}
+	
 	/*************************************   Add/Delete/Get resources  ************************************/
 	
+
 	
 	public ComputeNode addComputeNode(String name){
 		ComputeNode node = new ComputeNode(this,name);
@@ -289,14 +301,14 @@ public class Request extends NDLLIBCommon  {
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
-	public void loadRequest(String file){
+	public void load(String file){
 		RequestLoader loader = new RequestLoader(this);
 		loader.loadGraph(new File(file));
 	}
 	
 	
-	public void saveRequest(String file){
-		RequestSaver saver = new RequestSaver(this);
+	public void save(String file){
+		RequestSaver saver = new RequestSaver(this);Request r = new Request();
 		saver.saveRequest(file);
 		
 	}
@@ -315,7 +327,7 @@ public class Request extends NDLLIBCommon  {
 	}
 	
 	/*************************************   debugging ************************************/
-	public String getRequestDebugString(){
+	public String getDebugString(){
 		String rtnStr = "getRequestDebugString: ";
 		rtnStr += g.toString();
 		return rtnStr;

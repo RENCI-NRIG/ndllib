@@ -54,14 +54,14 @@ import edu.uci.ics.jung.visualization.LayeredIcon;
 * OUT OF OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS 
 * IN THE WORK.
 */
-public class BroadcastLink extends Link {
+public class NetworkConnection extends LinkConnection {
 	private static final String BROADCAST_LINK = "Broadcast link";
 	// vlan or other path label
 	protected String label = null;
 	protected long bandwidth;
 	
 	
-	public BroadcastLink(Manifest manifest, String name) {
+	public NetworkConnection(Manifest manifest, String name) {
 		super(manifest,name);
 	}
 
@@ -135,8 +135,8 @@ public class BroadcastLink extends Link {
 	
 	public Interface stitch(ManifestResource r){
 		Interface stitch = null;
-		if (r instanceof ComputeNode){
-			stitch = ((ComputeNode)r).stitch(this);	
+		if (r instanceof Node){
+			//stitch = ((Node)r).stitch(this);	
 		} else {
 			//Can't stitch link to r
 			//Should throw exception
