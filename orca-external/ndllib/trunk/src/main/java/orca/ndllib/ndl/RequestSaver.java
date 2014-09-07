@@ -147,6 +147,14 @@ public class RequestSaver {
 	}
 	
 	
+	public boolean saveRequest(File f) {
+		return saveNewRequest(f);
+	}
+	
+	public boolean saveModifyRequest(File f) {
+		//
+		return true;
+	}
 	
 	
 	/**
@@ -156,8 +164,7 @@ public class RequestSaver {
 	 * @param nsGuid
 	 * @return
 	 */
-	//public boolean saveGraph(File f, final SparseMultigraph<OrcaResource, OrcaStitch> g, final String nsGuid) {
-	public boolean saveRequest(File f) {
+	public boolean saveNewRequest(File f) {
 		assert(f != null);
 
 		String ndl = convertGraphToNdl();
@@ -185,6 +192,8 @@ public class RequestSaver {
 		return false;
 	}
 
+	
+	
 	/**
 	 * Save to string
 	 * @param f
@@ -192,9 +201,12 @@ public class RequestSaver {
 	 * @param nsGuid
 	 * @return
 	 */  
-	//public boolean saveGraph(String f, final SparseMultigraph<OrcaNode, OrcaLink> g, final String nsGuid) {
 	public boolean saveRequest(String f) {
 		return this.saveRequest(new File(f));
+	}
+
+	public boolean saveModifyRequest(String f){
+		return this.saveModifyRequest(new File(f));
 	}
 	
 	/**
@@ -365,7 +377,7 @@ public class RequestSaver {
 			}
 
 			//Process stitches
-			for (Interface stitch: request.getStitches()){
+			for (Interface stitch: request.getInterfaces()){
 				if (stitch instanceof InterfaceNode2Net){
 					InterfaceNode2Net stitch_n2l = (InterfaceNode2Net)stitch;
 					Individual ei = ngen.getRequestIndividual(stitch_n2l.getLink().getName());

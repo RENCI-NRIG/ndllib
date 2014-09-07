@@ -8,7 +8,6 @@ import java.util.Set;
 
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
-import orca.ndllib.resources.OrcaResource;
 
 
 /**
@@ -17,11 +16,11 @@ import orca.ndllib.resources.OrcaResource;
  * @author pruth
  *
  */
-public abstract class ManifestResource extends OrcaResource{
+public abstract class ManifestResource{
 	protected Manifest manifest;
 
 	protected Set<ManifestResource> dependencies = new HashSet<ManifestResource>(); 
-	protected Set<Interface> stitches = new HashSet<Interface>(); 
+	protected Set<Interface> interfaces = new HashSet<Interface>(); 
 	
 	protected Map<String, String> substrateInfo = new HashMap<String, String>();
 	
@@ -76,8 +75,8 @@ public abstract class ManifestResource extends OrcaResource{
 		domain = d;
 	}
 	
-	public Collection<Interface> getStitches() {
-		return stitches;
+	public Collection<Interface> getInterfaces() {
+		return interfaces;
 	}
 	
 	

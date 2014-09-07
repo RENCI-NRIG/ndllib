@@ -29,7 +29,7 @@ import org.apache.commons.collections15.Factory;
 
 import edu.uci.ics.jung.graph.util.Pair;
 
-public abstract class LinkConnection extends ManifestResource {
+public class LinkConnection extends ManifestResource {
     protected long bandwidth;
     protected long latency;
     protected String label = null;
@@ -137,6 +137,12 @@ public abstract class LinkConnection extends ManifestResource {
 //    	}
     	return false;
     }
+
+	@Override
+	public String getPrintText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 
 }

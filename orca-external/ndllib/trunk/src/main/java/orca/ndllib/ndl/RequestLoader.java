@@ -177,6 +177,7 @@ public class RequestLoader implements INdlRequestModelListener {
 				newNode = newNodeGroup;
 			} else if (NdlCommons.isStitchingNode(ce)) {
 				// stitching node
+				// For some reason the properties of the stitchport are stored on the interface (not here)
 				StitchPort sp = this.request.addStitchPort(ce.getLocalName());
 				newNode = sp;
 			} else if (NdlCommons.isNetworkStorage(ce)) {
@@ -255,7 +256,11 @@ public class RequestLoader implements INdlRequestModelListener {
 	public void ndlInterface(Resource intf, OntModel om, Resource conn, Resource node, String ip, String mask) {
 	
 		request.logger().debug("Interface: " + intf + " link: " + conn + " node: " + node);
-
+		if(intf == null){
+			return;
+		}
+		
+		
 		RequestResource onode = null;
 		if(node != null){
 			onode = this.request.getResourceByName(node.getLocalName());
@@ -269,13 +274,43 @@ public class RequestLoader implements INdlRequestModelListener {
 			request.logger().warn("ndlInterface with null connection: " + intf);
 		}
 		
-		if(onode != null){
+		if(onode == null){
+			request.logger().warn("ndlInterface with null missing node:  Interface: " + intf + ", Node: " + node);
+			return;
+		}
+		
+		//ComputeNode
+		if(onode instanceof ComputeNode){
+			request.logger().debug("stitching compute node");
 			InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
 			stitch.setIpAddress(ip);  
 			stitch.setNetmask(mask);
-		} else {
-			request.logger().warn("ndlInterface with null missing node:  Interface: " + intf + ", Node: " + node);	
+			return;
+		} 
+		
+		//StorageNode
+		if(onode instanceof StorageNode){
+			request.logger().debug("stitching storage node");
+			InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
+			
+			return;
 		}
+		
+		//StitchPort
+		if(onode instanceof StitchPort){
+			request.logger().debug("stitching stitchport");
+			//Why is this stuff stored in the interface? 
+			//It Seems like they are properties of the stitchport itself. 
+			StitchPort sp = (StitchPort)onode;
+			sp.setPort(intf.toString());
+			sp.setLabel(NdlCommons.getLayerLabelLiteral(intf));
+			
+			InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
+			return;
+		}	
+		
+		//shouldnt get here
+		request.logger().debug("Unknown node type: " + node + ", " + node.getClass());
 	}
 	
 	public void ndlSlice(Resource sl, OntModel m) {

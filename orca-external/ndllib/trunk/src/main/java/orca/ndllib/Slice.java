@@ -9,8 +9,6 @@ import org.apache.log4j.Logger;
 
 import orca.ndllib.ndl.RequestLoader;
 import orca.ndllib.ndl.RequestSaver;
-import orca.ndllib.resources.OrcaInterface;
-import orca.ndllib.resources.OrcaResource;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Interface;
@@ -26,12 +24,16 @@ public class Slice {
 	
 	protected static Logger logger;
 	
+	private boolean isNewSlice;
+	
 	public Slice(){
 		logger = Logger.getLogger(NDLLIBCommon.class.getCanonicalName());
 		logger.setLevel(Level.DEBUG);
 		
 		request = new Request();
 		manifest = new Manifest();
+		
+		isNewSlice = true;
 	}
 	
 	
@@ -65,73 +67,64 @@ public class Slice {
 		request.deleteResource(r);
 	}
 	
-	public void addStitch(RequestResource a, RequestResource b, Interface s){
-		request.addStitch(a, b, s);
+	public Interface stitch(RequestResource r1, RequestResource r2){
+		logger.error("slice.stitch is unimplemented");
+		return null;
 	}
 	
-	public Collection<Interface> getRequestStitches(){
-		return request.getStitches();
+	
+	
+	/**************************** Get Slice Info ***********************************/
+	public Collection<RequestResource> getAllResources(){
+		return request.getResources();
 	}
 	
-	/**************************** Get Request Info ***********************************/
-	public Collection<Network> getRequestLinks(){
+	public Collection<Interface> getInterfaces(){
+		return request.getInterfaces();
+	}
+
+	public Collection<Network> getLinks(){
 		return request.getLinks();
 	}
 		
-	public Collection<BroadcastNetwork> getRequestBroadcastLinks(){
+	public Collection<BroadcastNetwork> getBroadcastLinks(){
 		return request.getBroadcastLinks();
 	}
 	
-	public Collection<Node> getRequestNodes(){
+	public Collection<Node> getNodes(){
 		return request.getNodes();
 	}
 	
-	public Collection<ComputeNode> getRequestComputeNodes(){
+	public Collection<ComputeNode> getComputeNodes(){
 		return request.getComputeNodes();
 	}
 	
-	public Collection<StorageNode> getRequestStorageNodes(){
+	public Collection<StorageNode> getStorageNodes(){
 		return request.getStorageNodes();
 	}	
 
-	public Collection<StitchPort> getRequestStitchPorts(){
+	public Collection<StitchPort> getStitchPorts(){
 		return request.getStitchPorts();
 	}	
 	
 	
 	
-	/**************************** Get Manifest Info ***********************************/
-	public Collection<Network> getManifestCrossConnects(){
-		return null;
-	}
-		
-	public Collection<Network> getManifestLinkConnections(){
-		return null;
-	}
-	
-	public Collection<Network> getManifestNetworkConnections(){
-		return null;
-	}
-	
-	public Collection<Network> getManifestNodes(){
-		return null;
-	}
-	
-	
 	/**************************** Load/Save Methods **********************************/
 	public void load(String file){
 		request.load(file);
-		manifest.load(file);
+		isNewSlice = manifest.load(file);
+		logger.debug("Slice has manifest? " + isNewSlice);
 	}
 		
 	public void save(String file){
-		request.save(file);
-		//manifest.save(file);
+		if(isNewSlice){
+			request.save(file);
+		} else { 
+			request.saveModifyRequest(file);
+		}
 	}
 	
-	
-	
-	public String getRDFString(){
+	public String getRequest(){
 		return request.getRDFString();
 	}
 

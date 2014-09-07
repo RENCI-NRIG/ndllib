@@ -46,7 +46,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 import edu.uci.ics.jung.visualization.renderers.Checkmark;
 
-public abstract class Node extends ManifestResource {
+public class Node extends ManifestResource {
 
 	//protected static final String NOT_SPECIFIED = "Not specified";
 	//public static final String NODE_NETMASK="32";
@@ -318,6 +318,12 @@ public abstract class Node extends ManifestResource {
         	}
         }       
     }
+
+	@Override
+	public String getPrintText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	
 
