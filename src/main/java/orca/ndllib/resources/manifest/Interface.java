@@ -3,7 +3,6 @@
  */
 package orca.ndllib.resources.manifest;
 
-import orca.ndllib.resources.OrcaInterface;
 
 
 
@@ -11,7 +10,7 @@ import orca.ndllib.resources.OrcaInterface;
  * @author geni-orca
  *
  */
-public abstract class Interface extends OrcaInterface{
+public abstract class Interface {
 	ManifestResource a;
 	ManifestResource b;
 		

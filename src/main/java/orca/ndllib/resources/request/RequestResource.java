@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import orca.ndllib.Request;
-import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.manifest.ManifestResource;
 
 
 /**
@@ -16,22 +16,19 @@ import orca.ndllib.resources.OrcaResource;
  * @author pruth
  *
  */
-public abstract class RequestResource extends OrcaResource{
+public abstract class RequestResource{
 	protected Request request;
 
 	protected Set<RequestResource> dependencies = new HashSet<RequestResource>(); 
-	protected Set<Interface> stitches = new HashSet<Interface>(); 
+	protected Set<Interface> interfaces = new HashSet<Interface>(); 
+	protected Set<ManifestResource> instantiation = new HashSet<ManifestResource>();
 	
-	protected Map<String, String> substrateInfo = new HashMap<String, String>();
-	
-	//Properties:
-	protected String name;
 
-	// reservation state
+	// reservation state - should probably be an enumeration
 	protected String state = null;
-	// reservation notice:  PRUTH--what is this?
-	protected String resNotice = null;
 	
+	//User controlled properties:
+	protected String name;
 	protected String domain; 
 	
 	
@@ -43,6 +40,7 @@ public abstract class RequestResource extends OrcaResource{
 	public abstract String getPrintText();
 	public abstract Interface stitch(RequestResource r);
 
+	//non-abstract methods
 	public String getName(){ 
 		return name; 
 	}
@@ -55,16 +53,8 @@ public abstract class RequestResource extends OrcaResource{
 		return state;
 	}
 
-	public void setState(String s) {
+	protected void setState(String s) {
 		state = s;
-	}
-
-	public String getReservationNotice() {
-		return resNotice;
-	}
-
-	public void setReservationNotice(String s) {
-		resNotice = s;
 	}
 
 	public String getDomain() {
@@ -75,24 +65,25 @@ public abstract class RequestResource extends OrcaResource{
 		domain = d;
 	}
 	
-	public Collection<Interface> getStitches() {
-		return stitches;
+	public Collection<Interface> getInterfaces() {
+		return interfaces;
 	}
 	
+	public Set<ManifestResource> getInstantiation() {
+		return instantiation;
+	}
 	
-	/**
-	 * Substrate info is just an associative array. 
-	 * Describes some information about the substrate of the resource
-	 */
-	public void setSubstrateInfo(String t, String o) {
-		substrateInfo.put(t, o);
+	public void addInterface(Interface i){
+		interfaces.add(i);
+	}
+	
+	public void addInstantiationResource(ManifestResource r){
+		instantiation.add(r);
 	}
 
-	public String getSubstrateInfo(String t) {
-		return substrateInfo.get(t);
-	}
-
 	
-
-	//
+	public void delete(){
+		request.deleteResource(this);
+	}
+	
 }

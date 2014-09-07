@@ -25,9 +25,18 @@ package orca.ndllib;
 import orca.ndllib.ndl.*;
 import orca.ndllib.resources.OrcaInterface;
 import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.resources.manifest.CrossConnect;
 import orca.ndllib.resources.manifest.Interface;
-import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.manifest.LinkConnection;
+import orca.ndllib.resources.manifest.ManifestResource;
+import orca.ndllib.resources.manifest.NetworkConnection;
+import orca.ndllib.resources.manifest.Node;
+import orca.ndllib.resources.request.BroadcastNetwork;
+import orca.ndllib.resources.request.ComputeNode;
+import orca.ndllib.resources.request.Network;
 import orca.ndllib.resources.request.RequestResource;
+import orca.ndllib.resources.request.StitchPort;
+import orca.ndllib.resources.request.StorageNode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,18 +45,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-
-
-
-
-
-
-
-
-
-
-
 
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -60,33 +57,99 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 
 public class Manifest extends NDLLIBCommon {
 	private Date start = null, end = null, newEnd = null;
-
-	SparseMultigraph<OrcaResource, OrcaInterface> manifestGraph = new SparseMultigraph<OrcaResource, OrcaInterface>();
+		
+	SparseMultigraph<ManifestResource, Interface> g = new SparseMultigraph<ManifestResource, Interface>();
 	
 	public Manifest(){
 		super();
 				
-		Set<OrcaResource> nodes = new HashSet<OrcaResource>(manifestGraph.getVertices());
-		for (OrcaResource n: nodes)
-			manifestGraph.removeVertex(n);
+		Set<ManifestResource> nodes = new HashSet<ManifestResource>(g.getVertices());
+		for (ManifestResource n: nodes)
+			g.removeVertex(n);
 	}
 	
 	
 	//public Collection<OrcaResource> getRequestResources(){
 	//	return requestGraph.getVertices();
 	//}
+	
+	private SparseMultigraph<ManifestResource, Interface> getManifestGraph() {
+		return g;
+	}
+	
+	/*************************************   Add/Delete/Get resources  ************************************/
+	
 
 	
-	private SparseMultigraph<OrcaResource, OrcaInterface> getManifestGraph() {
-		return manifestGraph;
+	public CrossConnect addCrossConnect(String name){
+		CrossConnect c = new CrossConnect(this,name);
+		g.addVertex(c);
+		return c;
 	}
+	public LinkConnection addLinkConnection(String name){
+		LinkConnection c = new LinkConnection(this,name);
+		g.addVertex(c);
+		return c;
+	}
+	public NetworkConnection addNetworkConnection(String name){
+		NetworkConnection n = new NetworkConnection(this,name);
+		g.addVertex(n);
+		return n;
+	}
+	public Node addNode(String name){
+		Node n = new Node(this,name);
+		g.addVertex(n);
+		return n;
+	}
+
+	
+	
+	public ManifestResource getResourceByName(String nm){
+		if (nm == null)
+			return null;
+		
+		for (ManifestResource n: g.getVertices()) {
+			if (nm.equals(n.getName()) && n instanceof ManifestResource)
+				return (ManifestResource)n;
+		}
+		return null;
+	}
+	
+	public void deleteResource(ManifestResource r){
+		for (Interface s: r.getInterfaces()){
+			g.removeEdge(s);
+		}
+		g.removeVertex(r);
+	}
+	
+	public void addStitch(ManifestResource a, ManifestResource b, Interface s){
+		g.addEdge(s, a, b);
+	}
+	
+	public Collection<Interface> getStitches(){
+		ArrayList<Interface> interfaces = new ArrayList<Interface>();
+		
+		for (Interface i: g.getEdges()) {
+			if (i instanceof Interface){
+				interfaces.add((Interface)i);
+			}
+		}
+		return interfaces;
+	}
+	
+	public void clear(){
+		//reset the whole request
+	}
+	
+	
 	
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
-	public void load(String file){
+	public boolean load(String file){
 		ManifestLoader mloader = new ManifestLoader(this);
-		mloader.loadGraph(new File(file));
+		return mloader.loadGraph(new File(file));
+		
 		
 	}
 	
@@ -100,7 +163,7 @@ public class Manifest extends NDLLIBCommon {
 	/*************************************   debugging ************************************/
 	public String getDebugString(){
 		String rtnStr = "getDebugString: ";
-		rtnStr += "ManifestGraph:\n" + manifestGraph.toString();
+		rtnStr += "ManifestGraph:\n" + g.toString();
 		return rtnStr;
 	}
 	

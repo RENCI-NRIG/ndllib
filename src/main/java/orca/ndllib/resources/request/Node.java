@@ -47,82 +47,6 @@ import edu.uci.ics.jung.visualization.renderers.Checkmark;
 
 public abstract class Node extends RequestResource {
 
-	//protected static final String NOT_SPECIFIED = "Not specified";
-	//public static final String NODE_NETMASK="32";
-	
-	
-	protected class NetworkInterface{
-		private String ipAddress; 
-		private String netmask;
-		private String macAddress;
-		private String name;
-		
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public NetworkInterface(){
-			this.ipAddress = null;
-			this.netmask = null;
-			this.macAddress = null;
-			this.name = null;
-		}
-		
-		public NetworkInterface(String ipAddress, String netmask, String macAddress, String name){
-			this.ipAddress = ipAddress; 
-			this.netmask = netmask;
-			this.macAddress = macAddress;
-			this.name = name;
-		}
-
-		public String getIpAddress() {
-			return ipAddress;
-		}
-
-		public void setIpAddress(String ipAddress) {
-			this.ipAddress = ipAddress;
-		}
-
-		public String getNetmask() {
-			return netmask;
-		}
-
-		public void setNetmask(String netmask) {
-			this.netmask = netmask;
-		}
-
-		public String getMacAddress() {
-			return macAddress;
-		}
-
-		public void setMacAddress(String macAddress) {
-			this.macAddress = macAddress;
-		}
-		
-	}
-	
-
-	
-	//Node
-	protected Map<Network, NetworkInterface> interfaces = null;
-	
-	interface INodeCreator {
-		public Node create();
-		public void reset();
-	}
-
-	public String toStringLong() {
-		String ret =  name;
-//		if (domain != null) 
-//			ret += " in domain " + domain;
-//		if (image != null)
-//			ret += " with image " + image;
-		return ret;
-	}
 	
 	public String toString() {
 		return name;
@@ -138,58 +62,7 @@ public abstract class Node extends RequestResource {
 	}
 
 	
-	public void setMac(Network e, String mac) {
-		if (e == null)
-			return;
-		if (mac == null) { 
-			interfaces.remove(e);
-			return;
-		}
-		if(interfaces.get(e) == null)
-			interfaces.put(e, new NetworkInterface());
-		
-		interfaces.get(e).setMacAddress(mac);
-	}
-	
-	public String getMac(Network e) {
-		if ((e == null) || (interfaces.get(e).getMacAddress() == null))
-			return null;
-		return interfaces.get(e).getMacAddress() ;
-	}
-	
-	
-	public void setIp(Network e, String addr, String netmask) {
-		if (e == null)
-			return;
-		//if(interfaces.get(fol) == null)
-		//	interfaces.put(fol, new NetworkInterface());
-		
-		
-		if ((addr == null) || (netmask == null)) {
-			interfaces.get(e).setIpAddress(addr);
-			interfaces.get(e).setNetmask(netmask);
-			return;
-		}
-	}
-	
-	public String getIp(Network e) {
-		if ((e == null) || (interfaces.get(e) == null))
-			return null;
-		return interfaces.get(e).getIpAddress();
-	}
-	
-	public String getNetmask(Network e) {
-		if ((e == null) || (interfaces.get(e) == null))
-			return null;
-		return interfaces.get(e).getNetmask();
-	}
-	
-	public void removeIp(Network e) {
-		if (e == null)
-			return;
-		this.setIp(e, null, null);
-	}
-	
+
 	public void addDependency(Node n) {
 		if (n != null) 
 			dependencies.add(n);
@@ -225,38 +98,7 @@ public abstract class Node extends RequestResource {
 		return dependencies;
 	}
 	
-	public String getInterfaceName(Network l) {
-		if (l != null)
-			return interfaces.get(l).getName();
-		return null;
-	}
-	
-	public void setInterfaceName(Network l, String ifName) {
-		if ((l == null) || (ifName == null))
-			return;
-		
-		interfaces.get(l).setName(ifName); 
-	}
-	
-//	public void setManagementAccess(List<String> s) {
-//		managementAccess = s;
-//	}
-//	
-//	// all available access options
-//	public List<String> getManagementAccess() {
-//		return managementAccess;
-//	}
-//	
-//	// if ssh is available
-//	public String getSSHManagementAccess() {
-//		for (String service: managementAccess) {
-//			if (service.startsWith("ssh://root")) {
-//				return service;
-//			}
-//		}
-//		return null;
-//	}
-	
+
 
 	
 	/** 
@@ -293,30 +135,7 @@ public abstract class Node extends RequestResource {
 //		}
 //		return viewText;
 //	}
-	
-	/**
-	 * Node factory for requests
-	 * @author ibaldin
-	 *
-	 */
-    public static class OrcaNodeFactory implements Factory<Node> {
-        private INodeCreator inc = null;
-        
-        public OrcaNodeFactory(INodeCreator i) {
-        	inc = i;
-        }
-        
-        /**
-         * Create a node or a cloud based on some setting
-         */
-        public Node create() {
-        	if (inc == null)
-        		return null;
-        	synchronized(inc) {
-        		return inc.create();
-        	}
-        }       
-    }
+
 
 	
 

@@ -63,7 +63,8 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
  *
  */
 public class Request extends NDLLIBCommon  {
-	SparseMultigraph<OrcaResource, OrcaInterface> g = new SparseMultigraph<OrcaResource, OrcaInterface>();
+	SparseMultigraph<RequestResource, Interface> g = new SparseMultigraph<RequestResource, Interface>();
+	private boolean newRequest; //true if new,  false if from manifest
 	
 	private static final String IMAGE_NAME_SUFFIX = "-req";
 	public static final String NO_GLOBAL_IMAGE = "None";
@@ -72,7 +73,7 @@ public class Request extends NDLLIBCommon  {
 	public static final String NO_NODE_DEPS="No dependencies";
 	private static final String RDF_START = "<rdf:RDF";
 	private static final String RDF_END = "</rdf:RDF>";
-	
+
 	
 	// is it openflow (and what version [null means non-of])
 	private String ofNeededVersion = null;
@@ -101,8 +102,8 @@ public class Request extends NDLLIBCommon  {
 		if (g == null)
 			return;
 		
-		Set<OrcaResource> resources = new HashSet<OrcaResource>(g.getVertices());
-		for (OrcaResource r: resources)
+		Set<RequestResource> resources = new HashSet<RequestResource>(g.getVertices());
+		for (RequestResource r: resources)
 			g.removeVertex(r);
 		resDomainName = null;
 		term = new RequestReservationTerm();
@@ -112,13 +113,16 @@ public class Request extends NDLLIBCommon  {
 		ofCtrlUrl = null;
 		nsGuid = null;
 		saveFile = null;
+		
+		//default to true request
+		newRequest = true;
 	}
 	
-	public Collection<OrcaResource> getResources(){
+	public Collection<RequestResource> getResources(){
 		return g.getVertices();
 	}
 	
-	protected SparseMultigraph<OrcaResource, OrcaInterface> getGraph() {
+	protected SparseMultigraph<RequestResource, Interface> getGraph() {
 		return g;
 	}
 	
@@ -157,7 +161,7 @@ public class Request extends NDLLIBCommon  {
 		if (nm == null)
 			return null;
 		
-		for (OrcaResource n: g.getVertices()) {
+		for (RequestResource n: g.getVertices()) {
 			if (nm.equals(n.getName()) && n instanceof RequestResource)
 				return (RequestResource)n;
 		}
@@ -165,7 +169,7 @@ public class Request extends NDLLIBCommon  {
 	}
 	
 	public void deleteResource(RequestResource r){
-		for (Interface s: r.getStitches()){
+		for (Interface s: r.getInterfaces()){
 			g.removeEdge(s);
 		}
 		g.removeVertex(r);
@@ -175,15 +179,15 @@ public class Request extends NDLLIBCommon  {
 		g.addEdge(s, a, b);
 	}
 	
-	public Collection<Interface> getStitches(){
-		ArrayList<Interface> stitches = new ArrayList<Interface>();
+	public Collection<Interface> getInterfaces(){
+		ArrayList<Interface> interfaces = new ArrayList<Interface>();
 		
-		for (OrcaInterface stitch: g.getEdges()) {
-			if (stitch instanceof Interface){
-				stitches.add((Interface)stitch);
+		for (Interface i: g.getEdges()) {
+			if (i instanceof Interface){
+				interfaces.add((Interface)i);
 			}
 		}
-		return stitches;
+		return interfaces;
 	}
 	
 	public void clear(){
@@ -234,7 +238,7 @@ public class Request extends NDLLIBCommon  {
 	public Collection<Network> getLinks(){
 		ArrayList<Network> links = new ArrayList<Network>();
 		
-		for (OrcaResource resource: g.getVertices()) {
+		for (RequestResource resource: g.getVertices()) {
 			if(resource instanceof Network){
 				links.add((Network)resource);
 			}
@@ -247,7 +251,7 @@ public class Request extends NDLLIBCommon  {
 	public Collection<BroadcastNetwork> getBroadcastLinks(){
 		ArrayList<BroadcastNetwork> broadcastlinks = new ArrayList<BroadcastNetwork>();
 		
-		for (OrcaResource resource: g.getVertices()) {
+		for (RequestResource resource: g.getVertices()) {
 			if(resource instanceof BroadcastNetwork){
 				broadcastlinks.add((BroadcastNetwork)resource);
 			}
@@ -258,7 +262,7 @@ public class Request extends NDLLIBCommon  {
 	public Collection<Node> getNodes(){
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		
-		for (OrcaResource resource: g.getVertices()) {
+		for (RequestResource resource: g.getVertices()) {
 			if(resource instanceof Node){
 				nodes.add((Node)resource);
 			}
@@ -269,7 +273,7 @@ public class Request extends NDLLIBCommon  {
 	public Collection<ComputeNode> getComputeNodes(){
 		ArrayList<ComputeNode> nodes = new ArrayList<ComputeNode>();
 		
-		for (OrcaResource resource: g.getVertices()) {
+		for (RequestResource resource: g.getVertices()) {
 			if(resource instanceof ComputeNode){
 				nodes.add((ComputeNode)resource);
 			}
@@ -280,7 +284,7 @@ public class Request extends NDLLIBCommon  {
 	public Collection<StorageNode> getStorageNodes(){
 		ArrayList<StorageNode> nodes = new ArrayList<StorageNode>();
 		
-		for (OrcaResource resource: g.getVertices()) {
+		for (RequestResource resource: g.getVertices()) {
 			if(resource instanceof StorageNode){
 				nodes.add((StorageNode)resource);
 			}
@@ -290,7 +294,7 @@ public class Request extends NDLLIBCommon  {
 	public Collection<StitchPort> getStitchPorts(){
 		ArrayList<StitchPort> nodes = new ArrayList<StitchPort>();
 		
-		for (OrcaResource resource: g.getVertices()) {
+		for (RequestResource resource: g.getVertices()) {
 			if(resource instanceof StitchPort){
 				nodes.add((StitchPort)resource);
 			}
@@ -308,9 +312,17 @@ public class Request extends NDLLIBCommon  {
 	
 	
 	public void save(String file){
+		saveNewRequest(file);
+	}
+	
+	public void saveNewRequest(String file){
 		RequestSaver saver = new RequestSaver(this);Request r = new Request();
 		saver.saveRequest(file);
-		
+	}
+	
+	public void saveModifyRequest(String file){
+		RequestSaver saver = new RequestSaver(this);Request r = new Request();
+		saver.saveModifyRequest(file);
 	}
 	
 	public String getRDFString(){
