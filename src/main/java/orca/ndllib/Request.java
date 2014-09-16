@@ -326,7 +326,8 @@ public class Request extends NDLLIBCommon  {
 	}
 	
 	public String getRDFString(){
-		return null;
+		RequestSaver saver = new RequestSaver(this);Request r = new Request();
+		return saver.getRequest();
 	}
 
 

@@ -173,7 +173,7 @@ public class TestDriver {
 		data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
 		
 		s.logger().debug("******************** START REQUEST *********************");
-		s.logger().debug(s.getRequestString());
+		s.logger().debug(s.getRequest());
 		s.logger().debug("******************** END REQUEST *********************");
 		
 		s.save("/home/geni-orca/test-requests/adamant-test1-output-request.rdf");
@@ -195,7 +195,7 @@ public class TestDriver {
 		n.setNodeCount(16);
 		
 		s.logger().debug("******************** START REQUEST *********************");
-		s.logger().debug(s.getRequestString());
+		s.logger().debug(s.getRequest());
 		
 		s.logger().debug("******************** END REQUEST *********************");
 		
@@ -218,7 +218,7 @@ public class TestDriver {
 		n.setNodeCount(10);
 				
 		s.logger().debug("******************** START REQUEST *********************");
-		s.logger().debug(s.getRequestString());
+		s.logger().debug(s.getRequest());
 		
 		s.logger().debug("******************** START MANIFEST *********************");
 		
