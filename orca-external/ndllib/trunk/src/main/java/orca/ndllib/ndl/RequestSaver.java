@@ -209,6 +209,10 @@ public class RequestSaver {
 		return this.saveModifyRequest(new File(f));
 	}
 	
+	public String getRequest(){
+		return convertGraphToNdl();
+	}
+	
 	/**
 	 * Save graph using NDL
 	 * @param f
