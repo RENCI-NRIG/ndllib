@@ -87,7 +87,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 		isManifest = false;
 	}
 	
-	public boolean loadGraph(File f) {
+	public boolean loadFile(File f) {
 		manifest.logger().debug("About to load graph");
 		BufferedReader bin = null; 
 		StringBuilder sb = null;
@@ -112,6 +112,10 @@ public class ManifestLoader implements INdlManifestModelListener{
 		} 
 		
 		return loadString(sb.toString());
+	}
+	
+	public boolean loadRDF(String rdf){
+		return loadString(rdf);
 	}
 	
 	public boolean loadString(String s) {

@@ -146,9 +146,16 @@ public class Manifest extends NDLLIBCommon {
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
-	public boolean load(String file){
+	public boolean loadFile(String file){
 		ManifestLoader mloader = new ManifestLoader(this);
-		return mloader.loadGraph(new File(file));
+		return mloader.loadFile(new File(file));
+		
+		
+	}
+	
+	public boolean loadRDF(String rdf){
+		ManifestLoader mloader = new ManifestLoader(this);
+		return mloader.loadRDF(rdf);
 		
 		
 	}
