@@ -110,12 +110,18 @@ public class Slice {
 	
 	
 	/**************************** Load/Save Methods **********************************/
-	public void load(String file){
-		request.load(file);
-		isNewSlice = manifest.load(file);
+	public void loadFile(String file){
+		request.loadFile(file);
+		isNewSlice = manifest.loadFile(file);
 		logger.debug("Slice has manifest? " + isNewSlice);
 	}
-		
+	
+	public void loadRDF(String rdf){
+		request.loadRDF(rdf);
+		isNewSlice = manifest.loadRDF(rdf);
+		logger.debug("Slice has manifest? " + isNewSlice);
+	}
+	
 	public void save(String file){
 		if(isNewSlice){
 			request.save(file);

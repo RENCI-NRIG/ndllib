@@ -3,17 +3,23 @@
  */
 package orca.ndllib;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
-import orca.ndllib.ndl.RequestLoader;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
+import orca.ndllib.resources.request.Interface;
 import orca.ndllib.resources.request.InterfaceNode2Net;
 import orca.ndllib.resources.request.Network;
 import orca.ndllib.resources.request.Node;
-import orca.ndllib.resources.request.Interface;
 import orca.ndllib.resources.request.StitchPort;
 import orca.ndllib.resources.request.StorageNode;
+
+
+
+
 
 /**
  * @author geni-orca
@@ -33,6 +39,7 @@ public class TestDriver {
 	}
 	
 	public static  void test1(){
+		
 		System.out.println("ndllib TestDriver: test1");
 		Slice r = new Slice();
 		
@@ -65,10 +72,10 @@ public class TestDriver {
 		//r.logger("ndllib TestDriver: testLoad");
 		Slice s = new Slice();
 		
-		s.logger().debug("logger test");
+		s.logger().debug("logger test");		
 		
 		//s.load("/home/geni-orca/test-requests/all-types.rdf");
-		s.load("/home/geni-orca/test-requests/test.rdf");
+		s.loadFile("/home/geni-orca/test-requests/test.rdf");
 	
 		s.logger().debug("******************** START REQUEST *********************");
 		s.logger().debug(s.getRequestString());
@@ -106,7 +113,7 @@ public class TestDriver {
 		Slice s = new Slice();
 		
 		
-		s.load("/home/geni-orca/test-requests/test-load-request.rdf");
+		s.loadFile("/home/geni-orca/test-requests/test-load-request.rdf");
 		
 		printRequest2Log(s);
 		
@@ -118,7 +125,7 @@ public class TestDriver {
 	public static void testLoadManifest(){
 		Slice s = new Slice();
 		s.logger().debug("testLoadManifest");
-		s.load("/home/geni-orca/test-requests/test-load-manifest.rdf");
+		s.loadFile("/home/geni-orca/test-requests/test-load-manifest.rdf");
 		
 		
 		
@@ -131,6 +138,33 @@ public class TestDriver {
 		//s.logger().debug("******************** END PRINTING *********************");
 	}
 
+	public static String readRDF(String fileName){
+		BufferedReader bin = null; 
+		StringBuilder sb = null;
+		try {
+			FileInputStream is = new FileInputStream(fileName);
+			bin = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+			
+			sb = new StringBuilder();
+			String line = null;// parse as request
+			
+			while((line = bin.readLine()) != null) {
+				sb.append(line);
+				// re-add line separator
+				sb.append(System.getProperty("line.separator"));
+			}
+			
+			bin.close();
+
+		} catch (Exception e) {
+			return "Error Reading " + fileName;
+		} 
+		
+		return sb.toString();
+		
+	}
+	
+	
 	/** 
 	 *  Test Case 1
 	 *  
@@ -189,7 +223,8 @@ public class TestDriver {
 	public static void adamantTest2(){
 		Slice s = new Slice();
 		s.logger().debug("adamantTest2: ");
-		s.load("/home/geni-orca/test-requests/adamant-test2-input-request-template.rdf");
+		//s.loadFile("/home/geni-orca/test-requests/adamant-test2-input-request-template.rdf");
+		s.loadRDF(readRDF("/home/geni-orca/test-requests/adamant-test2-input-request-template.rdf"));
 		
 		ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
 		n.setNodeCount(16);
@@ -212,7 +247,7 @@ public class TestDriver {
 	public static void adamantTest3(){
 		Slice s = new Slice();
 		s.logger().debug("adamantTest3: ");
-		s.load("/home/geni-orca/test-requests/adamant-test3-input-manifest.rdf");
+		s.loadFile("/home/geni-orca/test-requests/adamant-test3-input-manifest.rdf");
 		
 		ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
 		n.setNodeCount(10);

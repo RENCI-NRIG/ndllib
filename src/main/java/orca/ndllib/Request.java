@@ -305,11 +305,15 @@ public class Request extends NDLLIBCommon  {
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
-	public void load(String file){
+	public void loadFile(String file){
 		RequestLoader loader = new RequestLoader(this);
 		loader.loadGraph(new File(file));
 	}
 	
+	public void loadRDF(String rdf){
+		RequestLoader loader = new RequestLoader(this);
+		loader.load(rdf);
+	}
 	
 	public void save(String file){
 		saveNewRequest(file);

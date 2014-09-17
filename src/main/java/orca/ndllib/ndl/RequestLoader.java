@@ -109,9 +109,9 @@ public class RequestLoader implements INdlRequestModelListener {
 	 * @param f
 	 * @return
 	 */
-	public boolean loadGraph(String f) {
+	public boolean load(String rdf) {
 		try {
-			NdlRequestParser nrp = new NdlRequestParser(f, this);
+			NdlRequestParser nrp = new NdlRequestParser(rdf, this);
 			nrp.processRequest();
 			nrp.freeModel();
 			
@@ -124,6 +124,8 @@ public class RequestLoader implements INdlRequestModelListener {
 		return true;
 	}
 
+	
+	
 
 	public void ndlReservation(Resource i, final OntModel m) {
 		
