@@ -220,7 +220,7 @@ public class RequestSaver {
 	 */
 	//public String convertGraphToNdl(SparseMultigraph<OrcaResource, OrcaStitch> g, String nsGuid) {
 	public String convertGraphToNdl() {
-		String nsGuid = "111111";  //TODO: what is an nsGuid???
+		String nsGuid = null;  //TODO: if set to null ndlcommons will pick one for me
 		this.request.logger().debug("convertGraphToNdl");
 		String res = null;
 

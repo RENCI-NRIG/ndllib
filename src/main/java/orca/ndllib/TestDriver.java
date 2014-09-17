@@ -32,8 +32,8 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	//adamantTest1();
-    	adamantTest2();
+    	adamantTest1();
+    	//adamantTest2();
     	System.out.println("ndllib TestDriver: END");
     	
 	}
