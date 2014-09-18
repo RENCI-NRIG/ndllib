@@ -24,8 +24,6 @@
 package orca.ndllib;
 
 import orca.ndllib.ndl.*;
-import orca.ndllib.resources.OrcaInterface;
-import orca.ndllib.resources.OrcaResource;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Network;
