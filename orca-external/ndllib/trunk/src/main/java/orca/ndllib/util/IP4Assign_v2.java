@@ -34,7 +34,7 @@ import java.util.BitSet;
  * 
  */
 public class IP4Assign_v2 {
-	/*
+	
 	private TreeMap<Integer, Integer> managedSubnetTreeMap; // for searching if
 															// subnet overlapps
 															// with any managed
@@ -67,12 +67,12 @@ public class IP4Assign_v2 {
 
 		// Hardcoded pool of available subnets
 		try {
-			// 172.16.0.0/16
-			availableSubnets.get(16).add(
+			// 172.16.0.0/12
+			availableSubnets.get(20).add(
 					new IP4Subnet((Inet4Address) InetAddress
-							.getByName("172.16.0.0"), 16));
+							.getByName("172.16.0.0"), 12));
 		} catch (UnknownHostException e) {
-			System.out.println("Exception: can not add subnet 172.16.0.0/16 to free list");
+			System.out.println("Exception: can not add subnet 172.16.0.0/12 to free list");
 		}
 		// 192.168.0.0/16
 		// availableSubnets.get(16).add(new IP4Subnet("192.168.0.0",16));
@@ -126,7 +126,7 @@ public class IP4Assign_v2 {
 		return subnets;
 	}
 
-	private IP4Subnet getSubnet(Inet4Address ip, int mask_length) {
+	public IP4Subnet getSubnet(Inet4Address ip, int mask_length) {
 		logger.debug("getSubnet 1: " + ip + ", mask_lengh: " + mask_length);
 		if (!isAvailable(ip, mask_length)) {
 			// Should throw exception
@@ -163,7 +163,7 @@ public class IP4Assign_v2 {
 
 	}
 
-	private IP4Subnet getAvailableSubnet(int count) {
+	public IP4Subnet getAvailableSubnet(int count) {
 		int mask_length = IP4Subnet.getMaskFromSize(count);
 
 		// find smallest subnet bigger than count
@@ -188,162 +188,6 @@ public class IP4Assign_v2 {
 
 	}
 
-	private void allocateSubnet(OrcaCrossconnect cc, int count) {
-		IP4Subnet s = getAvailableSubnet(count);
-		logger.debug("allocateSubnet(OrcaCrossconnect cc, int count): " + s);
-
-		allocatedSubnetMap.put(cc, s);
-		allocatedSubnetTreeMap.put(
-				InetAddresses.coerceToInteger(s.getStartIP()), s.getSize());
-	}
-
-	private void allocateSubnet(OrcaCrossconnect cc, Inet4Address ip,
-			int mask_length) {
-
-		if (!isAvailable(ip, mask_length)) {
-			// Should throw execption
-			return;
-		}
-
-		IP4Subnet s = getSubnet(ip, mask_length);
-		allocatedSubnetMap.put(cc, s);
-		allocatedSubnetTreeMap.put(
-				InetAddresses.coerceToInteger(s.getStartIP()), s.getSize());
-	}
-
-	private void allocateSubnet(OrcaLink l, int count) {
-		IP4Subnet s = getAvailableSubnet(count);
-		logger.debug("allocateSubnet(OrcaCrossconnect l, int count): " + s);
-
-		allocatedSubnetMap.put(l, s);
-		allocatedSubnetTreeMap.put(
-				InetAddresses.coerceToInteger(s.getStartIP()), s.getSize());
-
-	}
-
-	private void allocateSubnet(OrcaLink l, Inet4Address ip, int mask_length) {
-		if (!isAvailable(ip, mask_length))
-			return;
-
-		IP4Subnet s = getSubnet(ip, mask_length);
-		allocatedSubnetMap.put(l, s);
-		allocatedSubnetTreeMap.put(
-				InetAddresses.coerceToInteger(s.getStartIP()), s.getSize());
-	}
-
-	public void allocateSubnet(OrcaResource r, int size) {
-		if (r instanceof OrcaCrossconnect)
-			allocateSubnet((OrcaCrossconnect) r, size);
-		else if (r instanceof OrcaLink)
-			allocateSubnet((OrcaLink) r, size);
-		else
-			logger.error("Cannot allocate subnet to OrcaResource of type "
-					+ r.getClass().getName());
-
-	}
-
-	public void allocateSubnet(OrcaResource r, Inet4Address ip, int mask_length) {
-		if (!isAvailable(ip, mask_length)) {
-			logger.error("Cannot allocate subnet subnet allocated: " + ip + ", "
-					+ mask_length);
-		}
-
-		if (r instanceof OrcaCrossconnect)
-			allocateSubnet((OrcaCrossconnect) r, ip, mask_length);
-		else if (r instanceof OrcaLink)
-			allocateSubnet((OrcaLink) r, ip, mask_length);
-		else
-			logger.error("Cannot allocate subnet to OrcaResource of type "
-					+ r.getClass().getName());
-
-	}
-
-	public void allocateSubnet(OrcaResource r, IP4Subnet s) {
-		if (!isAvailable(s.getStartIP(), s.getMaskLength())) {
-			// Should throw execption
-			return;
-		}
-
-		allocatedSubnetMap.put(r, s);
-		allocatedSubnetTreeMap.put(
-				InetAddresses.coerceToInteger(s.getStartIP()), s.getSize());
-
-	}
-
-	public IP4Subnet addResouceToSubnet(OrcaResource new_resource,
-			OrcaResource existing_resource) {
-		IP4Subnet s = allocatedSubnetMap.get(existing_resource);
-
-		allocatedSubnetMap.put(new_resource, s);
-
-		return s;
-	}
-
-	public IP4Subnet getSubnetByResource(OrcaResource r) {
-		return allocatedSubnetMap.get(r);
-	}
-
-	public Inet4Address getFreeIP(OrcaResource resource) {
-		IP4Subnet s = allocatedSubnetMap.get(resource);
-
-		if (s == null) {
-			logger.error("Cannot getFreeIP (cannot find subnet for resource). "
-					+ resource);
-			return null;
-		}
-
-		return s.getFreeIP();
-	}
-
-	public int getSubnetMask(OrcaResource resource) {
-		IP4Subnet s = allocatedSubnetMap.get(resource);
-
-		if (s == null) {
-			logger.error("Cannot getSubnetMask (cannot find subnet for resource). "
-					+ resource);
-			return 0;
-		}
-
-		return s.getMaskLength();
-	}
-
-	public void markIPsUsed(OrcaResource resource, Inet4Address ip, int size) {
-		IP4Subnet s = allocatedSubnetMap.get(resource);
-
-		if (s == null) {
-			logger.error("Cannot mark IP used (cannot find subnet for resource). "
-					+ ip + ", " + resource);
-			return;
-		}
-
-		if (!s.isInSubnet(ip)
-				|| !s.isInSubnet((Inet4Address) InetAddresses
-						.fromInteger(InetAddresses.coerceToInteger(ip) + size))) {
-			logger.error("Cannot mark IP used (IP not in subnet). " + ip + ", "
-					+ s + ", size " + size);
-			return;
-		}
-
-		s.markIPsUsed(ip, size);
-	}
-
-	public void markIPUsed(OrcaResource resource, Inet4Address ip) {
-		IP4Subnet s = allocatedSubnetMap.get(resource);
-
-		if (s == null) {
-			logger.error("Cannot mark IP used (cannot find subnet for resource). "
-					+ ip + ", " + resource);
-			return;
-		}
-
-		if (!s.isInSubnet(ip)) {
-			logger.error("Cannot mark IP used (IP not in subnet). " + ip + ", "
-					+ s);
-			return;
-		}
-
-		s.markIPUsed(ip);
-	}
 
 	public boolean isAvailable(Inet4Address ip, int mask_length) {
 		int size = IP4Subnet.getSizeFromMask(mask_length);
@@ -411,90 +255,8 @@ public class IP4Assign_v2 {
 		return rtnStr;
 	}
 
-	public static void main(String[] argv) {
 
-		IP4Assign_v2 ipassign = new IP4Assign_v2();
 
-		System.out.println(ipassign);
-	}
 
-	public String getSubnetJsonString(OrcaResource n) {
-		// GsonBuilder gson_builder = new GsonBuilder();
-		// gson_builder.registerTypeAdapter(IP4Subnet.class, new
-		// IP4SubnetSerializer());
-		// Gson gson = gson_builder.create();
-		Gson gson = new Gson();
-		return gson.toJson(allocatedSubnetMap.get(n));
-	}
-
-	public static IP4Subnet createSubnetFromJsonString(String json) {
-		System.out.println("IP4Subnet createSubnetFromJsonString(String json): json = " + json);
-		
-		GsonBuilder gson_builder = new GsonBuilder();
-		gson_builder.registerTypeAdapter(IP4Subnet.class, new IP4SubnetDeserializer());
-		Gson gson = gson_builder.create();
-		// Gson gson = new Gson();
-		return gson.fromJson(json, IP4Subnet.class);
-	}
-
-	private static class IP4SubnetDeserializer implements
-			JsonDeserializer<IP4Subnet> {
-		public IP4Subnet deserialize(JsonElement json, Type typeOfT,
-				JsonDeserializationContext context) throws JsonParseException {
-
-			System.out.println(json);
-
-			JsonObject json_obj = json.getAsJsonObject();
-			JsonObject json_subnet = json_obj.getAsJsonObject("subnet");
-
-			System.out.println("json_subnet = " + json_subnet);
-			String ip_str = json_subnet.getAsJsonPrimitive("ip").getAsString();
-			int mask_length = json_subnet.getAsJsonPrimitive("mask_length")
-					.getAsInt();
-
-			JsonArray json_ips = json_subnet.getAsJsonArray("ip_avail");
-
-			System.out.println("ip: " + ip_str);
-			System.out.println("mask_length: " + mask_length);
-			System.out.println("json_ips: " + json_ips);
-
-			IP4Subnet s = null;
-			try {
-				s = new IP4Subnet((Inet4Address) InetAddress.getByName(ip_str),
-						mask_length);
-				s.markIPsUsed((Inet4Address) InetAddress.getByName(ip_str),
-						IP4Subnet.getSizeFromMask(mask_length));
-
-				Iterator<JsonElement> i = json_ips.iterator();
-				while (i.hasNext()) {
-					JsonPrimitive p = i.next().getAsJsonPrimitive();
-					String[] ip = p.getAsString().split("/");
-					System.out.println("ip[0]: " + ip[0]);
-					System.out.println("ip[1]: " + ip[1]);
-					System.out.println("IP: " + p.getAsString());
-
-					s.markIPsFree((Inet4Address) InetAddress.getByName(ip[0]),
-							IP4Subnet.getSizeFromMask(Integer.parseInt(ip[1])));
-				}
-
-			} catch (UnknownHostException e) {
-				System.out.println("Caught UnknownHostException");
-				return null;
-			}
-
-			return s;
-
-		}
-	}
-
-	private static class IP4SubnetSerializer implements
-			JsonSerializer<IP4Subnet> {
-		public JsonElement serialize(IP4Subnet src, Type typeOfSrc,
-				JsonSerializationContext context) {
-			System.out.println("****** " + src.toJsonString());
-			return new JsonPrimitive(src.toJsonString());
-
-		}
-	}*/
 
 }

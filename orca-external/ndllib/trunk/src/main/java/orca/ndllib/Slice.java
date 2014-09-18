@@ -4,11 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import orca.ndllib.ndl.RequestLoader;
-import orca.ndllib.ndl.RequestSaver;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Interface;
@@ -17,6 +12,11 @@ import orca.ndllib.resources.request.Node;
 import orca.ndllib.resources.request.RequestResource;
 import orca.ndllib.resources.request.StitchPort;
 import orca.ndllib.resources.request.StorageNode;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+
 
 public class Slice {
 	Request request;

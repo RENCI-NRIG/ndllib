@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import orca.ndllib.ndl.*;
-import orca.ndllib.resources.OrcaInterface;
-import orca.ndllib.resources.OrcaResource;
+
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;

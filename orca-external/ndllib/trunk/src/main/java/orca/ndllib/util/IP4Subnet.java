@@ -8,244 +8,229 @@ import java.util.BitSet;
 
 import com.google.common.net.InetAddresses;
 /**
- * Class to manage and ip subnet
+ * Class to manage an ip subnet
  * @author pruth 
  *
  */
 public class IP4Subnet {
-    Inet4Address start_ip;
-    int mask_length;  //cidr mask length
-    int mask;
+	Inet4Address start_ip;
+	int mask_length;  //cidr mask length
+	int mask;
 
-    BitSet allocatedIPs;
+	BitSet allocatedIPs;
 
-    public IP4Subnet() {}
+	public IP4Subnet() {}
 
-    public IP4Subnet(Inet4Address anIp, int aMaskLength) {
-        mask_length = aMaskLength;
-        allocatedIPs = new BitSet();
-        mask = 0xFFFFFFFF << (32 - mask_length);
-        start_ip = InetAddresses.fromInteger(InetAddresses.coerceToInteger(anIp) & mask);
-    }
-
-    public IP4Subnet(Inet4Address anIp, int aMaskLength, BitSet anAllocatedIPs) {
-        mask_length = aMaskLength;
-        allocatedIPs = (BitSet) anAllocatedIPs.clone();
-        mask = 0xFFFFFFFF << (32 - mask_length);
-        start_ip = InetAddresses.fromInteger(InetAddresses.coerceToInteger(anIp) & mask);
-    }
-        
-    public String toJsonString(){
-	String ip_avail ="[";
-        for(int i = 0; i < getSizeFromMask(mask_length); i++){
-	    if(allocatedIPs.get(i)){
-                if(ip_avail != "[")
-		    ip_avail += ",";
-
-                ip_avail += ((Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+i)).getHostAddress() + "/32";
-            }
-        }
-	ip_avail += "]";
-
-        return "\"subnet\":{\"IP\":\""+start_ip.getHostAddress()+"\",\"mask_length\":\""+mask_length+"\",\"ip_avail\":"+ip_avail+"}";
-    }
-
-
-
-    public static int getSizeFromMask(int mask_length){
-	return 1 << (32 - mask_length);
-    }
-
-    public static int getMaskFromSize(int size){
-        int size_curr = size;
-	int cnt = 0;
-	while (size_curr > 0){
-	    size_curr = size_curr >> 1;
-	    cnt++;
+	public IP4Subnet(Inet4Address anIp, int aMaskLength) {
+		mask_length = aMaskLength;
+		allocatedIPs = new BitSet();
+		mask = 0xFFFFFFFF << (32 - mask_length);
+		start_ip = InetAddresses.fromInteger(InetAddresses.coerceToInteger(anIp) & mask);
 	}
 
-	if ((1 << cnt-1) == size)
-	    cnt--;
-
-	return  32 - cnt;
-    }
-
-    public int getMaskLength(){
-	return mask_length;
-    }
-
-    public Inet4Address getStartIP(){
-	return start_ip;
-    }
-
-    public int getSize(){
-	return getSizeFromMask(mask_length);
-    }
-
-
-    public boolean doesOverlap(Inet4Address test_ip, int test_mask_length){
-	int this_start_ip_int = InetAddresses.coerceToInteger(start_ip);
-	int this_end_ip_int = this_start_ip_int + getSizeFromMask(mask_length);
-
-	int test_start_ip_int = InetAddresses.coerceToInteger(test_ip);
-	int test_end_ip_int = test_start_ip_int + getSizeFromMask(test_mask_length);
-	int test_mask = 0xFFFFFFFF << (32 - test_mask_length);
-
-	//test endpoints in this endpoints
-        if ((test_start_ip_int & mask) == (this_start_ip_int & mask)  || (test_end_ip_int & mask) == (this_start_ip_int & mask) ) 
-            return true;
-
-	//this endpoints in test endpoints
-	if ((this_start_ip_int & test_mask) == (test_start_ip_int & test_mask)  || (this_end_ip_int & test_mask) == (test_start_ip_int & test_mask) )
-            return true;
-
-
-        return false;
-    }
-
-    public boolean isInSubnet(Inet4Address ip){
-	int start_ip_int = InetAddresses.coerceToInteger(start_ip);
-	int ip_int = InetAddresses.coerceToInteger(ip);
-
-	if ((ip_int & mask) == (start_ip_int & mask))
-	    return true;
-	    
-	return false;
-    }
-
-    private int getOffset(Inet4Address ip){
-	int start_ip_int = InetAddresses.coerceToInteger(start_ip);
-	int ip_int = InetAddresses.coerceToInteger(ip);
-
-        return ip_int - start_ip_int;
-    }
-	
-    public Inet4Address getFreeIP(){
-	int new_offset = allocatedIPs.nextClearBit(0);
-	if (new_offset < getSizeFromMask(mask_length)){
-	    allocatedIPs.set(new_offset);
-	    return (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+new_offset);
+	public IP4Subnet(Inet4Address anIp, int aMaskLength, BitSet anAllocatedIPs) {
+		mask_length = aMaskLength;
+		allocatedIPs = (BitSet) anAllocatedIPs.clone();
+		mask = 0xFFFFFFFF << (32 - mask_length);
+		start_ip = InetAddresses.fromInteger(InetAddresses.coerceToInteger(anIp) & mask);
 	}
-	return null;
-    }
 
-    
-    //Gets a contiguous block of IPs or return null
-    public Inet4Address getFreeIPs(int count){
-	int start_offset = 0;
-	int max_offset = getSizeFromMask(mask_length);
-	int next_set = 0;
-
-	while (start_offset < max_offset){
-	    start_offset = allocatedIPs.nextClearBit(next_set);
-	    
-	    next_set = allocatedIPs.nextSetBit(start_offset); 
-	    
-	    //if there are no higher used ips, are there enough ips remaining to fullfill request?
-	    if(next_set == -1 && start_offset + count < max_offset)
-		break;
-
-	    //if ther is a higher used ip, is the block before it large enough?
-	    if (next_set > start_offset + count)
-		break;    
+	public static int getSizeFromMask(int mask_length){
+		return 1 << (32 - mask_length);
 	}
-	
-	if(start_offset >= max_offset){
-	    System.out.println("Could not allocate contiguous IPs.  No block of IPs is large enough.");
-	    return null;
+
+	public static int getMaskFromSize(int size){
+		int size_curr = size;
+		int cnt = 0;
+		while (size_curr > 0){
+			size_curr = size_curr >> 1;
+		cnt++;
+		}
+
+		if ((1 << cnt-1) == size)
+			cnt--;
+
+		return  32 - cnt;
 	}
-	
-	allocatedIPs.set(start_offset,start_offset + count);
-	return (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+start_offset);
-    }
-    
-    public void markIPFree(Inet4Address ip){
-	if (isInSubnet(ip))
-            allocatedIPs.clear(getOffset(ip));
-    }
 
-
-    public void markIPUsed(Inet4Address ip){
-	if (isInSubnet(ip))
-	    allocatedIPs.set(getOffset(ip));
-    }
-
-    
-    public void markIPsFree(Inet4Address ip, int count){
-	if (isInSubnet(ip)){
-            int offset = getOffset(ip);
-            int size = getSizeFromMask(mask_length);
-            if (offset + count > size)
-                count = size - offset;
-	    allocatedIPs.clear(offset,offset+count);
-        }
-    }
-
-
-    public void markIPsUsed(Inet4Address ip, int count){
-	if (isInSubnet(ip)){
-	    int offset = getOffset(ip);
-	    int size = getSizeFromMask(mask_length);
-	    if (offset + count > size) 
-		count = size - offset;
-	    allocatedIPs.set(offset,offset+count);
+	public int getMaskLength(){
+		return mask_length;
 	}
-    }
 
-    public IP4Subnet split(){
-	int old_size = getSizeFromMask(mask_length);
-	int old_mask_length = mask_length;
-	BitSet old_allocatedIPs = allocatedIPs;
-	
-	int size = old_size >> 1;  //must be power of 2
-	mask_length = old_mask_length + 1;
-	allocatedIPs = old_allocatedIPs.get(0,size-1);
+	public Inet4Address getStartIP(){
+		return start_ip;
+	}
 
-	int new_subnet_size = size;
-	int new_subnet_mask_length = mask_length;
-	BitSet new_subnet_allocatedIPs = old_allocatedIPs.get(size,old_size-1);
-	Inet4Address new_subnet_start_ip = (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+size);
+	public int getSize(){
+		return getSizeFromMask(mask_length);
+	}
 
-	return new IP4Subnet(new_subnet_start_ip, new_subnet_mask_length, new_subnet_allocatedIPs);
-    }
-    
+	public boolean doesOverlap(IP4Subnet subnet){
+		return doesOverlap(subnet.start_ip,subnet.mask_length);
+	}
 
-    public String toString(){
-	//return "in subnet toString";
-	return "start_ip: " + start_ip.getHostAddress() + ", mask_length: " + mask_length + ", mask: 0x" + Integer.toHexString(mask) + ", size: " + getSizeFromMask(mask_length) + " " + allocatedIPs;
-    }
-			     
+	public boolean doesOverlap(Inet4Address test_ip, int test_mask_length){
+		int this_start_ip_int = InetAddresses.coerceToInteger(start_ip);
+		int this_end_ip_int = this_start_ip_int + getSizeFromMask(mask_length);
 
-    public static void main(String[] argv) throws UnknownHostException{
-	//For testing ....
+		int test_start_ip_int = InetAddresses.coerceToInteger(test_ip);
+		int test_end_ip_int = test_start_ip_int + getSizeFromMask(test_mask_length);
+		int test_mask = 0xFFFFFFFF << (32 - test_mask_length);
 
-	IP4Subnet s = null;
+		//test endpoints in this endpoints
+		if ((test_start_ip_int & mask) == (this_start_ip_int & mask)  || (test_end_ip_int & mask) == (this_start_ip_int & mask) ) 
+			return true;
 
-	s = new IP4Subnet((Inet4Address)InetAddress.getByName("172.16.1.0"),25);
-	
-	System.out.println(s);
+		//this endpoints in test endpoints
+		if ((this_start_ip_int & test_mask) == (test_start_ip_int & test_mask)  || (this_end_ip_int & test_mask) == (test_start_ip_int & test_mask) )
+			return true;
 
-	s.markIPsUsed((Inet4Address)InetAddress.getByName("172.16.1.0"),256);
 
-	Inet4Address ip1 = s.getFreeIP();
-	System.out.println("new ip: " + ip1);
+		return false;
+	}
 
-	s.markIPsUsed((Inet4Address)InetAddress.getByName("172.16.1.125"),4);
+	public boolean isInSubnet(Inet4Address ip){
+		int start_ip_int = InetAddresses.coerceToInteger(start_ip);
+		int ip_int = InetAddresses.coerceToInteger(ip);
 
-	System.out.println(s);
-    
-	System.out.println(InetAddresses.coerceToInteger((Inet4Address)InetAddress.getByName("172.16.1.42")));
-	System.out.println(InetAddresses.coerceToInteger((Inet4Address)InetAddress.getByName("172.16.1.43")));
+		if ((ip_int & mask) == (start_ip_int & mask))
+			return true;
 
-	IP4Subnet s2 = s.split();
+		return false;
+	}
 
-	System.out.println("s : " + s);
-	System.out.println("s2: " + s2);
+	private int getOffset(Inet4Address ip){
+		int start_ip_int = InetAddresses.coerceToInteger(start_ip);
+		int ip_int = InetAddresses.coerceToInteger(ip);
 
-	//Inet4Address ip100 = (Inet4Address)InetAddress.getByName("172.16.1.42");
-	//Inet4Address ip101 = (Inet4Address)InetAddress.getByName("172.16.2.43");
-	//System.out.println(InetAddresses.coerceToInteger(ip101) - InetAddresses.coerceToInteger(ip100));
-    }
+		return ip_int - start_ip_int;
+	}
+
+	public Inet4Address getFreeIP(){
+		int new_offset = allocatedIPs.nextClearBit(0);
+		if (new_offset < getSizeFromMask(mask_length)){
+			allocatedIPs.set(new_offset);
+			return (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+new_offset);
+		}
+		return null;
+	}
+
+
+	//Gets a contiguous block of IPs or return null
+	public Inet4Address getFreeIPs(int count){
+		int start_offset = 0;
+		int max_offset = getSizeFromMask(mask_length);
+		int next_set = 0;
+
+		while (start_offset < max_offset){
+			start_offset = allocatedIPs.nextClearBit(next_set);
+
+			next_set = allocatedIPs.nextSetBit(start_offset); 
+
+			//if there are no higher used ips, are there enough ips remaining to fullfill request?
+			if(next_set == -1 && start_offset + count < max_offset)
+				break;
+
+			//if ther is a higher used ip, is the block before it large enough?
+			if (next_set > start_offset + count)
+				break;    
+		}
+
+		if(start_offset >= max_offset){
+			System.out.println("Could not allocate contiguous IPs.  No block of IPs is large enough.");
+			return null;
+		}
+
+		allocatedIPs.set(start_offset,start_offset + count);
+		return (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+start_offset);
+	}
+
+	public void markIPFree(Inet4Address ip){
+		if (isInSubnet(ip))
+			allocatedIPs.clear(getOffset(ip));
+	}
+
+
+	public void markIPUsed(Inet4Address ip){
+		if (isInSubnet(ip))
+			allocatedIPs.set(getOffset(ip));
+	}
+
+
+	public void markIPsFree(Inet4Address ip, int count){
+		if (isInSubnet(ip)){
+			int offset = getOffset(ip);
+			int size = getSizeFromMask(mask_length);
+			if (offset + count > size)
+				count = size - offset;
+			allocatedIPs.clear(offset,offset+count);
+		}
+	}
+
+
+	public void markIPsUsed(Inet4Address ip, int count){
+		if (isInSubnet(ip)){
+			int offset = getOffset(ip);
+			int size = getSizeFromMask(mask_length);
+			if (offset + count > size) 
+				count = size - offset;
+			allocatedIPs.set(offset,offset+count);
+		}
+	}
+
+	public IP4Subnet split(){
+		int old_size = getSizeFromMask(mask_length);
+		int old_mask_length = mask_length;
+		BitSet old_allocatedIPs = allocatedIPs;
+
+		int size = old_size >> 1;  //must be power of 2
+		mask_length = old_mask_length + 1;
+		allocatedIPs = old_allocatedIPs.get(0,size-1);
+
+		int new_subnet_size = size;
+		int new_subnet_mask_length = mask_length;
+		BitSet new_subnet_allocatedIPs = old_allocatedIPs.get(size,old_size-1);
+		Inet4Address new_subnet_start_ip = (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+size);
+
+		return new IP4Subnet(new_subnet_start_ip, new_subnet_mask_length, new_subnet_allocatedIPs);
+	}
+
+	public String toString(){
+		//return "in subnet toString";
+		return "start_ip: " + start_ip.getHostAddress() + ", mask_length: " + mask_length + ", mask: 0x" + Integer.toHexString(mask) + ", size: " + getSizeFromMask(mask_length) + " " + allocatedIPs;
+	}
+
+
+	public static void main(String[] argv) throws UnknownHostException{
+		//For testing ....
+
+		IP4Subnet s = null;
+
+		s = new IP4Subnet((Inet4Address)InetAddress.getByName("172.16.1.0"),25);
+
+		System.out.println(s);
+
+		s.markIPsUsed((Inet4Address)InetAddress.getByName("172.16.1.0"),256);
+
+		Inet4Address ip1 = s.getFreeIP();
+		System.out.println("new ip: " + ip1);
+
+		s.markIPsUsed((Inet4Address)InetAddress.getByName("172.16.1.125"),4);
+
+		System.out.println(s);
+
+		System.out.println(InetAddresses.coerceToInteger((Inet4Address)InetAddress.getByName("172.16.1.42")));
+		System.out.println(InetAddresses.coerceToInteger((Inet4Address)InetAddress.getByName("172.16.1.43")));
+
+		IP4Subnet s2 = s.split();
+
+		System.out.println("s : " + s);
+		System.out.println("s2: " + s2);
+
+		//Inet4Address ip100 = (Inet4Address)InetAddress.getByName("172.16.1.42");
+		//Inet4Address ip101 = (Inet4Address)InetAddress.getByName("172.16.2.43");
+		//System.out.println(InetAddresses.coerceToInteger(ip101) - InetAddresses.coerceToInteger(ip100));
+	}
 
 
 }

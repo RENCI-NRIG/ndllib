@@ -4,9 +4,10 @@
 package orca.ndllib;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
@@ -16,6 +17,8 @@ import orca.ndllib.resources.request.Network;
 import orca.ndllib.resources.request.Node;
 import orca.ndllib.resources.request.StitchPort;
 import orca.ndllib.resources.request.StorageNode;
+import orca.ndllib.util.IP4Assign_v2;
+import orca.ndllib.util.IP4Subnet;
 
 
 
@@ -32,10 +35,41 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	adamantTest1();
+    	//adamantTest1();
     	//adamantTest2();
+    	autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
+	}
+	
+	public static  void autoIP1(){
+		Slice s = new Slice();
+		s.logger().debug("autoIP1");
+
+		try{
+			IP4Assign_v2 ipa = new IP4Assign_v2();
+			IP4Subnet subnet5 = ipa.getSubnet((Inet4Address)InetAddress.getByName("172.16.0.6"),24);
+			IP4Subnet subnet6 = ipa.getSubnet((Inet4Address)InetAddress.getByName("192.168.0.0"),24);
+			IP4Subnet subnet1 = ipa.getAvailableSubnet(300);
+			IP4Subnet subnet2 = ipa.getAvailableSubnet(100);
+			IP4Subnet subnet3 = ipa.getAvailableSubnet(600);
+			IP4Subnet subnet4 = ipa.getAvailableSubnet(100);
+			
+
+			s.logger().debug("subnet1: \n" + subnet1.toString());
+			s.logger().debug("subnet2: \n" + subnet2.toString());
+			s.logger().debug("subnet3: \n" + subnet3.toString());
+			s.logger().debug("subnet4: \n" + subnet4.toString());
+			s.logger().debug("subnet5: \n" + subnet5.toString());
+			s.logger().debug("subnet6: \n" + subnet6.toString());
+			
+			s.logger().debug("Subnet1 IP: " + subnet1.getFreeIP());
+			s.logger().debug("Subnet1 IP: " + subnet1.getFreeIPs(10));
+			s.logger().debug("Subnet1 IP: " + subnet1.getFreeIP());
+			
+		} catch (Exception e){
+			;
+		}
 	}
 	
 	public static  void test1(){

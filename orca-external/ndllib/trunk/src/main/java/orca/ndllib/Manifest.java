@@ -22,9 +22,7 @@
 */
 package orca.ndllib;
 
-import orca.ndllib.ndl.*;
-import orca.ndllib.resources.OrcaInterface;
-import orca.ndllib.resources.OrcaResource;
+import orca.ndllib.ndl.*;  
 import orca.ndllib.resources.manifest.CrossConnect;
 import orca.ndllib.resources.manifest.Interface;
 import orca.ndllib.resources.manifest.LinkConnection;
