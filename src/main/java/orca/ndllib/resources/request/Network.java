@@ -23,6 +23,7 @@
 package orca.ndllib.resources.request;
 
 import orca.ndllib.Request;
+import orca.ndllib.util.IP4Subnet;
 
 import org.apache.commons.collections15.Factory;
 
@@ -34,18 +35,15 @@ public abstract class Network extends RequestResource {
     protected String label = null;
     protected String realName = null;
     
+    //Subnet for autoIP
+    protected IP4Subnet ipSubnet;
 	
     public Network(Request request, String name) {
     	super(request);
         this.name = name;
+        this.ipSubnet = null;
     }
 
-    interface ILinkCreator {
-    	public Network create(String prefix);
-    	public Network create(String nm, long bw);
-    	public void reset();
-    }
-    
     public void setBandwidth(long bw) {
     	bandwidth = bw;
     }
@@ -78,64 +76,20 @@ public abstract class Network extends RequestResource {
     	this.realName = n;
     }
 	
+    //set IP subnet for autoIP
+    public void setIPSubnet(String ip, int mask){
+    	ipSubnet = request.setSubnet(ip,mask);
+    }
+    
+    //allocate new subnet for autoIP
+    public void allocateIPSubnet(int count){
+    	ipSubnet = request.allocateSubnet(count);
+    }  
+    
+    
     @Override
     public String toString() {
         return name;
     }
-    
-  
-    
-    public static class OrcaLinkFactory implements Factory<Network> {
-       private ILinkCreator inc = null;
-        
-        public OrcaLinkFactory(ILinkCreator i) {
-        	inc = i;
-        }
-        
-        public Network create() {
-        	if (inc == null)
-        		return null;
-        	synchronized(inc) {
-        		return inc.create(null);
-        	}
-        }    
-    }
-    
-    // link to broadcast?
-    public boolean linkToBroadcast() {
-//    	// if it is a link to broadcastlink, no editable properties
-//    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
-//    	
-//    	if (pn == null)
-//    		return false;
-//    	
-//    	//if ((pn.getFirst() instanceof OrcaVLAN) || 
-//    	//		(pn.getSecond() instanceof OrcaVLAN))
-//    	//	return true;
-    	return false;
-    }
-    
-    // link to shared storage?
-    public boolean linkToSharedStorage() {
-    	// if it is a link to broadcastlink, no editable properties
-//    	Pair<OrcaNode> pn = Request.getInstance().getGraph().getEndpoints(this);
-//    	
-//    	if (pn == null)
-//    		return false;
-//    	
-//    	if (pn.getFirst() instanceof OrcaStorageNode) {
-//    		OrcaStorageNode snode = (OrcaStorageNode)pn.getFirst();
-//    		if (snode.getSharedNetwork())
-//    			return true;
-//    	}
-//    	
-//    	if (pn.getSecond() instanceof OrcaStorageNode) {
-//    		OrcaStorageNode snode = (OrcaStorageNode)pn.getSecond();
-//    		if (snode.getSharedNetwork())
-//    			return true;
-//    	}
-    	return false;
-    }
-    
 
 }

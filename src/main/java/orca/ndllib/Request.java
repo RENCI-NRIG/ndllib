@@ -33,8 +33,12 @@ import orca.ndllib.resources.request.RequestResource;
 import orca.ndllib.resources.request.Interface;
 import orca.ndllib.resources.request.StitchPort;
 import orca.ndllib.resources.request.StorageNode;
+import orca.ndllib.util.IP4Assign;
+import orca.ndllib.util.IP4Subnet;
 
 import java.io.File;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,6 +67,10 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 public class Request extends NDLLIBCommon  {
 	SparseMultigraph<RequestResource, Interface> g = new SparseMultigraph<RequestResource, Interface>();
 	private boolean newRequest; //true if new,  false if from manifest
+	
+	//Obeject for managing subnets for autoIP functionallity
+	private IP4Assign ipAssign;
+	
 	
 	private static final String IMAGE_NAME_SUFFIX = "-req";
 	public static final String NO_GLOBAL_IMAGE = "None";
@@ -112,8 +120,12 @@ public class Request extends NDLLIBCommon  {
 		nsGuid = null;
 		saveFile = null;
 		
+		IP4Assign ipAssign = new IP4Assign();
+
 		//default to true request
 		newRequest = true;
+		
+		
 	}
 	
 	public Collection<RequestResource> getResources(){
@@ -299,6 +311,31 @@ public class Request extends NDLLIBCommon  {
 		}
 		return nodes;
 	}	
+	
+	/*************************************   AutoIP methods ************************************/
+	public IP4Subnet setSubnet(String ip, int maskLength){
+		IP4Subnet subnet = null;
+		try{
+			subnet = ipAssign.getSubnet((Inet4Address)InetAddress.getByName(ip), maskLength);
+		} catch (Exception e){
+			this.logger().warn("setSubnet warning: " + e);
+		}
+		return subnet;
+	}
+	
+	public IP4Subnet allocateSubnet(int count){
+		IP4Subnet subnet = null;
+		try{
+			subnet = ipAssign.getAvailableSubnet(count);
+		} catch (Exception e){
+			this.logger().warn("allocateSubnet warning: " + e);
+		}
+		return subnet;
+	}
+	
+	public void autoIP(){
+		this.logger().debug("autoIP unimplemented");
+	}
 	
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
