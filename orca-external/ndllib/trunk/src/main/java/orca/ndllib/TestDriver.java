@@ -17,7 +17,7 @@ import orca.ndllib.resources.request.Network;
 import orca.ndllib.resources.request.Node;
 import orca.ndllib.resources.request.StitchPort;
 import orca.ndllib.resources.request.StorageNode;
-import orca.ndllib.util.IP4Assign_v2;
+import orca.ndllib.util.IP4Assign;
 import orca.ndllib.util.IP4Subnet;
 
 
@@ -47,7 +47,7 @@ public class TestDriver {
 		s.logger().debug("autoIP1");
 
 		try{
-			IP4Assign_v2 ipa = new IP4Assign_v2();
+			IP4Assign ipa = new IP4Assign();
 			IP4Subnet subnet5 = ipa.getSubnet((Inet4Address)InetAddress.getByName("172.16.0.6"),24);
 			IP4Subnet subnet6 = ipa.getSubnet((Inet4Address)InetAddress.getByName("192.168.0.0"),24);
 			IP4Subnet subnet1 = ipa.getAvailableSubnet(300);

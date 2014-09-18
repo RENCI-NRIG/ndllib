@@ -33,7 +33,7 @@ import java.util.BitSet;
  * @author pruth
  * 
  */
-public class IP4Assign_v2 {
+public class IP4Assign {
 	
 	private TreeMap<Integer, Integer> managedSubnetTreeMap; // for searching if
 															// subnet overlapps
@@ -50,9 +50,9 @@ public class IP4Assign_v2 {
 
 	private static Logger logger;
 
-	public IP4Assign_v2() {
+	public IP4Assign() {
 		if (logger == null)	{
-			logger = Logger.getLogger(IP4Assign_v2.class.getCanonicalName());
+			logger = Logger.getLogger(IP4Assign.class.getCanonicalName());
 			logger.setLevel(Level.DEBUG);
 		}
 		
