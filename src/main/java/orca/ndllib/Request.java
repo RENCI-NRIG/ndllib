@@ -120,7 +120,7 @@ public class Request extends NDLLIBCommon  {
 		nsGuid = null;
 		saveFile = null;
 		
-		IP4Assign ipAssign = new IP4Assign();
+		ipAssign = new IP4Assign();
 
 		//default to true request
 		newRequest = true;
@@ -199,6 +199,11 @@ public class Request extends NDLLIBCommon  {
 		}
 		return interfaces;
 	}
+	
+	public Collection<Interface> getInterfaces(RequestResource r){
+		return g.getIncidentEdges(r);
+	}
+	
 	
 	public void clear(){
 		//reset the whole request

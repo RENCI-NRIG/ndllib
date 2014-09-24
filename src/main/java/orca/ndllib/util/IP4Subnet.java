@@ -3,7 +3,6 @@ package orca.ndllib.util;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import java.util.BitSet;
 
 import com.google.common.net.InetAddresses;
@@ -17,6 +16,8 @@ public class IP4Subnet {
 	int mask_length;  //cidr mask length
 	int mask;
 
+
+	
 	BitSet allocatedIPs;
 
 	public IP4Subnet() {}
@@ -56,7 +57,7 @@ public class IP4Subnet {
 	public int getMaskLength(){
 		return mask_length;
 	}
-
+	
 	public Inet4Address getStartIP(){
 		return start_ip;
 	}
@@ -232,6 +233,43 @@ public class IP4Subnet {
 		//System.out.println(InetAddresses.coerceToInteger(ip101) - InetAddresses.coerceToInteger(ip100));
 	}
 
+	
+	/********************************** netmask convertion ****************************/
+	
+	// converting to netmask
+	private static final String[] netmaskConverter = {
+		"128.0.0.0", "192.0.0.0", "224.0.0.0", "240.0.0.0", "248.0.0.0", "252.0.0.0", "254.0.0.0", "255.0.0.0",
+		"255.128.0.0", "255.192.0.0", "255.224.0.0", "255.240.0.0", "255.248.0.0", "255.252.0.0", "255.254.0.0", "255.255.0.0",
+		"255.255.128.0", "255.255.192.0", "255.255.224.0", "255.255.240.0", "255.255.248.0", "255.255.252.0", "255.255.254.0", "255.255.255.0",
+		"255.255.255.128", "255.255.255.192", "255.255.255.224", "255.255.255.240", "255.255.255.248", "255.255.255.252", "255.255.255.254", "255.255.255.255"
+	};
+	
+	/**
+	 * Convert netmask string to an integer (24-bit returned if no match)
+	 * @param nm
+	 * @return
+	 */
+	public static int netmaskStringToInt(String nm) {
+		int i = 1;
+		for(String s: netmaskConverter) {
+			if (s.equals(nm))
+				return i;
+			i++;
+		}
+		return 24;
+	}
+	
+	/**
+	 * Convert netmask int to string (255.255.255.0 returned if nm > 32 or nm < 1)
+	 * @param nm
+	 * @return
+	 */
+	public static String netmaskIntToString(int nm) {
+		if ((nm > 32) || (nm < 1)) 
+			return "255.255.255.0";
+		else
+			return netmaskConverter[nm - 1];
+	}
 
 }
 

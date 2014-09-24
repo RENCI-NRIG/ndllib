@@ -20,7 +20,7 @@ public abstract class RequestResource{
 	protected Request request;
 
 	protected Set<RequestResource> dependencies = new HashSet<RequestResource>(); 
-	protected Set<Interface> interfaces = new HashSet<Interface>(); 
+	//protected Set<Interface> interfaces = new HashSet<Interface>(); 
 	protected Set<ManifestResource> instantiation = new HashSet<ManifestResource>();
 	
 
@@ -66,16 +66,16 @@ public abstract class RequestResource{
 	}
 	
 	public Collection<Interface> getInterfaces() {
-		return interfaces;
+		return request.getInterfaces(this);
 	}
 	
 	public Set<ManifestResource> getInstantiation() {
 		return instantiation;
 	}
 	
-	public void addInterface(Interface i){
-		interfaces.add(i);
-	}
+	//public void addInterface(Interface i){
+	//	interfaces.add(i);
+	//}
 	
 	public void addInstantiationResource(ManifestResource r){
 		instantiation.add(r);

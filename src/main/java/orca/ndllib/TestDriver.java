@@ -35,16 +35,16 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	//adamantTest1();
+    	adamantTest1();
     	//adamantTest2();
-    	autoIP1();
+    	///autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
 	}
 	
 	public static  void autoIP1(){
 		Slice s = new Slice();
-		s.logger().debug("autoIP1");
+		s.logger().debug("START: autoIP1");
 
 		try{
 			IP4Assign ipa = new IP4Assign();
@@ -219,13 +219,15 @@ public class TestDriver {
 		InterfaceNode2Net workersIface = (InterfaceNode2Net) net.stitch(workers);
 		InterfaceNode2Net dataIface    = (InterfaceNode2Net) net.stitch(data);
 
+		
+		
 		master.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
 		master.setNodeType("XO Large");
 		master.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
 		master.setPostBootScript("master post boot script");
 		
-		masterIface.setIpAddress("172.16.1.1");
-		masterIface.setNetmask("255.255.255.0");
+		//masterIface.setIpAddress("172.16.1.1");
+		//masterIface.setNetmask("255.255.255.0");
 		
 		workers.setImage("worker_url", "worker_hash", "worker_shortName");
 		workers.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
@@ -234,11 +236,15 @@ public class TestDriver {
 		workers.setPostBootScript("worker post boot script");
 		workers.setNodeCount(10);
 		
-		workersIface.setIpAddress("172.16.1.100");
-		workersIface.setNetmask("255.255.255.0");
+		//workersIface.setIpAddress("172.16.1.100");
+		//workersIface.setNetmask("255.255.255.0");
 		
 		data.setLabel("1499");
 		data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
+		
+		//net.allocateIPSubnet(300);
+		net.setIPSubnet("196.168.0.0", 20);
+		net.autoIP();
 		
 		s.logger().debug("******************** START REQUEST *********************");
 		s.logger().debug(s.getRequest());

@@ -30,6 +30,9 @@ import org.apache.commons.collections15.Factory;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public abstract class Network extends RequestResource {
+	//default size for auto ip
+	private static int DEFAULT_SIZE = 256;
+	
     protected long bandwidth;
     protected long latency;
     protected String label = null;
@@ -86,6 +89,33 @@ public abstract class Network extends RequestResource {
     	ipSubnet = request.allocateSubnet(count);
     }  
     
+    //automatically set IPs on interfaces
+    public void autoIP(){
+    	request.logger().debug("AutoIP for network ");
+    	if (ipSubnet == null){
+    		ipSubnet = request.allocateSubnet(Network.DEFAULT_SIZE);
+    	}
+    	
+    	
+    	for (Interface i : this.getInterfaces()){
+    		request.logger().debug("AutoIP for interface: " + i);
+    		if (i instanceof InterfaceNode2Net){
+    			Node n = ((InterfaceNode2Net)i).getNode();
+    			if(n instanceof ComputeNode){
+    				int count = ((ComputeNode)n).getNodeCount();
+    				int maskLength = ipSubnet.getMaskLength();
+    				String ip = ipSubnet.getFreeIPs(count).getHostAddress();
+    				String mask = IP4Subnet.netmaskIntToString(maskLength);
+    				request.logger().debug("AutoIP for interface: count: " + count + ", maskLength: " + maskLength + ", mask: " + mask + ", ip: " + ip);
+    				((InterfaceNode2Net)i).setNetmask(mask);
+    				((InterfaceNode2Net)i).setIpAddress(ip);
+    			}
+    		} else {
+    			//unknown interface type
+    			request.logger().warn("Unkown interface type. Can not autoIP for interface: " + i.toString());
+    		}
+    	}
+    }
     
     @Override
     public String toString() {

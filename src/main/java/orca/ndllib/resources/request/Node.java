@@ -97,50 +97,5 @@ public abstract class Node extends RequestResource {
 	public Set<RequestResource> getDependencies() {
 		return dependencies;
 	}
-	
-
-
-	
-	/** 
-	 * Create a detailed printout of properties
-	 * @return
-	 */
-//	public String getViewerText() {
-//		String viewText = "";
-//		viewText += "Node name: " + name;
-//		viewText += "\nNode reservation state: " + (state != null ? state : NOT_SPECIFIED);
-//		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
-////		viewText += "\nNode Type: " + node.getNodeType();
-////		viewText += "\nImage: " + node.getImage();
-////		viewText += "\nDomain: " + domain;
-//		viewText += "\n\nPost Boot Script: \n" + (postBootScript == null ? NOT_SPECIFIED : postBootScript);
-//		viewText += "\n\nManagement access: \n";
-//		for (String service: getManagementAccess()) {
-//			viewText += service + "\n";
-//		}
-//		if (getManagementAccess().size() == 0) {
-//			viewText += NOT_SPECIFIED + "\n";
-//		}
-//		viewText += "\n\nInterfaces: ";
-//		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
-//			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond() + " " + 
-//			(macAddresses.get(e.getKey()) != null ? macAddresses.get(e.getKey()) : "");
-//		}
-//		
-//		if (substrateInfo.size() > 0) {
-//			viewText += "\n\nSubstrate information: ";
-//			for(Map.Entry<String, String> e: substrateInfo.entrySet()) {
-//				viewText += "\n\t" + e.getKey() + ": " + e.getValue();
-//			}
-//		}
-//		return viewText;
-//	}
-
-
-	
-
-
-
-
- 
+	 
 }
