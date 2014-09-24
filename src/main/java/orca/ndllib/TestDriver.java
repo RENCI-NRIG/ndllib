@@ -244,7 +244,8 @@ public class TestDriver {
 		
 		//net.allocateIPSubnet(300);
 		net.setIPSubnet("196.168.0.0", 20);
-		net.autoIP();
+		//net.autoIP();
+		s.autoIP();
 		
 		s.logger().debug("******************** START REQUEST *********************");
 		s.logger().debug(s.getRequest());
