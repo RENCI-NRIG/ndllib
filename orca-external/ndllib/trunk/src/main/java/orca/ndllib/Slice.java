@@ -72,6 +72,11 @@ public class Slice {
 		return null;
 	}
 	
+	public void autoIP(){
+		for (Network n : request.getLinks()){
+			n.autoIP();
+		}
+	}
 	
 	
 	/**************************** Get Slice Info ***********************************/
