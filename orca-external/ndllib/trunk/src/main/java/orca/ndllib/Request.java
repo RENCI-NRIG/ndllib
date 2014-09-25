@@ -67,6 +67,11 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 public class Request extends NDLLIBCommon  {
 	SparseMultigraph<RequestResource, Interface> g = new SparseMultigraph<RequestResource, Interface>();
 	private boolean newRequest; //true if new,  false if from manifest
+	private String rawLoadedRDF; //original rdf loaded. used for reseting uncommited modifies
+	
+	//record modifies
+	private ModifySaver modify;
+	
 	
 	//Obeject for managing subnets for autoIP functionallity
 	private IP4Assign ipAssign;
@@ -119,13 +124,14 @@ public class Request extends NDLLIBCommon  {
 		ofCtrlUrl = null;
 		nsGuid = null;
 		saveFile = null;
+		rawLoadedRDF = null;
 		
 		ipAssign = new IP4Assign();
 
 		//default to true request
 		newRequest = true;
 		
-		
+		modify = new ModifySaver();
 	}
 	
 	public Collection<RequestResource> getResources(){
@@ -136,9 +142,19 @@ public class Request extends NDLLIBCommon  {
 		return g;
 	}
 	
+	public boolean isNewRequest(){
+		return newRequest;
+	}
+	
+	public void setIsNewRequest(boolean isNew){
+		newRequest = isNew;
+	}
 	/*************************************   Add/Delete/Get resources  ************************************/
 	
-
+	public void increaseComputeNodeCount(ComputeNode node, int addCount){
+		modify.addNodesToGroup(node.getModelResource().getURI(), addCount);
+	}
+	
 	
 	public ComputeNode addComputeNode(String name){
 		ComputeNode node = new ComputeNode(this,name);
@@ -204,6 +220,7 @@ public class Request extends NDLLIBCommon  {
 		return g.getIncidentEdges(r);
 	}
 	
+	 
 	
 	public void clear(){
 		//reset the whole request
@@ -345,12 +362,13 @@ public class Request extends NDLLIBCommon  {
 	
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
-	public void loadFile(String file){
-		RequestLoader loader = new RequestLoader(this);
-		loader.loadGraph(new File(file));
+	public void loadFile(String file){		
+		RequestLoader rloader = new RequestLoader(this);
+		rawLoadedRDF = rloader.loadGraph(new File(file));
 	}
 	
 	public void loadRDF(String rdf){
+		rawLoadedRDF = rdf;
 		RequestLoader loader = new RequestLoader(this);
 		loader.load(rdf);
 	}
@@ -360,18 +378,26 @@ public class Request extends NDLLIBCommon  {
 	}
 	
 	public void saveNewRequest(String file){
-		RequestSaver saver = new RequestSaver(this);Request r = new Request();
+		RequestSaver saver = new RequestSaver(this);
+		Request r = new Request();
 		saver.saveRequest(file);
 	}
 	
 	public void saveModifyRequest(String file){
-		RequestSaver saver = new RequestSaver(this);Request r = new Request();
+		RequestSaver saver = new RequestSaver(this);
+		Request r = new Request();
 		saver.saveModifyRequest(file);
 	}
 	
 	public String getRDFString(){
-		RequestSaver saver = new RequestSaver(this);Request r = new Request();
+		RequestSaver saver = new RequestSaver(this);
+		Request r = new Request();
 		return saver.getRequest();
+	}
+	
+	public String getModifyRDFString(){
+		this.logger().debug("getModifyRDFString");
+		return modify.getModifyRequest();
 	}
 
 

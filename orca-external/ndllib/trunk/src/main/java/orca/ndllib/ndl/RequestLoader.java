@@ -71,13 +71,15 @@ public class RequestLoader implements INdlRequestModelListener {
 	 * @param f
 	 * @return
 	 */
-	public boolean loadGraph(File f) {
+	public String loadGraph(File f) {
 		BufferedReader bin = null; 
+		String rawRDF = null;
 		try {
 			FileInputStream is = new FileInputStream(f);
 			bin = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			
 			StringBuilder sb = new StringBuilder();
+		
 			String line = null;
 			while((line = bin.readLine()) != null) {
 				sb.append(line);
@@ -86,6 +88,8 @@ public class RequestLoader implements INdlRequestModelListener {
 			}
 			
 			bin.close();
+			
+			rawRDF = sb.toString();
 			
 			NdlRequestParser nrp = new NdlRequestParser(sb.toString(), this);
 			request.logger().debug("Parsing request");
@@ -98,10 +102,10 @@ public class RequestLoader implements INdlRequestModelListener {
 			System.out.println("error loading graph");
 			request.logger().error(e);
 			e.printStackTrace();
-			return false;
+			return null;
 		} 
 		
-		return true;
+		return rawRDF;
 	}
 	
 	/**
@@ -166,17 +170,26 @@ public class RequestLoader implements INdlRequestModelListener {
 		Node newNode;
 		ComputeNode newComputeNode = null;
 		if (ceClass.equals(NdlCommons.computeElementClass)){
-			newNode = this.request.addComputeNode(ce.getLocalName());
-			newComputeNode = (ComputeNode)newNode;
+			if(!ce.hasProperty(NdlCommons.manifestHasParent)){
+				request.logger().debug("Node: " + ce.getLocalName() + " : found computeElementClass, parent = " + ce.hasProperty(NdlCommons.manifestHasParent));
+			
+				newNode = this.request.addComputeNode(ce.getLocalName());
+				newComputeNode = (ComputeNode)newNode;
+				newNode.setModelResource(ce);
+			} else {
+				request.logger().debug("Node: " + ce.getLocalName() + " : found computeElementClass without parent, skipping!");
+				return;
+			}
 		} else { 
 			if (ceClass.equals(NdlCommons.serverCloudClass)) {
+				request.logger().debug("Node: " + ce.getLocalName() + " : found serverCloudClass, parent = " + ce.hasProperty(NdlCommons.manifestHasParent));
 				ComputeNode newNodeGroup = this.request.addComputeNode(ce.getLocalName());
 				newComputeNode = newNodeGroup;
 				int ceCount = NdlCommons.getNumCE(ce);
-				if (ceCount > 0)
-					newNodeGroup.setNodeCount(ceCount);
+				if (ceCount > 0) newNodeGroup.setNodeCount(ceCount);
 				//newNodeGroup.setSplittable(NdlCommons.isSplittable(ce));
 				newNode = newNodeGroup;
+				newNode.setModelResource(ce);
 			} else if (NdlCommons.isStitchingNode(ce)) {
 				// stitching node
 				// For some reason the properties of the stitchport are stored on the interface (not here)
@@ -282,7 +295,7 @@ public class RequestLoader implements INdlRequestModelListener {
 		}
 		
 		//ComputeNode
-		if(onode instanceof ComputeNode){
+		if(onode instanceof ComputeNode && olink instanceof Network){
 			request.logger().debug("stitching compute node");
 			InterfaceNode2Net stitch = (InterfaceNode2Net)onode.stitch(olink);
 			stitch.setIpAddress(ip);  

@@ -131,8 +131,18 @@ public class ComputeNode extends Node {
 	}
 	
 	public void setNodeCount(int nc) {
-		if (nc >= 1)
+		request.logger().debug("setNodeCount: nc = " + nc + ", nodeCount = " + nodeCount + ", isNewReqeust = " + request.isNewRequest());
+		if (nc >= 1){
+			//if it is a modify
+			if (!request.isNewRequest()){
+				if(nc > nodeCount){
+					request.logger().debug("setNodeCount: " + nc);
+					request.increaseComputeNodeCount(this, nc-nodeCount);
+				}
+			}
+			
 			nodeCount = nc;
+		}
 	}
 	
 	public String getNodeType() {

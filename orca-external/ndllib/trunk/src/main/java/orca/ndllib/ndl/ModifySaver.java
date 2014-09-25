@@ -1,11 +1,13 @@
 package orca.ndllib.ndl;
 
 import orca.ndllib.NDLLIB;
+import orca.ndllib.Request;
 import orca.ndl.NdlException;
 import orca.ndl.NdlGenerator;
 
 import com.hp.hpl.jena.ontology.Individual;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
+import com.rabbitmq.tools.Tracer.Logger;
 
 /**
  * Generate a modify request
@@ -13,20 +15,12 @@ import com.hp.hpl.jena.ontology.Individual;
  *
  */
 public class ModifySaver {
-	/*
+	
 	private NdlGenerator ngen = null;
 	private Individual modRes = null;
 	private String outputFormat = null;
 	
-	private ModifySaver() {
-	}
-	
-	private static ModifySaver instance = null;
-	
-	public static ModifySaver getInstance() {
-		if (instance == null)
-			instance = new ModifySaver();
-		return instance;
+	public ModifySaver() {
 	}
 	
 	public void setOutputFormat(String of) {
@@ -49,56 +43,48 @@ public class ModifySaver {
 			return getFormattedOutput(RequestSaver.defaultFormat);
 	}
 
-	*//**
+	/**
 	 * Create a modify request in a specific namespace (null is allowed - NDLLIBD will be used)
 	 * This call is optional. Calling addNodesToGroup and removeNodeFromGroup will automatically
 	 * make this call if it has not been made.
 	 * @param nsGuid
-	 *//*
+	 */
 	public void createModifyRequest(String nsGuid) {
 		// this should never run in parallel anyway
-		synchronized(instance) {
 			try {
-				ngen = new NdlGenerator(nsGuid, NDLLIB.logger(), true);
-				
+				ngen = new NdlGenerator(nsGuid, Request.logger(), true);
 				String nm = (nsGuid == null ? "my-modify" : nsGuid + "/my-modify");
-				
 				modRes = ngen.declareModifyReservation(nm);
-				
 			} catch (Exception e) {
-//				ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//				ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//				ed.setException("Exception encountered while converting graph to NDL-OWL: ", e);
-//				ed.setVisible(true);
+				Request.logger().debug("Fail: createModifyRequest");
 				return;
 			} 
-		}
+	
 	}
 	
-	*//**
+	/**
 	 * Add a count of nodes to a group
 	 * @param groupUrl
 	 * @param count
-	 *//*
+	 */
 	public void addNodesToGroup(String groupUrl, Integer count) {
 		if (ngen == null)
 			createModifyRequest(null);
 		try {
+			Request.logger().debug("ngen: " + ngen + ", modRes: " + modRes +", groupUrl: " + groupUrl + ", count: " + count);
 			ngen.declareModifyElementNGIncreaseBy(modRes, groupUrl, count);
 		} catch (NdlException e) {
-//			ExceptionDialog ed = new ExceptionDialog(NDLLIB.getInstance().getFrame(), "Exception");
-//			ed.setLocationRelativeTo(NDLLIB.getInstance().getFrame());
-//			ed.setException("Exception encountered while converting graph to NDL-OWL: ", e);
-//			ed.setVisible(true);
+			Request.logger().debug("addNodesToGroup FAIL: ngen: " + ngen + ", modRes: " + modRes +", groupUrl: " + groupUrl + ", count: " + count);
+
 			return;
 		}
 	}
 	
-	*//**
+	/**
 	 * Remove a specific node from a specific group
 	 * @param groupUrl
 	 * @param nodeUrl
-	 *//*
+	 */
 	public void removeNodeFromGroup(String groupUrl, String nodeUrl) {
 		if (ngen == null)
 			createModifyRequest(null);
@@ -113,22 +99,22 @@ public class ModifySaver {
 		}
 	}
 	
-	*//**
+	/**
 	 * Return modify request in specified format
 	 * @return
-	 *//*
+	 */
 	public String getModifyRequest() {
 		return getFormattedOutput(outputFormat);
 	}
 	
-	*//**
+	/**
 	 * clear up the modify saver
-	 *//*
+	 */
 	public void clear() {
 		if (ngen != null) {
 			ngen.done();
 			ngen = null;
 		}
-	}*/
+	}
 	
 }

@@ -146,14 +146,14 @@ public class Manifest extends NDLLIBCommon {
 	
 	public boolean loadFile(String file){
 		ManifestLoader mloader = new ManifestLoader(this);
-		return mloader.loadFile(new File(file));
+		return !mloader.loadFile(new File(file));
 		
 		
 	}
 	
 	public boolean loadRDF(String rdf){
 		ManifestLoader mloader = new ManifestLoader(this);
-		return mloader.loadRDF(rdf);
+		return !mloader.loadRDF(rdf);
 		
 		
 	}
