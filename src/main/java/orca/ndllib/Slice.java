@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import orca.ndllib.ndl.ModifySaver;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Interface;
@@ -118,12 +119,14 @@ public class Slice {
 	public void loadFile(String file){
 		request.loadFile(file);
 		isNewSlice = manifest.loadFile(file);
+		request.setIsNewRequest(isNewSlice);
 		logger.debug("Slice has manifest? " + isNewSlice);
 	}
 	
 	public void loadRDF(String rdf){
 		request.loadRDF(rdf);
 		isNewSlice = manifest.loadRDF(rdf);
+		request.setIsNewRequest(isNewSlice);
 		logger.debug("Slice has manifest? " + isNewSlice);
 	}
 	
@@ -136,7 +139,12 @@ public class Slice {
 	}
 	
 	public String getRequest(){
-		return request.getRDFString();
+		
+		if(isNewSlice){
+			return request.getRDFString();
+		} else { 
+			return request.getModifyRDFString();
+		}
 	}
 
 	/**************************** Logger Methods *************************************/

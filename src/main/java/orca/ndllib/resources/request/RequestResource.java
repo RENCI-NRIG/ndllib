@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import orca.ndllib.Request;
 import orca.ndllib.resources.manifest.ManifestResource;
 
@@ -21,8 +23,18 @@ public abstract class RequestResource{
 
 	protected Set<RequestResource> dependencies = new HashSet<RequestResource>(); 
 	//protected Set<Interface> interfaces = new HashSet<Interface>(); 
-	protected Set<ManifestResource> instantiation = new HashSet<ManifestResource>();
+	//protected Set<ManifestResource> instantiation = new HashSet<ManifestResource>();
 	
+
+	protected Resource modelResource;
+	
+	public Resource getModelResource() {
+		return modelResource;
+	}
+
+	public void setModelResource(Resource modelResource) {
+		this.modelResource = modelResource;
+	}
 
 	// reservation state - should probably be an enumeration
 	protected String state = null;
@@ -69,17 +81,17 @@ public abstract class RequestResource{
 		return request.getInterfaces(this);
 	}
 	
-	public Set<ManifestResource> getInstantiation() {
-		return instantiation;
-	}
+	//public Set<ManifestResource> getInstantiation() {
+	//	return instantiation;
+	//}
 	
 	//public void addInterface(Interface i){
 	//	interfaces.add(i);
 	//}
 	
-	public void addInstantiationResource(ManifestResource r){
-		instantiation.add(r);
-	}
+	//public void addInstantiationResource(ManifestResource r){
+	//	instantiation.add(r);
+	//}
 
 	
 	public void delete(){

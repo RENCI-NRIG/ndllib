@@ -119,6 +119,10 @@ public class IP4Subnet {
 
 	//Gets a contiguous block of IPs or return null
 	public Inet4Address getFreeIPs(int count){
+		//enforce minimum count so groups can grow
+		//probably should be a user defined max count for a group
+		if (count < 256) count = 256;
+		
 		int start_offset = 0;
 		int max_offset = getSizeFromMask(mask_length);
 		int next_set = 0;
