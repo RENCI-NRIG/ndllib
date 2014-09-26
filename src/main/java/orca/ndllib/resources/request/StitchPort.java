@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import javax.swing.ImageIcon;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
 /*
@@ -35,8 +36,8 @@ public class StitchPort extends Node {
 	protected String label;
 	protected String port;
 	
-	public StitchPort(Request request, String name) {
-		super(request,name);
+	public StitchPort(Slice slice, Request request, String name) {
+		super(slice, request,name);
 	}
 
 	public void setLabel(String l) {

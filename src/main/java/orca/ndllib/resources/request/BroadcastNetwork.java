@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import javax.swing.ImageIcon;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -60,8 +61,8 @@ public class BroadcastNetwork extends Network {
 	protected long bandwidth;
 	
 	
-	public BroadcastNetwork(Request request, String name) {
-		super(request,name);
+	public BroadcastNetwork(Slice slice, Request request, String name) {
+		super(slice, request,name);
 	}
 
 	public void setLabel(String l) {

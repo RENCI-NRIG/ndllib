@@ -31,8 +31,8 @@ public class Slice {
 		logger = Logger.getLogger(NDLLIBCommon.class.getCanonicalName());
 		logger.setLevel(Level.DEBUG);
 		
-		request = new Request();
-		manifest = new Manifest();
+		request = new Request(this);
+		manifest = new Manifest(this);
 		
 		isNewSlice = true;
 	}
@@ -62,6 +62,10 @@ public class Slice {
 		
 	public RequestResource getResourceByName(String nm){
 		return request.getResourceByName(nm);
+	}
+	
+	public RequestResource getResouceByURI(String uri){
+		return request.getResourceByURI(uri);
 	}
 	
 	public void deleteResource(RequestResource r){

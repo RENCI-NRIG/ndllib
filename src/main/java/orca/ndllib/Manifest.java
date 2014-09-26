@@ -55,11 +55,11 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 
 public class Manifest extends NDLLIBCommon {
 	private Date start = null, end = null, newEnd = null;
-		
+	
 	SparseMultigraph<ManifestResource, Interface> g = new SparseMultigraph<ManifestResource, Interface>();
 	
-	public Manifest(){
-		super();
+	public Manifest(Slice slice){
+		super(slice);
 				
 		Set<ManifestResource> nodes = new HashSet<ManifestResource>(g.getVertices());
 		for (ManifestResource n: nodes)
@@ -80,22 +80,22 @@ public class Manifest extends NDLLIBCommon {
 
 	
 	public CrossConnect addCrossConnect(String name){
-		CrossConnect c = new CrossConnect(this,name);
+		CrossConnect c = new CrossConnect(slice,this,name);
 		g.addVertex(c);
 		return c;
 	}
 	public LinkConnection addLinkConnection(String name){
-		LinkConnection c = new LinkConnection(this,name);
+		LinkConnection c = new LinkConnection(slice,this,name);
 		g.addVertex(c);
 		return c;
 	}
 	public NetworkConnection addNetworkConnection(String name){
-		NetworkConnection n = new NetworkConnection(this,name);
+		NetworkConnection n = new NetworkConnection(slice,this,name);
 		g.addVertex(n);
 		return n;
 	}
 	public Node addNode(String name){
-		Node n = new Node(this,name);
+		Node n = new Node(slice,this,name);
 		g.addVertex(n);
 		return n;
 	}
@@ -145,14 +145,14 @@ public class Manifest extends NDLLIBCommon {
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
 	public boolean loadFile(String file){
-		ManifestLoader mloader = new ManifestLoader(this);
+		ManifestLoader mloader = new ManifestLoader(slice,this);
 		return !mloader.loadFile(new File(file));
 		
 		
 	}
 	
 	public boolean loadRDF(String rdf){
-		ManifestLoader mloader = new ManifestLoader(this);
+		ManifestLoader mloader = new ManifestLoader(slice,this);
 		return !mloader.loadRDF(rdf);
 		
 		

@@ -38,6 +38,7 @@ import javax.swing.ImageIcon;
 
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
@@ -111,10 +112,13 @@ public class Node extends ManifestResource {
 	//Node
 	protected Map<LinkConnection, NetworkInterface> interfaces = null;
 	
-	interface INodeCreator {
-		public Node create();
-		public void reset();
-	}
+	protected orca.ndllib.resources.request.ComputeNode computeNode;
+	
+//	interface INodeCreator {
+//		public Node create();
+//		public void reset();
+//}
+
 
 	public String toStringLong() {
 		String ret =  name;
@@ -130,14 +134,30 @@ public class Node extends ManifestResource {
 	}
 		
 //basic constructor
-	public Node(Manifest manifest, String name) {
-		super(manifest);
+	public Node(Slice slice, Manifest manifest, String name) {
+		super(slice, manifest);
 		this.name = name; //name should be unique... i think
 		this.domain = null;
 		this.dependencies = null;
 		this.state = null;
 	}
 
+	public orca.ndllib.resources.request.ComputeNode getComputeNode() {
+		return computeNode;
+	}
+
+	public void setComputeNode(orca.ndllib.resources.request.ComputeNode computeNode) {
+		this.computeNode = computeNode;
+	}
+
+	//delete myself
+	public void delete(){
+		if(computeNode != null){	
+			computeNode.deleteNode(this.getURI());
+		} else {
+			manifest.logger().warn("Delete computeNode failed: " + this.getName());
+		}
+	}
 	
 	public void setMac(LinkConnection e, String mac) {
 		if (e == null)
@@ -238,6 +258,12 @@ public class Node extends ManifestResource {
 		
 		interfaces.get(l).setName(ifName); 
 	}
+
+	@Override
+	public String getPrintText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 //	public void setManagementAccess(List<String> s) {
 //		managementAccess = s;
@@ -259,76 +285,7 @@ public class Node extends ManifestResource {
 //	}
 	
 
-	
-	/** 
-	 * Create a detailed printout of properties
-	 * @return
-	 */
-//	public String getViewerText() {
-//		String viewText = "";
-//		viewText += "Node name: " + name;
-//		viewText += "\nNode reservation state: " + (state != null ? state : NOT_SPECIFIED);
-//		viewText += "\nReservation notice: " + (resNotice != null ? resNotice : NOT_SPECIFIED);
-////		viewText += "\nNode Type: " + node.getNodeType();
-////		viewText += "\nImage: " + node.getImage();
-////		viewText += "\nDomain: " + domain;
-//		viewText += "\n\nPost Boot Script: \n" + (postBootScript == null ? NOT_SPECIFIED : postBootScript);
-//		viewText += "\n\nManagement access: \n";
-//		for (String service: getManagementAccess()) {
-//			viewText += service + "\n";
-//		}
-//		if (getManagementAccess().size() == 0) {
-//			viewText += NOT_SPECIFIED + "\n";
-//		}
-//		viewText += "\n\nInterfaces: ";
-//		for(Map.Entry<OrcaLink, Pair<String>> e: addresses.entrySet()) {
-//			viewText += "\n\t" + e.getKey().getName() + ": " + e.getValue().getFirst() + "/" + e.getValue().getSecond() + " " + 
-//			(macAddresses.get(e.getKey()) != null ? macAddresses.get(e.getKey()) : "");
-//		}
-//		
-//		if (substrateInfo.size() > 0) {
-//			viewText += "\n\nSubstrate information: ";
-//			for(Map.Entry<String, String> e: substrateInfo.entrySet()) {
-//				viewText += "\n\t" + e.getKey() + ": " + e.getValue();
-//			}
-//		}
-//		return viewText;
-//	}
-	
-	/**
-	 * Node factory for requests
-	 * @author ibaldin
-	 *
-	 */
-    public static class OrcaNodeFactory implements Factory<Node> {
-        private INodeCreator inc = null;
-        
-        public OrcaNodeFactory(INodeCreator i) {
-        	inc = i;
-        }
-        
-        /**
-         * Create a node or a cloud based on some setting
-         */
-        public Node create() {
-        	if (inc == null)
-        		return null;
-        	synchronized(inc) {
-        		return inc.create();
-        	}
-        }       
-    }
-
-	@Override
-	public String getPrintText() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	
-
-
-
-
  
 }

@@ -2,6 +2,7 @@ package orca.ndllib.resources.manifest;
 
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 
 import org.apache.commons.collections15.Factory;
 
@@ -39,8 +40,8 @@ public class CrossConnect extends ManifestResource{
 	    protected String realName = null;
 	    
 		
-	    public CrossConnect(Manifest manifest, String name) {
-	    	super(manifest);
+	    public CrossConnect(Slice slice, Manifest manifest, String name) {
+	    	super(slice, manifest);
 	        this.name = name;
 	    }
 

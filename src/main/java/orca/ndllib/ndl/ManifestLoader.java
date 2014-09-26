@@ -38,9 +38,11 @@ import java.util.Set;
 import orca.ndllib.Manifest;
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Network;
 import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.request.RequestResource;
 import orca.ndllib.resources.request.StitchPort;
 import orca.ndllib.resources.request.StorageNode;
 import orca.ndl.INdlManifestModelListener;
@@ -66,6 +68,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 
 
+
+
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
@@ -76,15 +80,17 @@ import edu.uci.ics.jung.graph.util.Pair;
  */
 public class ManifestLoader implements INdlManifestModelListener{
 	
+	private Slice slice;
 	private Manifest manifest;
 
 	//for testing if a manifest exists
 	private boolean isManifest;
 	
-	public ManifestLoader(Manifest manifest){
+	public ManifestLoader(Slice slice, Manifest manifest){
 		manifest.logger().debug("new ManifestLoader");
 		this.manifest = manifest;
 		isManifest = false;
+		this.slice = slice;
 	}
 	
 	public boolean loadFile(File f) {
@@ -159,7 +165,8 @@ public class ManifestLoader implements INdlManifestModelListener{
 		printStr += "\n\tInterfaces:";
 		for (Resource r : interfaces){
 			printStr += "\n\t\t " + r;
-		}
+		}			
+
 		manifest.logger().debug(printStr);
 	}
 	public void ndlParseComplete() {		
@@ -254,6 +261,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 	}
 	public void ndlNode(Resource ce, OntModel om, Resource ceClass,
 			List<Resource> interfaces) {
+		
 		manifest.addNode(ce.toString());
 		
 		String printStr = "ndlManifest_Node: \n\tName: " + ce + " (" + ce.getLocalName() + ")"; 
@@ -262,6 +270,31 @@ public class ManifestLoader implements INdlManifestModelListener{
 			printStr += "\n\t\t " + r;
 		}
 		manifest.logger().debug(printStr);
+		
+		String groupUrl = NdlCommons.getRequestGroupURLProperty(ce);
+		manifest.logger().debug("NdlCommons.getRequestGroupURLProperty: " + groupUrl);
+		
+		String nodeUrl = ce.getURI();
+		manifest.logger().debug("ce.getURI(): " + nodeUrl);
+
+		if (ceClass.equals(NdlCommons.computeElementClass)){	
+			manifest.logger().debug("Adding computeElement: slice = " + slice);
+			orca.ndllib.resources.manifest.Node newNode = manifest.addNode(ce.toString());
+			manifest.logger().debug("newNode: " + newNode);
+			newNode.setModelResource(ce);
+			
+			
+			RequestResource r = slice.getResouceByURI(groupUrl);
+			manifest.logger().debug("r: " + r);
+			if(r instanceof ComputeNode){
+				ComputeNode computeNode = (ComputeNode)r;
+				manifest.logger().debug("Adding computeElement to group: " + computeNode + ", newNode: " + newNode);
+				computeNode.addManifestNode(newNode);
+				newNode.setComputeNode(computeNode);
+			}
+			
+		} 
+		
 	}	
 	
 	
