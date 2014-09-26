@@ -36,6 +36,7 @@ import java.util.Set;
 
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.InterfaceNode2Net;
 import orca.ndllib.resources.request.Network;
@@ -53,17 +54,20 @@ import org.apache.commons.lang.StringUtils;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestLoader implements INdlRequestModelListener {
 	
+	private Slice slice;
 	private Request request;
 	private RequestReservationTerm term = new RequestReservationTerm();
 
-	public RequestLoader(Request request){
+	public RequestLoader(Slice slice, Request request){
 		this.request = request;
+		this.slice =slice;
 	}
     
 	/**
@@ -190,6 +194,15 @@ public class RequestLoader implements INdlRequestModelListener {
 				//newNodeGroup.setSplittable(NdlCommons.isSplittable(ce));
 				newNode = newNodeGroup;
 				newNode.setModelResource(ce);
+				
+				String groupUrl = NdlCommons.getRequestGroupURLProperty(ce);
+				request.logger().debug("NdlCommons.getRequestGroupURLProperty: " + groupUrl);
+				
+				String nodeUrl = ce.getURI();
+				request.logger().debug("URI: " + nodeUrl);
+				
+				
+				
 			} else if (NdlCommons.isStitchingNode(ce)) {
 				// stitching node
 				// For some reason the properties of the stitchport are stored on the interface (not here)

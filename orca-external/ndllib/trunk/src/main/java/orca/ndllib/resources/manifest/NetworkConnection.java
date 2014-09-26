@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -61,8 +62,8 @@ public class NetworkConnection extends LinkConnection {
 	protected long bandwidth;
 	
 	
-	public NetworkConnection(Manifest manifest, String name) {
-		super(manifest,name);
+	public NetworkConnection(Slice slice, Manifest manifest, String name) {
+		super(slice, manifest,name);
 	}
 
 	public void setLabel(String l) {

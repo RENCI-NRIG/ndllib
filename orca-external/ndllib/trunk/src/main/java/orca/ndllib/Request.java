@@ -107,8 +107,8 @@ public class Request extends NDLLIBCommon  {
 	}
 
 	
-	public Request() {
-		super();
+	public Request(Slice slice) {
+		super(slice);
 		// clear the graph, reservation set else to defaults
 		if (g == null)
 			return;
@@ -155,29 +155,34 @@ public class Request extends NDLLIBCommon  {
 		modify.addNodesToGroup(node.getModelResource().getURI(), addCount);
 	}
 	
+	//deletes the node at uri from the group node
+	public void deleteComputeNode(ComputeNode node, String uri){
+		this.logger().debug("Request.deleteComputeNode: node = " + node + ", uri = " + uri);
+		modify.removeNodeFromGroup(node.getURI(), uri);
+	}
 	
 	public ComputeNode addComputeNode(String name){
-		ComputeNode node = new ComputeNode(this,name);
+		ComputeNode node = new ComputeNode(slice,this,name);
 		g.addVertex(node);
 		return node;
 	}
 	public StorageNode addStorageNode(String name){
-		StorageNode node = new StorageNode(this,name);
+		StorageNode node = new StorageNode(slice,this,name);
 		g.addVertex(node);
 		return node;
 	}
 	public StitchPort addStitchPort(String name){
-		StitchPort node = new StitchPort(this,name);
+		StitchPort node = new StitchPort(slice,this,name);
 		g.addVertex(node);
 		return node;
 	}
 	public Network addLink(String name){
-		BroadcastNetwork link = new BroadcastNetwork(this,name);
+		BroadcastNetwork link = new BroadcastNetwork(slice,this,name);
 		g.addVertex(link);
 		return link;
 	}
 	public BroadcastNetwork addBroadcastLink(String name){
-		BroadcastNetwork link = new BroadcastNetwork(this,name);
+		BroadcastNetwork link = new BroadcastNetwork(slice,this,name);
 		g.addVertex(link);
 		return link;
 	}
@@ -190,6 +195,23 @@ public class Request extends NDLLIBCommon  {
 		for (RequestResource n: g.getVertices()) {
 			if (nm.equals(n.getName()) && n instanceof RequestResource)
 				return (RequestResource)n;
+		}
+		return null;
+	}
+	
+	public RequestResource getResourceByURI(String uri){
+		this.logger().debug("getResourceByURI: " + uri);
+		
+		if (uri == null)
+			return null;
+		this.logger().debug("getResourceByURI: " + g);
+		for (RequestResource n: g.getVertices()) {
+			this.logger().debug("getResourceByURI: " + n.getName());
+			this.logger().debug("getResourceByURI: " + n.getURI());
+			if (n.getURI() != null && uri.equals(n.getURI()) && n instanceof RequestResource){
+				this.logger().debug("getResourceByURI: returning " + n.getName());
+				return (RequestResource)n;
+			}
 		}
 		return null;
 	}
@@ -363,13 +385,13 @@ public class Request extends NDLLIBCommon  {
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
 	public void loadFile(String file){		
-		RequestLoader rloader = new RequestLoader(this);
+		RequestLoader rloader = new RequestLoader(slice, this);
 		rawLoadedRDF = rloader.loadGraph(new File(file));
 	}
 	
 	public void loadRDF(String rdf){
 		rawLoadedRDF = rdf;
-		RequestLoader loader = new RequestLoader(this);
+		RequestLoader loader = new RequestLoader(slice, this);
 		loader.load(rdf);
 	}
 	
@@ -379,19 +401,19 @@ public class Request extends NDLLIBCommon  {
 	
 	public void saveNewRequest(String file){
 		RequestSaver saver = new RequestSaver(this);
-		Request r = new Request();
+		Request r = new Request(slice);
 		saver.saveRequest(file);
 	}
 	
 	public void saveModifyRequest(String file){
 		RequestSaver saver = new RequestSaver(this);
-		Request r = new Request();
+		Request r = new Request(slice);
 		saver.saveModifyRequest(file);
 	}
 	
 	public String getRDFString(){
 		RequestSaver saver = new RequestSaver(this);
-		Request r = new Request();
+		Request r = new Request(slice);
 		return saver.getRequest();
 	}
 	

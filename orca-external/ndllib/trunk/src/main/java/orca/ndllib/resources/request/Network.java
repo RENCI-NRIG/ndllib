@@ -23,6 +23,7 @@
 package orca.ndllib.resources.request;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import orca.ndllib.util.IP4Subnet;
 
 import org.apache.commons.collections15.Factory;
@@ -41,8 +42,8 @@ public abstract class Network extends RequestResource {
     //Subnet for autoIP
     protected IP4Subnet ipSubnet;
 	
-    public Network(Request request, String name) {
-    	super(request);
+    public Network(Slice slice, Request request, String name) {
+    	super(slice, request);
         this.name = name;
         this.ipSubnet = null;
     }

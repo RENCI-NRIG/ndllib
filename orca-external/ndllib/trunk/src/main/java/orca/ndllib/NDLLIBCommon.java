@@ -41,10 +41,16 @@ public abstract class NDLLIBCommon {
 	
 	
 	protected static Logger logger;
+	protected Slice slice;
 	
-	protected NDLLIBCommon(){
+	public Slice getSlice() {
+		return slice;
+	}
+
+	protected NDLLIBCommon(Slice slice){
 		logger = Logger.getLogger(NDLLIBCommon.class.getCanonicalName());
 		logger.setLevel(Level.DEBUG);
+		this.slice = slice;
 	}
 	
 	// where are we saving

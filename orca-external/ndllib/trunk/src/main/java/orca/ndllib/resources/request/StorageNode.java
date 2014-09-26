@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -21,8 +22,8 @@ public class StorageNode extends Node {
 	protected boolean doFormat = true;
 	protected String hasFSType = "ext4", hasFSParam = "-F -b 2048", hasMntPoint = "/mnt/target"; 
 	
-	public StorageNode(Request request, String name) {
-		super(request, name);
+	public StorageNode(Slice slice, Request request, String name) {
+		super(slice, request, name);
 	}
 	
 	public void setCapacity(long cap) {

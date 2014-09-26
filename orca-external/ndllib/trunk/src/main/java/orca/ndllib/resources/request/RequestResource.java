@@ -9,6 +9,7 @@ import java.util.Set;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import orca.ndllib.resources.manifest.ManifestResource;
 
 
@@ -20,12 +21,13 @@ import orca.ndllib.resources.manifest.ManifestResource;
  */
 public abstract class RequestResource{
 	protected Request request;
+	protected Slice slice;
 
 	protected Set<RequestResource> dependencies = new HashSet<RequestResource>(); 
 	//protected Set<Interface> interfaces = new HashSet<Interface>(); 
 	//protected Set<ManifestResource> instantiation = new HashSet<ManifestResource>();
 	
-
+	//Jena model references
 	protected Resource modelResource;
 	
 	public Resource getModelResource() {
@@ -44,8 +46,9 @@ public abstract class RequestResource{
 	protected String domain; 
 	
 	
-	public RequestResource(Request request){
+	public RequestResource(Slice slice, Request request){
 		this.request = request; 
+		this.slice = slice;
 	}
 	
 	//abstract methods 
@@ -53,6 +56,14 @@ public abstract class RequestResource{
 	public abstract Interface stitch(RequestResource r);
 
 	//non-abstract methods
+	public String getURI(){
+		if(getModelResource() != null){
+			return getModelResource().getURI();
+		} 
+		
+		return null;
+	}
+	
 	public String getName(){ 
 		return name; 
 	}

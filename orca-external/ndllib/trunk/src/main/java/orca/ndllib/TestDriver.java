@@ -39,6 +39,9 @@ import orca.ndllib.util.IP4Subnet;
 public class TestDriver {
 	public static void main(String [] args){
     	System.out.println("ndllib TestDriver: START");
+    	
+    	
+    	
     	//testLoad();
     	//testSave();
     	//testLoadAndSave();
@@ -242,7 +245,7 @@ public class TestDriver {
 		workers.setNodeType("XO Large");
 		workers.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
 		workers.setPostBootScript("worker post boot script");
-		workers.setNodeCount(2);
+		workers.setNodeCount(5);
 			
 		//data.setLabel("1499");
 		//data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
@@ -258,9 +261,9 @@ public class TestDriver {
 		//net.autoIP();
 		s.autoIP();
 		
-		s.logger().debug("******************** START REQUEST *********************");
-		s.logger().debug(s.getRequest());
-		s.logger().debug("******************** END REQUEST *********************");
+		//s.logger().debug("******************** START REQUEST *********************");
+		//s.logger().debug(s.getRequest());
+		//s.logger().debug("******************** END REQUEST *********************");
 		
 		s.save("/home/geni-orca/test-requests/adamant-test1-output-request.rdf");
 		
@@ -346,16 +349,28 @@ public class TestDriver {
 		
 		printRequest2Log(s);
 		
-		//s.logger().debug("******************** START MANIFEST *********************");
-		//s.logger().debug(s.getRequest());
-		//s.logger().debug("******************** START MANIFEST *********************");
+		s.logger().debug("Workers: ");
+		ComputeNode cn = (ComputeNode) s.getResourceByName("Workers");
+		int i = 0;
+		for (orca.ndllib.resources.manifest.Node mn : ((ComputeNode)cn).getManifestNodes()){
+			 s.logger().debug("manifestNode: " + mn.getURI());
+			 if (i++%2 == 0) {
+				 s.logger().debug("manifestNode: deleting " + mn.getURI());
+				 mn.delete();
+			 }
+		}
 		
-		ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
+		
+		s.logger().debug("******************** START MANIFEST *********************");
+		s.logger().debug(s.getRequest());
+		s.logger().debug("******************** END MANIFEST *********************");
+		
+		/*ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
 		if(n != null){
-			n.setNodeCount(4);
+			n.setNodeCount(10);
 		} else {
 			s.logger().debug("ERROR: n = null");
-		}
+		}*/
 		
 		printRequest2Log(s);
 		
@@ -386,6 +401,9 @@ public class TestDriver {
 			String printStr = "PRUTH:" + node;
 			if (node instanceof ComputeNode){
 				printStr += ", size: " + ((ComputeNode)node).getNodeCount();
+				for (orca.ndllib.resources.manifest.Node mn : ((ComputeNode)node).getManifestNodes()){
+					printStr += ", manifestNode: " + mn.getURI();
+				}
 			}
 			s.logger.debug(printStr);
 		}

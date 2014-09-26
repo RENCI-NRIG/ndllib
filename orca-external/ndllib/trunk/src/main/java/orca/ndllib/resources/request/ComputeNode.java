@@ -22,12 +22,15 @@
 */
 package orca.ndllib.resources.request;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.LayeredIcon;
 
@@ -36,7 +39,7 @@ public class ComputeNode extends Node {
 		String imageURL;
 		String imageHash;
 		String shortName;
-	
+		
 		public Image(String imageURL, String imageHash, String shortName) {
 			this.imageURL = imageURL;
 			this.imageHash = imageHash;
@@ -65,7 +68,6 @@ public class ComputeNode extends Node {
 	
 	
 	
-	
 	protected int nodeCount = 1;
 	protected boolean splittable = false;
 
@@ -73,6 +75,9 @@ public class ComputeNode extends Node {
 	protected String group = null;
 	protected String nodeType = null;
 	protected String postBootScript = null;
+		
+	//list of nodes that instantiate this group
+	ArrayList<orca.ndllib.resources.manifest.Node> manifestNodes; 
 		
 	public void setPostBootScript(String postBootScript) {
 		this.postBootScript = postBootScript;
@@ -84,10 +89,20 @@ public class ComputeNode extends Node {
 	// list of open ports
 	protected String openPorts = null;
 
-	public ComputeNode(Request request, String name){
-		super(request,name);
+	public ComputeNode(Slice slice, Request request, String name){
+		super(slice, request,name);
+		
+		manifestNodes = new ArrayList<orca.ndllib.resources.manifest.Node>();
 	}
 	
+	
+	public void addManifestNode(orca.ndllib.resources.manifest.Node node){
+		manifestNodes.add(node);
+	}
+	
+	public Collection<orca.ndllib.resources.manifest.Node> getManifestNodes(){
+		return manifestNodes;
+	}
 	
 	public void setImage(String url, String hash, String shortName){
 		image = new Image(url, hash, shortName);
@@ -143,6 +158,11 @@ public class ComputeNode extends Node {
 			
 			nodeCount = nc;
 		}
+	}
+	
+	public void deleteNode(String uri){
+		request.logger().debug("ComputeNode.deleteNode: uri = " + uri); 
+		request.deleteComputeNode(this, uri);
 	}
 	
 	public String getNodeType() {

@@ -6,8 +6,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 
 
 /**
@@ -18,7 +21,8 @@ import orca.ndllib.Request;
  */
 public abstract class ManifestResource{
 	protected Manifest manifest;
-
+	protected Slice slice;
+	
 	protected Set<ManifestResource> dependencies = new HashSet<ManifestResource>(); 
 	protected Set<Interface> interfaces = new HashSet<Interface>(); 
 	
@@ -34,14 +38,29 @@ public abstract class ManifestResource{
 	
 	protected String domain; 
 	
+	//Jena model references
+	protected Resource modelResource;
 	
-	public ManifestResource(Manifest manifest){
-		this.manifest = manifest; 
+	public Resource getModelResource() {
+		return modelResource;
+	}
+
+	public void setModelResource(Resource modelResource) {
+		this.modelResource = modelResource;
+	}
+	
+	
+	public ManifestResource(Slice slice, Manifest manifest){
+		this.manifest = manifest;
+		this.slice = slice;
 	}
 	
 	//abstact methods 
 	public abstract String getPrintText();
 	
+	public String getURI(){
+		return getModelResource().getURI();
+	}
 
 	public String getName(){ 
 		return name; 

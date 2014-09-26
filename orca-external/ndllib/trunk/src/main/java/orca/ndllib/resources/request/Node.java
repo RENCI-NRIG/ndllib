@@ -37,6 +37,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import orca.ndllib.Request;
+import orca.ndllib.Slice;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
@@ -53,8 +54,8 @@ public abstract class Node extends RequestResource {
 	}
 		
 //basic constructor
-	public Node(Request request, String name) {
-		super(request);
+	public Node(Slice slice, Request request, String name) {
+		super(slice, request);
 		this.name = name; //name should be unique... i think
 		this.domain = null;
 		this.dependencies = null;

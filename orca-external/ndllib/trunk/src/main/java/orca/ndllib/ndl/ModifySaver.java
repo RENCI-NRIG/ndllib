@@ -86,6 +86,7 @@ public class ModifySaver {
 	 * @param nodeUrl
 	 */
 	public void removeNodeFromGroup(String groupUrl, String nodeUrl) {
+		Request.logger().debug("removeNodeFromGroup: ngen: " + ngen + ", modRes: " + modRes +", groupUrl: " + groupUrl + ", nodeUrl: " + nodeUrl);
 		if (ngen == null)
 			createModifyRequest(null);
 		try {
