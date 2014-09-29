@@ -137,13 +137,14 @@ public class RequestLoader implements INdlRequestModelListener {
 
 	public void ndlReservation(Resource i, final OntModel m) {
 		
-		request.logger().debug("Reservation: " + i);
-		
+		request.logger().debug("Reservation: " + i + ", sliceState(Request:ndlReservation) = " + NdlCommons.getGeniSliceStateName(i));
 		// try to extract the guid out of the URL
 		String u = i.getURI();
 		String guid = StringUtils.removeEnd(StringUtils.removeStart(u, NdlCommons.ORCA_NS), "#");
 		
 		this.request.setNsGuid(guid);
+		
+		this.slice.setState(NdlCommons.getGeniSliceStateName(i));
 		
 		/*if (i != null) {
 			reservationDomain = RequestSaver.reverseLookupDomain(NdlCommons.getDomain(i));
@@ -343,8 +344,7 @@ public class RequestLoader implements INdlRequestModelListener {
 	
 	public void ndlSlice(Resource sl, OntModel m) {
 		
-		request.logger().debug("Slice: " + sl);
-		
+		request.logger().debug("Slice: " + sl + ", sliceState(request) = " + NdlCommons.getGeniSliceStateName(sl));
 		// check that this is an OpenFlow slice and get its details
 		if (sl.hasProperty(NdlCommons.RDF_TYPE, NdlCommons.ofSliceClass)) {
 			Resource ofCtrl = NdlCommons.getOfCtrl(sl);

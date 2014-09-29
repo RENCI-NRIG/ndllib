@@ -23,6 +23,9 @@ public class Slice {
 	Request request;
 	Manifest manifest;
 	
+	//Manifest state (if available)
+	String state;
+	
 	protected static Logger logger;
 	
 	private boolean isNewSlice;
@@ -35,6 +38,8 @@ public class Slice {
 		manifest = new Manifest(this);
 		
 		isNewSlice = true;
+		
+		state = null;
 	}
 	
 	
@@ -117,7 +122,13 @@ public class Slice {
 		return request.getStitchPorts();
 	}	
 	
+	public String getState(){
+		return state;
+	}
 	
+	public void setState(String state){
+		this.state = state;
+	}
 	
 	/**************************** Load/Save Methods **********************************/
 	public void loadFile(String file){

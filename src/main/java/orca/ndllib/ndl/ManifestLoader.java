@@ -178,7 +178,10 @@ public class ManifestLoader implements INdlManifestModelListener{
 	public void ndlReservation(Resource i, OntModel m) {
 		// TODO Auto-generated method stub
 		String printStr = "ndlManifest_Reservation: \n\tName: " + i;
+		printStr += ", sliceState(Manifest:ndlReservation) = " + NdlCommons.getGeniSliceStateName(i);
 		manifest.logger().debug(printStr);
+		
+		
 	}
 	public void ndlReservationTermDuration(Resource d, OntModel m,
 			int years, int months, int days, int hours, int minutes, int seconds) {
@@ -211,6 +214,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 	public void ndlSlice(Resource sl, OntModel m) {
 		// TODO Auto-generated method stub
 		String printStr = "ndlManifest_Slice: \n\tName: " + sl;
+		printStr += ", sliceState(manifest) = " + NdlCommons.getGeniSliceStateName(sl);
 		manifest.logger().debug(printStr);
 	}
 	public void ndlBroadcastConnection(Resource bl, OntModel om,
@@ -229,7 +233,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 		
 		// TODO Auto-generated method stub
 		String printStr = "ndlManifest_Manifest: \n\tName: " + i;
-		printStr += ", state = " + NdlCommons.getResourceStateAsString(i);
+		printStr += ", sliceState = " + NdlCommons.getGeniSliceStateName(i);
 		manifest.logger().debug(printStr);
 		
 	}

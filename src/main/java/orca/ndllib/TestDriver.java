@@ -360,6 +360,9 @@ public class TestDriver {
 			// }
 		}
 		
+		s.logger().debug("SliceState = " + s.getState());
+		
+		//s.logger().debug(manifest);
 		
 		//s.logger().debug("******************** START MANIFEST *********************");
 		//s.logger().debug(s.getRequest());
