@@ -36,6 +36,7 @@ import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import orca.ndl.NdlCommons;
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
 import orca.ndllib.Slice;
@@ -230,6 +231,9 @@ public class Node extends ManifestResource {
 			return false;
 		return dependencies.contains(n);
 	}
+	
+
+	
 	
 	/**
 	 * returns empty set if no dependencies

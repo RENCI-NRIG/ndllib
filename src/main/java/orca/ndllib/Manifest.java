@@ -58,6 +58,8 @@ public class Manifest extends NDLLIBCommon {
 	
 	SparseMultigraph<ManifestResource, Interface> g = new SparseMultigraph<ManifestResource, Interface>();
 	
+	ManifestLoader mloader; 
+	
 	public Manifest(Slice slice){
 		super(slice);
 				
@@ -145,17 +147,15 @@ public class Manifest extends NDLLIBCommon {
 	/*************************************   RDF Functions:  save, load, getRDFString, etc. ************************************/
 	
 	public boolean loadFile(String file){
-		ManifestLoader mloader = new ManifestLoader(slice,this);
+		mloader = new ManifestLoader(slice,this);
 		return !mloader.loadFile(new File(file));
 		
 		
 	}
 	
 	public boolean loadRDF(String rdf){
-		ManifestLoader mloader = new ManifestLoader(slice,this);
+		mloader = new ManifestLoader(slice,this);
 		return !mloader.loadRDF(rdf);
-		
-		
 	}
 	
 	public String getRDFString(){

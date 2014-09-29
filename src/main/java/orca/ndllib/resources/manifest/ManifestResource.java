@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
+import orca.ndl.NdlCommons;
 import orca.ndllib.Manifest;
 import orca.ndllib.Request;
 import orca.ndllib.Slice;
@@ -54,6 +55,7 @@ public abstract class ManifestResource{
 		this.manifest = manifest;
 		this.slice = slice;
 	}
+
 	
 	//abstact methods 
 	public abstract String getPrintText();
@@ -71,11 +73,7 @@ public abstract class ManifestResource{
 	}
 
 	public String getState() {
-		return state;
-	}
-
-	public void setState(String s) {
-		state = s;
+		return NdlCommons.getResourceStateAsString(this.getModelResource());
 	}
 
 	public String getReservationNotice() {
