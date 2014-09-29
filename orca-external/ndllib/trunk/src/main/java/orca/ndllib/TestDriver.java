@@ -224,13 +224,17 @@ public class TestDriver {
 		
 		ComputeNode master     = s.addComputeNode("Master");
 		ComputeNode workers    = s.addComputeNode("Workers");
-		//StitchPort  data       = s.addStitchPort("Data");
-		BroadcastNetwork net   = s.addBroadcastLink("Network");
+		StitchPort  data       = s.addStitchPort("Data");
+		StorageNode storage    = s.addStorageNode("Storage");
+		BroadcastNetwork net   = s.addBroadcastLink("DataNetwork");
+		BroadcastNetwork storageNet   = s.addBroadcastLink("StorageNetwork");
 		
 		InterfaceNode2Net masterIface  = (InterfaceNode2Net) net.stitch(master);
 		InterfaceNode2Net workersIface = (InterfaceNode2Net) net.stitch(workers);
-		//InterfaceNode2Net dataIface    = (InterfaceNode2Net) net.stitch(data);
+		InterfaceNode2Net dataIface    = (InterfaceNode2Net) net.stitch(data);
 
+		InterfaceNode2Net masterStorageIface  = (InterfaceNode2Net) storageNet.stitch(master);
+		InterfaceNode2Net storageStorageIface  = (InterfaceNode2Net) storageNet.stitch(storage);
 		
 		
 		master.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
@@ -243,13 +247,15 @@ public class TestDriver {
 		workers.setImage("worker_url", "worker_hash", "worker_shortName");
 		workers.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
 		workers.setNodeType("XO Large");
-		workers.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
+		workers.setDomain("UH (Houston, TX USA) XO Rack");
 		workers.setPostBootScript("worker post boot script");
 		workers.setNodeCount(5);
 			
-		//data.setLabel("1499");
-		//data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
+		data.setLabel("1499");
+		data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
 		
+		storage.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
+		storage.setCapacity(10);
 		
 		//masterIface.setIpAddress("172.16.1.1");
     	//masterIface.setNetmask("255.255.255.0");
@@ -266,16 +272,10 @@ public class TestDriver {
 		//s.logger().debug("******************** END REQUEST *********************");
 		
 		s.save("/home/geni-orca/test-requests/adamant-test1-output-request.rdf");
-		
-		String ndlReq = s.getRequest();
-		
-		/*************** Submit ********************/
-        // This populates rmProperties, which is neded by everybody else
-        processPreferences();
-        
-        
-        sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", ndlReq);
-        
+
+		/*************** Submit ********************/ 
+		processPreferences();
+        sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
 	}
 	
 	/** 
@@ -353,17 +353,17 @@ public class TestDriver {
 		ComputeNode cn = (ComputeNode) s.getResourceByName("Workers");
 		int i = 0;
 		for (orca.ndllib.resources.manifest.Node mn : ((ComputeNode)cn).getManifestNodes()){
-			 s.logger().debug("manifestNode: " + mn.getURI());
-			 if (i++%2 == 0) {
-				 s.logger().debug("manifestNode: deleting " + mn.getURI());
-				 mn.delete();
-			 }
+			 s.logger().debug("manifestNode: " + mn.getURI() + ", state = " + mn.getState());
+			 //if (i++%2 == 0) {
+			//	 s.logger().debug("manifestNode: deleting " + mn.getURI());
+			//	 mn.delete();
+			// }
 		}
 		
 		
-		s.logger().debug("******************** START MANIFEST *********************");
-		s.logger().debug(s.getRequest());
-		s.logger().debug("******************** END MANIFEST *********************");
+		//s.logger().debug("******************** START MANIFEST *********************");
+		//s.logger().debug(s.getRequest());
+		//s.logger().debug("******************** END MANIFEST *********************");
 		
 		/*ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
 		if(n != null){
@@ -372,9 +372,9 @@ public class TestDriver {
 			s.logger().debug("ERROR: n = null");
 		}*/
 		
-		printRequest2Log(s);
+		//printRequest2Log(s);
 		
-		sendModifyRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
+		//sendModifyRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
 		
         
 	}

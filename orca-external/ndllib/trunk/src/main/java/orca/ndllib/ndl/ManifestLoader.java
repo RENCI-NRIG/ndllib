@@ -39,6 +39,7 @@ import orca.ndllib.Manifest;
 import orca.ndllib.NDLLIB;
 import orca.ndllib.Request;
 import orca.ndllib.Slice;
+import orca.ndllib.resources.manifest.LinkConnection;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Network;
 import orca.ndllib.resources.request.Node;
@@ -58,6 +59,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
+
 
 
 
@@ -132,7 +134,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 			// parse as manifest
 			NdlManifestParser nmp = new NdlManifestParser(s, this);
 			nmp.processManifest();	
-			nmp.freeModel();			
+			//nmp.freeModel();			
 			//manifest.setManifestTerm(creationTime, expirationTime);
 			
 		} catch (Exception e) {
@@ -227,19 +229,22 @@ public class ManifestLoader implements INdlManifestModelListener{
 		
 		// TODO Auto-generated method stub
 		String printStr = "ndlManifest_Manifest: \n\tName: " + i;
+		printStr += ", state = " + NdlCommons.getResourceStateAsString(i);
 		manifest.logger().debug(printStr);
+		
 	}
 	public void ndlLinkConnection(Resource l, OntModel m,
 			List<Resource> interfaces, Resource parent) {// parse as request
-		
-		manifest.addLinkConnection(l.toString());
 		
 		String printStr = "ndlManifest_LinkConnection: \n\tName: " + l +  "\n\tparent: " + parent; 
 		printStr += "\n\tInterfaces:";
 		for (Resource r : interfaces){
 			printStr += "\n\t\t " + r;
 		}
-		manifest.logger().debug(printStr);
+		//manifest.logger().debug(printStr);
+		
+		LinkConnection lc = manifest.addLinkConnection(l.toString());
+		lc.setModelResource(l);		
 	}	
 	public void ndlCrossConnect(Resource c, OntModel m, long bw,
 			String label, List<Resource> interfaces, Resource parent) {
@@ -265,6 +270,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 		manifest.addNode(ce.toString());
 		
 		String printStr = "ndlManifest_Node: \n\tName: " + ce + " (" + ce.getLocalName() + ")"; 
+		printStr += ", state = " + NdlCommons.getResourceStateAsString(ce);
 		printStr += "\n\tInterfaces:";
 		for (Resource r : interfaces){
 			printStr += "\n\t\t " + r;
