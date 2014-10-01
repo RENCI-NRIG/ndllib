@@ -89,21 +89,51 @@ public abstract class Network extends RequestResource {
     public void allocateIPSubnet(int count){
     	ipSubnet = request.allocateSubnet(count);
     }  
+
+    public void clearAvailableIPs(){
+    	if(ipSubnet != null) {
+    		ipSubnet.markAllIPsUsed();
+    	}
+    }
+    
+    public void addAvailableIP(String ip){
+    	addAvailableIPs(ip, 32);
+    }
+    
+    public void addAvailableIPs(String ip, int maskLength){
+    	int count = 1<<(32-maskLength);
+    	
+    	ipSubnet.markIPsFree(ip, count);
+    }
     
     //automatically set IPs on interfaces
     public void autoIP(){
     	request.logger().debug("AutoIP for network ");
+    	//Do not set IPs for storage networks
+    	for (Interface i : this.getInterfaces()){
+    		if (i instanceof InterfaceNode2Net){
+    			Node n = ((InterfaceNode2Net)i).getNode();
+    			if(n instanceof StorageNode){
+    				request.logger().info("Skipping autoip for storage network: " + this.getName());
+    				return;
+    			}
+    		} else {
+    			//unknown interface type
+    			request.logger().warn("Unkown interface type. Can not autoIP for interface: " + i.toString());
+    		}
+    	}
+    	
+    	
     	if (ipSubnet == null){
     		ipSubnet = request.allocateSubnet(Network.DEFAULT_SIZE);
     	}
-    	
     	
     	for (Interface i : this.getInterfaces()){
     		request.logger().debug("AutoIP for interface: " + i);
     		if (i instanceof InterfaceNode2Net){
     			Node n = ((InterfaceNode2Net)i).getNode();
     			if(n instanceof ComputeNode){
-    				int count = ((ComputeNode)n).getNodeCount();
+    				int count = ((ComputeNode)n).getMaxNodeCount();
     				
     				int maskLength = ipSubnet.getMaskLength();
     				String ip = ipSubnet.getFreeIPs(count).getHostAddress();
