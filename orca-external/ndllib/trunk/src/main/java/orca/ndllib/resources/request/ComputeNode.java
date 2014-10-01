@@ -68,7 +68,8 @@ public class ComputeNode extends Node {
 	
 	
 	
-	protected int nodeCount = 1;
+	protected int nodeCount = 1; //The actual count of the nodes for a group
+	protected int maxNodeCount = 1; //The max nodes a group can expand to. Used for autoip. Default = nodeCount
 	protected boolean splittable = false;
 
 	protected Image image = null;
@@ -140,7 +141,22 @@ public class ComputeNode extends Node {
 		return postBootScript;
 	}
 
-
+	public int getMaxNodeCount(){
+		return maxNodeCount;
+	}
+	
+	public void setMaxNodeCount(int count){
+		if (request.isNewRequest()){
+			maxNodeCount = count;
+			
+			if(nodeCount > maxNodeCount){
+				setNodeCount(maxNodeCount);
+			}
+		}
+		
+		
+	}
+	
 	public int getNodeCount() {
 		return nodeCount;
 	}
@@ -154,8 +170,12 @@ public class ComputeNode extends Node {
 					request.logger().debug("setNodeCount: " + nc);
 					request.increaseComputeNodeCount(this, nc-nodeCount);
 				}
+			} else {
+				//if it is a new request
+				if(nodeCount > maxNodeCount){
+					maxNodeCount = nodeCount;
+				}
 			}
-			
 			nodeCount = nc;
 		}
 	}

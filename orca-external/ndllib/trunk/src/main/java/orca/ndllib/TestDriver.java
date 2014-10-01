@@ -46,9 +46,9 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	//adamantTest1();
+    	adamantTest1();
     	//adamantTest2();
-    	adamantTest3();
+    	//adamantTest3();
     	///autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
@@ -250,6 +250,7 @@ public class TestDriver {
 		workers.setDomain("UH (Houston, TX USA) XO Rack");
 		workers.setPostBootScript("worker post boot script");
 		workers.setNodeCount(5);
+		workers.setMaxNodeCount(13);
 			
 		data.setLabel("1499");
 		data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
@@ -265,6 +266,10 @@ public class TestDriver {
 		//net.allocateIPSubnet(300);
 		//net.setIPSubnet("196.168.0.0", 20);
 		//net.autoIP();
+		net.setIPSubnet("192.168.0.0",24);
+		net.clearAvailableIPs();
+		net.addAvailableIPs("192.168.0.0",24);
+		
 		s.autoIP();
 		
 		//s.logger().debug("******************** START REQUEST *********************");

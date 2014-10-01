@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.BitSet;
 
 import com.google.common.net.InetAddresses;
+import com.rabbitmq.tools.Tracer.Logger;
 /**
  * Class to manage an ip subnet
  * @author pruth 
@@ -121,7 +122,7 @@ public class IP4Subnet {
 	public Inet4Address getFreeIPs(int count){
 		//enforce minimum count so groups can grow
 		//probably should be a user defined max count for a group
-		if (count < 256) count = 256;
+		//if (count < 256) count = 256;
 		
 		int start_offset = 0;
 		int max_offset = getSizeFromMask(mask_length);
@@ -150,18 +151,46 @@ public class IP4Subnet {
 		return (Inet4Address)InetAddresses.fromInteger(InetAddresses.coerceToInteger(start_ip)+start_offset);
 	}
 
+	public void markAllIPsFree(){
+		allocatedIPs.clear();
+	}
+	
+	public void markAllIPsUsed(){
+		if(allocatedIPs.length() > 0){
+			allocatedIPs.set(0, allocatedIPs.length()-1);
+		}
+	}
+	
 	public void markIPFree(Inet4Address ip){
 		if (isInSubnet(ip))
 			allocatedIPs.clear(getOffset(ip));
+			
 	}
 
-
+	public void markIPUsed(String ipStr){
+		try {
+			markIPUsed((Inet4Address)InetAddress.getByName(ipStr));
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void markIPUsed(Inet4Address ip){
 		if (isInSubnet(ip))
 			allocatedIPs.set(getOffset(ip));
 	}
 
-
+	public void markIPsFree(String ipStr, int count){
+		try {
+			markIPsFree((Inet4Address)InetAddress.getByName(ipStr),count);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public void markIPsFree(Inet4Address ip, int count){
 		if (isInSubnet(ip)){
 			int offset = getOffset(ip);
