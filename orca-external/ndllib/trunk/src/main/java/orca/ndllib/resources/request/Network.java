@@ -93,7 +93,7 @@ public abstract class Network extends RequestResource {
     public void clearAvailableIPs(){
     	if(ipSubnet != null) {
     		ipSubnet.markAllIPsUsed();
-    	}
+    	} 
     }
     
     public void addAvailableIP(String ip){

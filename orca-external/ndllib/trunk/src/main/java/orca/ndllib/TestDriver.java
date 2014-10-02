@@ -268,19 +268,20 @@ public class TestDriver {
 		//net.autoIP();
 		net.setIPSubnet("192.168.0.0",24);
 		net.clearAvailableIPs();
-		net.addAvailableIPs("192.168.0.0",24);
-		
+		for (int i = 20; i < 50; i++){
+			net.addAvailableIP("192.168.0." + i);
+		}
 		s.autoIP();
 		
 		//s.logger().debug("******************** START REQUEST *********************");
 		//s.logger().debug(s.getRequest());
-		//s.logger().debug("******************** END REQUEST *********************");
+		//s.logger().debug("******************** END REQUEST ******************getManifestFromORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc");***");
 		
 		s.save("/home/geni-orca/test-requests/adamant-test1-output-request.rdf");
 
 		/*************** Submit ********************/ 
-		processPreferences();
-        sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
+		//processPreferences();
+        //sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
 	}
 	
 	/** 

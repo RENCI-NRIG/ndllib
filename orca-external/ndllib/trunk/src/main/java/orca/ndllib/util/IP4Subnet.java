@@ -74,7 +74,6 @@ public class IP4Subnet {
 	public boolean doesOverlap(Inet4Address test_ip, int test_mask_length){
 		int this_start_ip_int = InetAddresses.coerceToInteger(start_ip);
 		int this_end_ip_int = this_start_ip_int + getSizeFromMask(mask_length);
-
 		int test_start_ip_int = InetAddresses.coerceToInteger(test_ip);
 		int test_end_ip_int = test_start_ip_int + getSizeFromMask(test_mask_length);
 		int test_mask = 0xFFFFFFFF << (32 - test_mask_length);
@@ -156,8 +155,11 @@ public class IP4Subnet {
 	}
 	
 	public void markAllIPsUsed(){
-		if(allocatedIPs.length() > 0){
-			allocatedIPs.set(0, allocatedIPs.length()-1);
+		if(allocatedIPs != null){
+			System.out.println("markAllIPsUsed: marking");
+			allocatedIPs.set(0, (1 << (32 - mask_length))-1);
+		} else {
+			System.out.println("markAllIPsUsed: skipping allocatedIPs.length(): " + allocatedIPs.length());
 		}
 	}
 	
