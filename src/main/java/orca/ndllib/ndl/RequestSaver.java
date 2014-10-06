@@ -64,20 +64,17 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 
 
+
+
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestSaver {
 	private Request request;
 	
-	private static final String EUCALYPTUS_NS = "eucalyptus";
-	private static final String EXOGENI_NS = "exogeni";
-	public static final String BAREMETAL = "ExoGENI Bare-metal";
-	public static final String DOT_FORMAT = "DOT";
-	public static final String N3_FORMAT = "N3";
-	public static final String RDF_XML_FORMAT = "RDF-XML";
+	
 
-	public static final String defaultFormat = RDF_XML_FORMAT;
+	
 	
 	private static RequestSaver instance;
 	private NdlGenerator ngen = null;
@@ -92,6 +89,15 @@ public class RequestSaver {
 		"255.255.255.128", "255.255.255.192", "255.255.255.224", "255.255.255.240", "255.255.255.248", "255.255.255.252", "255.255.255.254", "255.255.255.255"
 	};
 		
+
+	private static final String EUCALYPTUS_NS = "eucalyptus";
+	private static final String EXOGENI_NS = "exogeni";
+	public static final String BAREMETAL = "ExoGENI Bare-metal";
+	public static final String DOT_FORMAT = "DOT";
+	public static final String N3_FORMAT = "N3";
+	public static final String RDF_XML_FORMAT = "RDF-XML";
+	public static final String defaultFormat = RDF_XML_FORMAT;
+	
 	// helper
 	public static final Map<String, String> domainMap;
 	static {
@@ -104,8 +110,19 @@ public class RequestSaver {
 		dm.put("NICTA (Sydney, Australia) XO Rack", "nictavmsite.rdf#nictavmsite");
 		dm.put("FIU (Miami, FL USA) XO Rack", "fiuvmsite.rdf#fiuvmsite");
 		dm.put("UH (Houston, TX USA) XO Rack", "uhvmsite.rdf#uhvmsite");
-		dm.put("NCSU (Raleigh, NC USA) XO Rack", "ncsuvmsite.rdf#ncsuvmsite");
 		dm.put("UvA (Amsterdam, The Netherlands) XO Rack", "uvanlvmsite.rdf#uvanlvmsite");
+		dm.put("UFL (Gainesville, FL USA) XO Rack", "uflvmsite.rdf#uflvmsite");
+		dm.put("UCD (Davis, CA USA) XO Rack", "ucdvmsite.rdf#ucdvmsite");
+		dm.put("OSF (Oakland, CA USA) XO Rack", "osfvmsite.rdf#osfvmsite");
+		dm.put("SL (Chicago, IL USA) XO Rack", "slvmsite.rdf#slvmsite");
+		dm.put("WVN (UCS-B series rack in Morgantown, WV, USA)", "wvnvmsite.rdf#wvnvmsite");
+		dm.put("NCSU (UCS-B series rack at NCSU)", "ncsuvmsite.rdf#ncsuvmsite");
+		dm.put("NCSU2 (UCS-C series rack at NCSU)", "ncsu2vmsite.rdf#ncsu2vmsite");
+		dm.put("TAMU (College Station, TX, USA) XO Rack", "tamuvmsite.rdf#tamuvmsite");
+		dm.put("UMass (UMass Amherst, MA, USA) XO Rack", "umassvmsite.rdf#umassvmsite");
+		dm.put("WSU (Detroit, MI, USA) XO Rack", "wsuvmsite.rdf#wsuvmsite");
+		dm.put("UAF (Fairbanks, AK, USA) XO Rack", "uafvmsite.rdf#uafvmsite");
+		dm.put("PSC (Pittsburgh, TX, USA) XO Rack", "pscvmsite.rdf#pscvmsite");
 		dm.put(StitchPort.STITCHING_DOMAIN_SHORT_NAME, "orca.rdf#Stitching");
 
 		domainMap = Collections.unmodifiableMap(dm);
@@ -117,10 +134,25 @@ public class RequestSaver {
 
 		ndm.put("RENCI XO Rack Net", "rciNet.rdf#rciNet");
 		ndm.put("BBN/GPO XO Rack Net", "bbnNet.rdf#bbnNet");
+		ndm.put("Duke CS Rack Net", "dukeNet.rdf#dukeNet");
+		ndm.put("UNC BEN XO Rack Net", "uncNet.rdf#UNCNet");
+		ndm.put("NICTA XO Rack Net", "nictaNet.rdf#nictaNet");
 		ndm.put("FIU XO Rack Net", "fiuNet.rdf#fiuNet");
+		ndm.put("UH XO Rack Net", "uhNet.rdf#UHNet");
+		ndm.put("NCSU XO Rack Net", "ncsuNet.rdf#ncsuNet");
+		ndm.put("UvA XO Rack Net", "uvanlNet.rdf#uvanlNet");
+		ndm.put("UFL XO Rack Net", "uflNet.rdf#uflNet");
+		ndm.put("UCD XO Rack Net", "ucdNet.rdf#ucdNet");
+		ndm.put("OSF XO Rack Net", "osfNet.rdf#osfNet");
+		ndm.put("SL XO Rack Net", "slNet.rdf#slNet");
+		ndm.put("WVN XO Rack Net", "wvnNet.rdf#wvnNet");
+		ndm.put("NCSU XO Rack Net", "ncsuNet.rdf#ncsuNet");
+		ndm.put("NCSU2 XO Rack Net", "ncs2Net.rdf#ncsuNet");
+		
+		ndm.put("I2 ION/AL2S", "ion.rdf#ion");
 		ndm.put("NLR Net", "nlr.rdf#nlr");
 		ndm.put("BEN Net", "ben.rdf#ben");
-		
+	
 		netDomainMap = Collections.unmodifiableMap(ndm);
 	}
 	
@@ -141,6 +173,7 @@ public class RequestSaver {
 		//nodeTypes = Collections.unmodifiableMap(nt);
 		nodeTypes = nt;
 	}
+
 	
 	public RequestSaver(Request r) {
 		request = r;

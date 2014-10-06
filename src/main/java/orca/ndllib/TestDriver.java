@@ -222,6 +222,8 @@ public class TestDriver {
 		Slice s = new Slice();
 		s.logger().debug("adamantTest1: ");
 		
+		s.logger().debug("Domains: " + s.getDomains());
+		
 		ComputeNode master     = s.addComputeNode("Master");
 		ComputeNode workers    = s.addComputeNode("Workers");
 		StitchPort  data       = s.addStitchPort("Data");

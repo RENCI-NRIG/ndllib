@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import orca.ndllib.ndl.ModifySaver;
+import orca.ndllib.ndl.RequestSaver;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Interface;
@@ -128,6 +129,10 @@ public class Slice {
 	
 	public void setState(String state){
 		this.state = state;
+	}
+	
+	public static Collection<String> getDomains(){
+		return RequestSaver.domainMap.keySet();
 	}
 	
 	/**************************** Load/Save Methods **********************************/
