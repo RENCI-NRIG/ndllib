@@ -32,7 +32,8 @@ import orca.ndllib.util.IP4Subnet;
 
 
 
-/**
+/**computeElement to group: Workers, newNode: http://geni-orca.renci.org/owl/2ce709f3-bee2-46f0-97da-b6b944aed836#Workers/3
+
  * @author geni-orca
  *
  */
@@ -46,9 +47,9 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	adamantTest1();
+    	//adamantTest1();
     	//adamantTest2();
-    	//adamantTest3();
+    	adamantTest3();
     	///autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
@@ -226,14 +227,14 @@ public class TestDriver {
 		
 		ComputeNode master     = s.addComputeNode("Master");
 		ComputeNode workers    = s.addComputeNode("Workers");
-		//StitchPort  data       = s.addStitchPort("Data");
+		StitchPort  data       = s.addStitchPort("Data");
 		StorageNode storage    = s.addStorageNode("Storage");
 		BroadcastNetwork net   = s.addBroadcastLink("DataNetwork");
 		BroadcastNetwork storageNet   = s.addBroadcastLink("StorageNetwork");
 		
 		InterfaceNode2Net masterIface  = (InterfaceNode2Net) net.stitch(master);
 		InterfaceNode2Net workersIface = (InterfaceNode2Net) net.stitch(workers);
-		//InterfaceNode2Net dataIface    = (InterfaceNode2Net) net.stitch(data);
+		InterfaceNode2Net dataIface    = (InterfaceNode2Net) net.stitch(data);
 
 		InterfaceNode2Net masterStorageIface  = (InterfaceNode2Net) storageNet.stitch(master);
 		InterfaceNode2Net storageStorageIface  = (InterfaceNode2Net) storageNet.stitch(storage);
@@ -241,7 +242,7 @@ public class TestDriver {
 		
 		master.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
 		master.setNodeType("XO Large");
-		master.setDomain("BBN/GPO (Boston, MA USA) XO Rack");
+		master.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
 		master.setPostBootScript("master post boot script");
 		
 		
@@ -254,8 +255,8 @@ public class TestDriver {
 		workers.setNodeCount(5);
 		workers.setMaxNodeCount(13);
 			
-		//data.setLabel("1499");
-		//data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
+		data.setLabel("1499");
+		data.setPort("http://geni-orca.renci.org/owl/ben-6509.rdf#Renci/Cisco/6509/TenGigabitEthernet/3/4/ethernet");
 		
 		storage.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
 		storage.setCapacity(10);

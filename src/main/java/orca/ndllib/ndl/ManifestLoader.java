@@ -129,10 +129,11 @@ public class ManifestLoader implements INdlManifestModelListener{
 	public boolean loadString(String s) {
 		
 		try {
-			manifest.logger().debug("About to parse request part of manifest");
+			manifest.logger().debug("About to parse manifest");
 			
 			// parse as manifest
 			NdlManifestParser nmp = new NdlManifestParser(s, this);
+			
 			nmp.processManifest();	
 			//nmp.freeModel();			
 			//manifest.setManifestTerm(creationTime, expirationTime);
