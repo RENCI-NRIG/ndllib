@@ -397,20 +397,47 @@ public class RequestSaver {
 			for (BroadcastNetwork e: request.getBroadcastLinks()) {
 				request.logger().debug("saving OrcaBroadcastLink");
 				//checkLinkSanity(e);
+				boolean hasStorage = false;
+				for(Interface i : e.getInterfaces()){
+					if (i instanceof InterfaceNode2Net){
+						if(((InterfaceNode2Net)i).getNode() instanceof StorageNode){
+							hasStorage = true;
+							break;
+						}
+						
+					}
+				}
 				
-				Individual ei = ngen.declareBroadcastConnection(e.getName());
-				ngen.addResourceToReservation(reservation, ei);
+				if(!hasStorage){
+					Individual ei = ngen.declareBroadcastConnection(e.getName());
+					ngen.addResourceToReservation(reservation, ei);
 
-				if (e.getBandwidth() > 0)
-					ngen.addBandwidthToConnection(ei, e.getBandwidth());
+					if (e.getBandwidth() > 0)
+						ngen.addBandwidthToConnection(ei, e.getBandwidth());
 
-				if (e.getLabel() != null) 
-					ngen.addLabelToIndividual(ei, e.getLabel());
+					if (e.getLabel() != null) 
+						ngen.addLabelToIndividual(ei, e.getLabel());
 
-				// TODO: deal with layers later
-				ngen.addLayerToConnection(ei, "ethernet", "EthernetNetworkElement");
+					// TODO: deal with layers later
+					ngen.addLayerToConnection(ei, "ethernet", "EthernetNetworkElement");
 
-				// TODO: latency
+					// TODO: latency
+				} else {			
+					//networks to storage must be point 2 point
+					Individual ei = ngen.declareNetworkConnection(e.getName());
+					ngen.addResourceToReservation(reservation, ei);
+
+					if (e.getBandwidth() > 0)
+						ngen.addBandwidthToConnection(ei, e.getBandwidth());
+				
+					if (e.getLabel() != null) 
+						ngen.addLabelToIndividual(ei, e.getLabel());
+				
+					// TODO: deal with layers later
+					ngen.addLayerToConnection(ei, "ethernet", "EthernetNetworkElement");
+
+					// TODO: latency
+				}
 			}
 
 			//Process stitches
