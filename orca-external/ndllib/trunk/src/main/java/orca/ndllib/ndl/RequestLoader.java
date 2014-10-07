@@ -120,6 +120,7 @@ public class RequestLoader implements INdlRequestModelListener {
 	public boolean load(String rdf) {
 		try {
 			NdlRequestParser nrp = new NdlRequestParser(rdf, this);
+			nrp.doLessStrictChecking(); //TODO: Should be removed...
 			nrp.processRequest();
 			nrp.freeModel();
 			
