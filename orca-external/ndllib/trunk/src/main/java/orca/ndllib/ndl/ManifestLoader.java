@@ -271,6 +271,14 @@ public class ManifestLoader implements INdlManifestModelListener{
 	public void ndlNode(Resource ce, OntModel om, Resource ceClass,
 			List<Resource> interfaces) {
 		
+		if (ce == null)
+			return;
+		
+		//Only handle compute nodes for now.
+		if (!(ceClass.equals(NdlCommons.computeElementClass) || ceClass.equals(NdlCommons.serverCloudClass))){
+			return;
+		}
+		
 		manifest.addNode(ce.toString());
 		
 		String printStr = "ndlManifest_Node: \n\tName: " + ce + " (" + ce.getLocalName() + ")"; 
