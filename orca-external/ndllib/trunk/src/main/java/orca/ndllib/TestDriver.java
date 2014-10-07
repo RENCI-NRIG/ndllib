@@ -47,9 +47,9 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	//adamantTest1();
+    	adamantTest1();
     	//adamantTest2();
-    	adamantTest3();
+    	//adamantTest3();
     	///autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
@@ -245,9 +245,6 @@ public class TestDriver {
 		master.setDomain("RENCI (Chapel Hill, NC USA) XO Rack");
 		master.setPostBootScript("master post boot script");
 		
-		
-		
-		workers.setImage("worker_url", "worker_hash", "worker_shortName");
 		workers.setImage("http://geni-images.renci.org/images/standard/centos/centos6.3-v1.0.11.xml","776f4874420266834c3e56c8092f5ca48a180eed","PRUTH-centos");
 		workers.setNodeType("XO Large");
 		workers.setDomain("UH (Houston, TX USA) XO Rack");

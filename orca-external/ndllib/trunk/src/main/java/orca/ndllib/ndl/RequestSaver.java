@@ -479,17 +479,17 @@ public class RequestSaver {
 	}
 
 /*	
-	private void addLinkStorageDependency(OrcaNode n, OrcaLink e) throws NdlException {
+	private void addLinkStorageDependency(StorageNode n, BroadcastNetwork e) throws NdlException {
 		
 		// if the other end is storage, need to add dependency
-		if (e.linkToSharedStorage() && !(n instanceof OrcaStorageNode)) {
-			Pair<OrcaNode> pn = r.getGraph().getEndpoints(e);
-			OrcaStorageNode osn = null;
+		if (e.linkToSharedStorage() && !(n instanceof StorageNode)) {
+			Pair<Node> pn = r.getGraph().getEndpoints(e);
+			StorageNode osn = null;
 			try {
-				if (pn.getFirst() instanceof OrcaStorageNode)
-					osn = (OrcaStorageNode) pn.getFirst();
+				if (pn.getFirst() instanceof StorageNode)
+					osn = (StorageNode) pn.getFirst();
 				else
-					osn = (OrcaStorageNode) pn.getSecond();
+					osn = (StorageNode) pn.getSecond();
 			} catch (Exception ce) {
 				;
 			}
@@ -503,7 +503,7 @@ public class RequestSaver {
 		}
 		
 	}
-	
+	*/
 	/**
 	 * Link node to edge, create interface and process IP address 
 	 * @param n
@@ -517,7 +517,21 @@ public class RequestSaver {
  		
 		Individual intI;
 		
-		//addLinkStorageDependency(n, e);
+		//Add storage dependency:  shouldn't the controller do this???
+		if (s.getNode() instanceof StorageNode){
+			Individual storInd = ngen.getRequestIndividual(s.getNode().getName());
+			InterfaceNode2Net iface = null;
+			for (Interface i : s.getLink().getInterfaces()){
+				if(i != s && i instanceof InterfaceNode2Net){
+					iface = (InterfaceNode2Net)i;
+					break;
+				}
+			}
+			Individual nodeInd = ngen.getRequestIndividual(iface.getNode().getName());
+			if ((storInd == null) || (nodeInd == null))
+				throw new NdlException("Unable to find individual for node " + s.getNode() + " or " + n);
+			ngen.addDependOnToIndividual(storInd, nodeInd);
+		}
 		
 		if (n instanceof StitchPort) {
 			StitchPort sp = (StitchPort)n;
