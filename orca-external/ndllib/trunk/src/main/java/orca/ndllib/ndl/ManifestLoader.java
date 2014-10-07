@@ -246,7 +246,7 @@ public class ManifestLoader implements INdlManifestModelListener{
 		for (Resource r : interfaces){
 			printStr += "\n\t\t " + r;
 		}
-		//manifest.logger().debug(printStr);
+		manifest.logger().debug(printStr);
 		
 		LinkConnection lc = manifest.addLinkConnection(l.toString());
 		lc.setModelResource(l);		
@@ -275,19 +275,30 @@ public class ManifestLoader implements INdlManifestModelListener{
 		if (ce == null)
 			return;
 		
-		//Only handle compute nodes for now.
-		if (!(ceClass.equals(NdlCommons.computeElementClass) || ceClass.equals(NdlCommons.serverCloudClass))){
-			return;
-		}
-		
-		manifest.addNode(ce.toString());
-		
-		String printStr = "ndlManifest_Node: \n\tName: " + ce + " (" + ce.getLocalName() + ")"; 
+		String printStr = "ndlManifest_Node: ("+ ceClass  + ")\n\tName: " + ce + " (" + ce.getLocalName() + ")"; 
 		printStr += ", state = " + NdlCommons.getResourceStateAsString(ce);
 		printStr += "\n\tInterfaces:";
 		for (Resource r : interfaces){
 			printStr += "\n\t\t " + r;
 		}
+		manifest.logger().debug(printStr);
+	
+		if(NdlCommons.isNetworkStorage(ce) || NdlCommons.isStitchingNode(ce)){
+			manifest.logger().debug("Found a stitchport or storage node, returning");
+			return;
+		}
+		
+	
+		
+		//Only handle compute nodes for now.
+		//if (!((ceClass.equals(NdlCommons.computeElementClass) || ceClass.equals(NdlCommons.serverCloudClass)))){
+		//	manifest.logger().debug("Not a compute element, returning");
+		//	
+		//	return;
+		//}
+		
+		manifest.addNode(ce.toString());
+		
 		manifest.logger().debug(printStr);
 		
 		String groupUrl = NdlCommons.getRequestGroupURLProperty(ce);
