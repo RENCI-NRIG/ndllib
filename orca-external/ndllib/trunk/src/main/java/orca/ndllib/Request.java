@@ -361,6 +361,7 @@ public class Request extends NDLLIBCommon  {
 		IP4Subnet subnet = null;
 		try{
 			subnet = ipAssign.getSubnet((Inet4Address)InetAddress.getByName(ip), maskLength);
+			subnet.markIPUsed(subnet.getStartIP());
 		} catch (Exception e){
 			this.logger().warn("setSubnet warning: " + e);
 		}
@@ -371,6 +372,7 @@ public class Request extends NDLLIBCommon  {
 		IP4Subnet subnet = null;
 		try{
 			subnet = ipAssign.getAvailableSubnet(count);
+			subnet.markIPUsed(subnet.getStartIP());
 		} catch (Exception e){
 			this.logger().warn("allocateSubnet warning: " + e);
 		}
