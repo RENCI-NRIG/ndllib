@@ -47,9 +47,9 @@ public class TestDriver {
     	//testSave();
     	//testLoadAndSave();
     	//testLoadManifest();
-    	adamantTest1();
+    	//adamantTest1();
     	//adamantTest2();
-    	//adamantTest3();
+    	adamantTest3();
     	///autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
@@ -359,13 +359,17 @@ public class TestDriver {
 		
 		s.logger().debug("Workers: ");
 		ComputeNode cn = (ComputeNode) s.getResourceByName("Workers");
+		cn.setNodeCount(6);
+		
+		
+		
 		int i = 0;
 		for (orca.ndllib.resources.manifest.Node mn : ((ComputeNode)cn).getManifestNodes()){
-			 s.logger().debug("manifestNode: " + mn.getURI() + ", state = " + mn.getState());
-			 //if (i++%2 == 0) {
+			 //s.logger().debug("manifestNode: " + mn.getURI() + ", state = " + mn.getState());
+			 //if (i++ == 1) {
 			//	 s.logger().debug("manifestNode: deleting " + mn.getURI());
 			//	 mn.delete();
-			// }
+			 //}
 		}
 		
 		s.logger().debug("SliceState = " + s.getState());
@@ -385,7 +389,7 @@ public class TestDriver {
 		
 		//printRequest2Log(s);
 		
-		//sendModifyRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
+		sendModifyRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
 		
         
 	}

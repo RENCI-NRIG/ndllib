@@ -182,6 +182,7 @@ public class ComputeNode extends Node {
 	
 	public void deleteNode(String uri){
 		request.logger().debug("ComputeNode.deleteNode: uri = " + uri); 
+		nodeCount--;
 		request.deleteComputeNode(this, uri);
 	}
 	
