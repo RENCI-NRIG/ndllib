@@ -144,7 +144,7 @@ public class Node extends ManifestResource {
 	}
 
 	public orca.ndllib.resources.request.ComputeNode getComputeNode() {
-		return computeNode;
+		return computeNode;	
 	}
 
 	public void setComputeNode(orca.ndllib.resources.request.ComputeNode computeNode) {
