@@ -232,7 +232,17 @@ public class Node extends ManifestResource {
 		return dependencies.contains(n);
 	}
 	
-
+	public String getPublicIP(){
+		//NdlCommons.getNodeServices(nr)
+		for (String service: NdlCommons.getNodeServices(this.getModelResource())) {
+			if (service.startsWith("ssh://root@")) {
+				service = service.replaceAll("ssh://root@","");
+				String[] split = service.split(":");
+				return split[0];
+			}
+		}
+		return null;
+	}
 	
 	
 	/**

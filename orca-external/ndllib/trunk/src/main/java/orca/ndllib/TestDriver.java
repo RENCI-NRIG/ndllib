@@ -323,7 +323,7 @@ public class TestDriver {
 	public static void adamantTest3() {
 		Slice s = new Slice();
 		s.logger().debug("adamantTest3: ");
-		//s.loadFile("/home/geni-orca/test-requests/adamant-test3-input-manifest.rdf");
+		s.loadFile("/home/geni-orca/test-requests/adamant-test3-input-manifest.rdf");
 		
 		
 		
@@ -338,14 +338,14 @@ public class TestDriver {
 		//String ndlReq = s.getRequest();
 		
 		/*************** Submit ********************/
-        processPreferences();
+        //processPreferences();
         //sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", ndlReq);
 		
         //System.out.println("Press enter to continue...");
         //Scanner keyboard = new Scanner(System.in);
         //keyboard.nextLine();
         //System.out.println("continuing");
-        String manifest = getManifestFromORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc");
+        //String manifest = getManifestFromORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc");
         //s.logger().debug("******************** START MANIFEST *********************");
 		//s.logger().debug(manifest);
 		//s.logger().debug("******************** START MANIFEST *********************");
@@ -353,18 +353,19 @@ public class TestDriver {
 		
 		s.logger().debug("************************************ Loading new manifest into slice *********************************");
 
-		s.loadRDF(manifest);
+		//s.loadRDF(manifest);
 		
 		printRequest2Log(s);
 		
 		s.logger().debug("Workers: ");
 		ComputeNode cn = (ComputeNode) s.getResourceByName("Workers");
-		cn.setNodeCount(6);
+		//cn.setNodeCount(6);
 		
 		
 		
 		int i = 0;
 		for (orca.ndllib.resources.manifest.Node mn : ((ComputeNode)cn).getManifestNodes()){
+			s.logger().debug("public ip: " + mn.getPublicIP());
 			 //s.logger().debug("manifestNode: " + mn.getURI() + ", state = " + mn.getState());
 			 //if (i++ == 1) {
 			//	 s.logger().debug("manifestNode: deleting " + mn.getURI());
