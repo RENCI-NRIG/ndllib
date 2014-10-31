@@ -249,7 +249,7 @@ public class TestDriver {
 		workers.setNodeType("XO Large");
 		workers.setDomain("UH (Houston, TX USA) XO Rack");
 		workers.setPostBootScript("worker post boot script");
-		workers.setNodeCount(5);
+		workers.setNodeCount(2);
 		workers.setMaxNodeCount(13);
 			
 		data.setLabel("1499");
@@ -321,9 +321,11 @@ public class TestDriver {
 	 * @thro 
 	 */
 	public static void adamantTest3() {
+		
+		
 		Slice s = new Slice();
 		s.logger().debug("adamantTest3: ");
-		s.loadFile("/home/geni-orca/test-requests/adamant-test3-input-manifest.rdf");
+		//s.loadFile("/home/geni-orca/test-requests/adamant-test3-input-manifest.rdf");
 		
 		
 		
@@ -338,14 +340,14 @@ public class TestDriver {
 		//String ndlReq = s.getRequest();
 		
 		/*************** Submit ********************/
-        //processPreferences();
+        processPreferences();
         //sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", ndlReq);
 		
         //System.out.println("Press enter to continue...");
         //Scanner keyboard = new Scanner(System.in);
         //keyboard.nextLine();
         //System.out.println("continuing");
-        //String manifest = getManifestFromORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc");
+        String manifest = getManifestFromORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc");
         //s.logger().debug("******************** START MANIFEST *********************");
 		//s.logger().debug(manifest);
 		//s.logger().debug("******************** START MANIFEST *********************");
@@ -353,13 +355,15 @@ public class TestDriver {
 		
 		s.logger().debug("************************************ Loading new manifest into slice *********************************");
 
-		//s.loadRDF(manifest);
+		s.loadRDF(manifest);
 		
-		printRequest2Log(s);
+		//printRequest2Log(s);
 		
 		s.logger().debug("Workers: ");
 		ComputeNode cn = (ComputeNode) s.getResourceByName("Workers");
-		//cn.setNodeCount(6);
+		s.logger().debug("Workers nodeCount = " + cn.getNodeCount());
+		//cn.setNodeCount(9);
+		//s.logger().debug("Workers nodeCount = " + cn.getNodeCount());
 		
 		
 		
@@ -390,7 +394,7 @@ public class TestDriver {
 		
 		//printRequest2Log(s);
 		
-		sendModifyRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
+		//sendModifyRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
 		
         
 	}

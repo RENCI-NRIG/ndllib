@@ -271,10 +271,9 @@ public class ManifestLoader implements INdlManifestModelListener{
 	}
 	public void ndlNode(Resource ce, OntModel om, Resource ceClass,
 			List<Resource> interfaces) {
-		
+		manifest.logger().debug("\n\n\n #################################### Processing Node ############################################## \n\n\n");
 		if (ce == null)
 			return;
-		
 		String printStr = "ndlManifest_Node: ("+ ceClass  + ")\n\tName: " + ce + " (" + ce.getLocalName() + ")"; 
 		printStr += ", state = " + NdlCommons.getResourceStateAsString(ce);
 		printStr += "\n\tInterfaces:";
@@ -297,10 +296,9 @@ public class ManifestLoader implements INdlManifestModelListener{
 		//	return;
 		//}
 		
-		manifest.addNode(ce.toString());
+		//orca.ndllib.resources.manifest.Node newNode = manifest.addNode(ce.toString());
 		
-		manifest.logger().debug(printStr);
-		
+		manifest.logger().debug("\n\n\n ************************************** FOUND COMPUTE NODE *************************************** \n\n\n");
 		String groupUrl = NdlCommons.getRequestGroupURLProperty(ce);
 		manifest.logger().debug("NdlCommons.getRequestGroupURLProperty: " + groupUrl);
 		

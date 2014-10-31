@@ -93,12 +93,13 @@ public class ComputeNode extends Node {
 	public ComputeNode(Slice slice, Request request, String name){
 		super(slice, request,name);
 		
+		nodeCount = 1;
 		manifestNodes = new ArrayList<orca.ndllib.resources.manifest.Node>();
 	}
 	
-	
 	public void addManifestNode(orca.ndllib.resources.manifest.Node node){
 		manifestNodes.add(node);
+		nodeCount++;
 	}
 	
 	public Collection<orca.ndllib.resources.manifest.Node> getManifestNodes(){
@@ -157,28 +158,51 @@ public class ComputeNode extends Node {
 		
 	}
 	
+	
+	public void initializeNodeCount(int nc) {
+		nodeCount = nc;
+		if(nodeCount > maxNodeCount){
+			maxNodeCount = nodeCount;
+		}
+	}
 	public int getNodeCount() {
 		return nodeCount;
 	}
 	
 	public void setNodeCount(int nc) {
 		request.logger().debug("setNodeCount: nc = " + nc + ", nodeCount = " + nodeCount + ", isNewReqeust = " + request.isNewRequest());
-		if (nc >= 1){
-			//if it is a modify
-			if (!request.isNewRequest()){
-				if(nc > nodeCount){
-					request.logger().debug("setNodeCount: " + nc);
-					request.increaseComputeNodeCount(this, nc-nodeCount);
-				}
-			} else {
-				//if it is a new request
-				if(nodeCount > maxNodeCount){
-					maxNodeCount = nodeCount;
-				}
-			}
-			nodeCount = nc;
+		
+		if (nc <= 0){
+			request.logger().warn("setNodeCount: Node group size must be greater than 0");
+			return;
 		}
-	}
+		
+		if (nc < nodeCount ){
+			request.logger().warn("setNodeCount: Reducing node group size is not supported.  Please delete indivudual nodes.");
+			return;
+		}
+		
+		if (nc == nodeCount){
+			request.logger().warn("setNodeCount: Setting node group size to the current nodoe group size");
+			return;
+		}
+		
+		//if it is a modify
+		if (!request.isNewRequest()){
+			if(nc > nodeCount){
+				request.logger().debug("setNodeCount: " + nc);
+				request.increaseComputeNodeCount(this, nc-nodeCount);
+			}
+		} else {
+			//if it is a new request
+			if(nodeCount > maxNodeCount){
+				maxNodeCount = nodeCount;
+			}
+		}
+		request.logger().debug("setNodeCount: Setting node group size to " + nc);
+		nodeCount = nc;
+				
+	}	
 	
 	public void deleteNode(String uri){
 		request.logger().debug("ComputeNode.deleteNode: uri = " + uri); 
