@@ -191,8 +191,9 @@ public class RequestLoader implements INdlRequestModelListener {
 				request.logger().debug("Node: " + ce.getLocalName() + " : found serverCloudClass, parent = " + ce.hasProperty(NdlCommons.manifestHasParent));
 				ComputeNode newNodeGroup = this.request.addComputeNode(ce.getLocalName());
 				newComputeNode = newNodeGroup;
-				int ceCount = NdlCommons.getNumCE(ce);
-				if (ceCount > 0) newNodeGroup.setNodeCount(ceCount);
+				//int ceCount = NdlCommons.getNumCE(ce);
+				//if (ceCount > 0) newNodeGroup.setNodeCount(ceCount);
+				newNodeGroup.initializeNodeCount(0);
 				//newNodeGroup.setSplittable(NdlCommons.isSplittable(ce));
 				newNode = newNodeGroup;
 				newNode.setModelResource(ce);
