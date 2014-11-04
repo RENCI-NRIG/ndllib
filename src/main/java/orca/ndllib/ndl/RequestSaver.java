@@ -202,7 +202,6 @@ public class RequestSaver {
 
 		String ndl = convertGraphToNdl();
 		if (ndl == null){
-			System.out.println("saveGraph: ndl == null");
 			return false;
 		}
 		
@@ -213,13 +212,13 @@ public class RequestSaver {
 			out.close();
 			return true;
 		} catch(FileNotFoundException e) {
-			System.out.println("saveGraph: FileNotFoundException");
+			request.logger().debug("saveGraph: FileNotFoundException");
 			;
 		} catch(UnsupportedEncodingException ex) {
-			System.out.println("saveGraph: UnsupportedEncodingException");
+			request.logger().debug("saveGraph: UnsupportedEncodingException");
 			;
 		} catch(IOException ey) {
-			System.out.println("saveGraph: IOException");
+			request.logger().debug("saveGraph: IOException");
 			;
 		} 
 		return false;

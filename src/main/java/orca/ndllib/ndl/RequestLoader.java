@@ -103,7 +103,7 @@ public class RequestLoader implements INdlRequestModelListener {
 			nrp.freeModel();
 			
 		} catch (Exception e) {
-			System.out.println("error loading graph");
+			request.logger().debug("error loading graph");
 			request.logger().error(e);
 			e.printStackTrace();
 			return null;
@@ -126,7 +126,7 @@ public class RequestLoader implements INdlRequestModelListener {
 			
 		} catch (Exception e) {
 			request.logger().error(e);
-			System.out.println("error loading graph");
+			request.logger().debug("error loading graph");
 			return false;
 		} 
 		
@@ -274,7 +274,7 @@ public class RequestLoader implements INdlRequestModelListener {
 		
 		request.logger().debug("NetworkConnection: " + l);
 		
-		// System.out.println("Found connection " + l + " connecting " + interfaces + " with bandwidth " + bandwidth);
+		// request.logger().debug("Found connection " + l + " connecting " + interfaces + " with bandwidth " + bandwidth);
 		if (l == null)
 			return;
 		
