@@ -54,7 +54,7 @@ public abstract class NDLLIBCommon {
 
 	protected NDLLIBCommon(Slice slice){
 		logger = Logger.getLogger(NDLLIBCommon.class.getCanonicalName());
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.INFO);
 		this.slice = slice;
 	}
 	

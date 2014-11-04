@@ -532,7 +532,7 @@ public class TestDriver {
             orcaProxy.setControllerUrl(controllerUrl);
             modifyRes = orcaProxy.modifySlice(sliceId, modifyReq);
             //logger.info("Result for modify slice for " + sliceId + " = " + modifyRes);
-            System.out.println("Result for modify slice for " + sliceId + " = " + modifyRes);
+            //System.out.println("Result for modify slice for " + sliceId + " = " + modifyRes);
         } catch (Exception ex) {
             //logger.error("Exception while calling ORCA modifySlice" + ex);
             System.out.println("Exception while calling ORCA modifySlice" + ex);
@@ -553,7 +553,7 @@ public class TestDriver {
             orcaProxy.setControllerUrl(controllerUrl);
             createRes = orcaProxy.createSlice(sliceId, createReq);
             //logger.info("Result for create slice for " + sliceId + " = " + createRes);
-            System.out.println("Result for modify slice for " + sliceId + " = " + createRes);
+            //System.out.println("Result for modify slice for " + sliceId + " = " + createRes);
         } catch (Exception ex) {
             //logger.error("Exception while calling ORCA createSlice" + ex);
             System.out.println("Exception while calling ORCA createSlice" + ex);
@@ -574,7 +574,7 @@ public class TestDriver {
             orcaProxy.setControllerUrl(controllerUrl);
             manifest = orcaProxy.sliceStatus(sliceId);
             //logger.info("manifest for slice " + sliceId + " = " + manifest);
-            System.out.println("manifest for slice " + sliceId + " = " + manifest);
+            //System.out.println("manifest for slice " + sliceId + " = " + manifest);
             sanitizedManifest = sanitizeManifest(manifest);
         } catch (Exception ex) {
             //logger.error("Exception while calling ORCA sliceStatus" + ex);
