@@ -6,7 +6,6 @@ import java.net.UnknownHostException;
 import java.util.BitSet;
 
 import com.google.common.net.InetAddresses;
-import com.rabbitmq.tools.Tracer.Logger;
 /**
  * Class to manage an ip subnet
  * @author pruth 

@@ -7,7 +7,6 @@ import orca.ndl.NdlGenerator;
 
 import com.hp.hpl.jena.ontology.Individual;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
-import com.rabbitmq.tools.Tracer.Logger;
 
 /**
  * Generate a modify request

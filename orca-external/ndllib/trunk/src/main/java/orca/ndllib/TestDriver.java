@@ -14,8 +14,7 @@ import java.net.InetAddress;
 import java.util.Properties;
 import java.util.Scanner;
 
-import org.renci.requestmanager.RequestManagerMain;
-import org.renci.requestmanager.orcaxmlrpc.OrcaSMXMLRPCProxy;
+//import org.renci.requestmanager.orcaxmlrpc.OrcaSMXMLRPCProxy;
 
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
@@ -49,7 +48,8 @@ public class TestDriver {
     	//testLoadManifest();
     	//adamantTest1();
     	//adamantTest2();
-    	adamantTest3();
+        //@anirban (05/05/15) commented out the next line
+    	//adamantTest3();
     	///autoIP1();
     	System.out.println("ndllib TestDriver: END");
     	
@@ -281,7 +281,8 @@ public class TestDriver {
 
 		/*************** Submit ********************/ 
 		processPreferences();
-        sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
+                //@anirban commented out (05/05/15)
+                //sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", s.getRequest());
         
        
 	}
@@ -320,6 +321,8 @@ public class TestDriver {
 	 *  3.  Get the modify request rdf
 	 * @thro 
 	 */
+        /* @anirban (05/05/15) commented out adamantTest3()
+        
 	public static void adamantTest3() {
 		
 		
@@ -339,7 +342,7 @@ public class TestDriver {
 		
 		//String ndlReq = s.getRequest();
 		
-		/*************** Submit ********************/
+		// ***************** Submit *******************  
         processPreferences();
         //sendCreateRequestToORCA("adamantTest1", "https://localhost:11443/orca/xmlrpc", ndlReq);
 		
@@ -385,12 +388,12 @@ public class TestDriver {
 		//s.logger().debug(s.getRequest());
 		//s.logger().debug("******************** END MANIFEST *********************");
 		
-		/*ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
-		if(n != null){
-			n.setNodeCount(10);
-		} else {
-			s.logger().debug("ERROR: n = null");
-		}*/
+		//ComputeNode n = (ComputeNode)s.getResourceByName("Workers");
+		//if(n != null){
+		//	n.setNodeCount(10);
+		//} else {
+		//	s.logger().debug("ERROR: n = null");
+		//}
 		
 		//printRequest2Log(s);
 		
@@ -398,7 +401,7 @@ public class TestDriver {
 		
         
 	}
-	
+	*/
 	
 	
 	public static void printManifest2Log(Slice s){
@@ -520,7 +523,8 @@ public class TestDriver {
         return p;
 
     }
-
+    
+    /* @anirban (05/05/15) commented out sendModifyRequestToORCA(), sendCreateRequestToORCA(), getManifestFromORCA(), and sanitizeManifest()
     // Send modify request to a specific ORCA controller
     private static void sendModifyRequestToORCA(String sliceId, String controllerUrl, String modifyReq){
 
@@ -598,7 +602,7 @@ public class TestDriver {
 
 
     }
-
+    */
 
 	
 }
