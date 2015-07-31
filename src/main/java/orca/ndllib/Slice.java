@@ -6,6 +6,8 @@ import java.util.Collection;
 
 import orca.ndllib.ndl.ModifySaver;
 import orca.ndllib.ndl.RequestSaver;
+import orca.ndllib.propertygraph.GraphImpl;
+import orca.ndllib.propertygraph.ManifestPropertygraphImpl;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Interface;
@@ -31,19 +33,32 @@ public class Slice {
 	
 	private boolean isNewSlice;
 	
-	public Slice(){
+	private void init(Manifest mf){
+
 		logger = Logger.getLogger(NDLLIBCommon.class.getCanonicalName());
 		logger.setLevel(Level.DEBUG);
 		
 		request = new Request(this);
-		manifest = new Manifest(this);
+		manifest = mf;
 		
 		isNewSlice = true;
 		
 		state = null;
 	}
+	public Slice(){
+		init(new ManifestSparseMultigraphImpl(this));
+	}
 	
-	
+	public Slice(GraphImpl graphImpl){
+		switch(graphImpl){
+		case Blueprintgraph:
+			init(new ManifestPropertygraphImpl(this));
+			break;
+		default:
+			init(new ManifestSparseMultigraphImpl(this));
+			break;
+		}		
+	}
 	/************************ User API Methods ****************************/
 	
 	public ComputeNode addComputeNode(String name){

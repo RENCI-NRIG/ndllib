@@ -16,6 +16,10 @@ import java.util.Scanner;
 
 //import org.renci.requestmanager.orcaxmlrpc.OrcaSMXMLRPCProxy;
 
+
+
+import orca.ndllib.propertygraph.GraphImpl;
+import orca.ndllib.propertygraph.ManifestPropertygraphImpl;
 import orca.ndllib.resources.request.BroadcastNetwork;
 import orca.ndllib.resources.request.ComputeNode;
 import orca.ndllib.resources.request.Interface;
@@ -41,7 +45,7 @@ public class TestDriver {
     	System.out.println("ndllib TestDriver: START");
     	
     	
-    	
+    	testLoadManifestPropertyGraph();
     	//testLoad();
     	//testSave();
     	//testLoadAndSave();
@@ -172,7 +176,7 @@ public class TestDriver {
 	public static void testLoadManifest(){
 		Slice s = new Slice();
 		s.logger().debug("testLoadManifest");
-		s.loadFile("/home/geni-orca/test-requests/test-load-manifest.rdf");
+		s.loadFile("/Users/shuang/Sandbox/gremlin-groovy-2.6.0/data/manifest.rdf");
 		
 		
 		
@@ -180,7 +184,23 @@ public class TestDriver {
 		s.logger().debug(s.getRequestString());
 		
 		s.logger().debug("******************** START MANIFEST *********************");
-		//s.logger().debug(s.getManifestString());
+		s.logger().debug(s.getManifestString());
+		
+		//s.logger().debug("******************** END PRINTING *********************");
+	}
+	
+	public static void testLoadManifestPropertyGraph(){
+		Slice s = new Slice(GraphImpl.Blueprintgraph);
+		s.logger().debug("testLoadManifest");
+		s.loadFile("/Users/shuang/Sandbox/gremlin-groovy-2.6.0/data/manifest.rdf");
+		
+		
+		
+		s.logger().debug("******************** START REQUEST *********************");
+		s.logger().debug(s.getRequestString());
+		
+		s.logger().debug("******************** START MANIFEST *********************");
+		s.logger().debug(s.getManifestString());
 		
 		//s.logger().debug("******************** END PRINTING *********************");
 	}
