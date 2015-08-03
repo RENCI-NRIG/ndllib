@@ -5,9 +5,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.tinkerpop.blueprints.Graph;
+
 import orca.ndllib.Manifest;
 import orca.ndllib.Slice;
 import orca.ndllib.ndl.ManifestLoader;
+import orca.ndllib.ndl.ManifestLoaderInt;
 import orca.ndllib.resources.manifest.CrossConnect;
 import orca.ndllib.resources.manifest.Interface;
 import orca.ndllib.resources.manifest.LinkConnection;
@@ -77,15 +80,14 @@ public class ManifestPropertygraphImpl extends Manifest {
 
 	@Override
 	public boolean loadFile(String file){
-		mloader = new ManifestLoaderPropertyGraph(slice,this);
+		mloader = new ManifestLoaderPropertyGraph(this);
 		return !mloader.loadFile(new File(file));
-		
-		
+				
 	}
 
 	@Override
 	public boolean loadRDF(String rdf){
-		mloader = new ManifestLoaderPropertyGraph(slice,this);
+		mloader = new ManifestLoaderPropertyGraph(this);
 		return !mloader.loadRDF(rdf);
 	}
 
@@ -101,6 +103,14 @@ public class ManifestPropertygraphImpl extends Manifest {
 		return null;
 	}
 	
+	public static Graph convertManifestNDL(String file){
+		ManifestLoaderPropertyGraph ml=new ManifestLoaderPropertyGraph();
+		ml.loadFile(new File(file));
+		return ml.getGraph();
+	}
 	
-
+	public static void convertManifestNDL(String file, Graph graph){
+		ManifestLoaderPropertyGraph ml=new ManifestLoaderPropertyGraph(graph);
+		ml.loadFile(new File(file));
+	}
 }

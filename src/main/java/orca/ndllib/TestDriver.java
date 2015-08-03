@@ -203,6 +203,7 @@ public class TestDriver {
 		s.logger().debug(s.getManifestString());
 		
 		//s.logger().debug("******************** END PRINTING *********************");
+		com.tinkerpop.blueprints.Graph g=ManifestPropertygraphImpl.convertManifestNDL("/Users/shuang/Sandbox/gremlin-groovy-2.6.0/data/manifest.rdf");
 	}
 
 	public static String readRDF(String fileName){

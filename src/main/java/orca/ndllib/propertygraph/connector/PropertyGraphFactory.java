@@ -16,6 +16,9 @@ public class PropertyGraphFactory {
 	List<PropertyGraphEdge> edges=new ArrayList<PropertyGraphEdge>();
 	List<OrcaNode> nodes=new ArrayList<OrcaNode>();
 	Graph graph;
+	public Graph getGraph(){
+		return graph;
+	}
 	public PropertyGraphFactory(Graph graph){
 		this.graph=graph;
 	}

@@ -24,7 +24,6 @@ import orca.ndl.NdlManifestParser;
 import orca.ndl.NdlRequestParser;
 import orca.ndllib.Manifest;
 import orca.ndllib.NDLLIBCommon;
-import orca.ndllib.Slice;
 import orca.ndllib.ndl.ManifestLoaderInt;
 import orca.ndllib.ndl.RequestSaver;
 import orca.ndllib.propertygraph.connector.OrcaCrossconnect;
@@ -54,25 +53,33 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 	protected Date expirationTime = null;
 	
 
-	private Slice slice;
-	private Manifest manifest;
 	private PropertyGraphFactory pg;
 
 	//for testing if a manifest exists
 	private boolean isManifest;
 	
-	public ManifestLoaderPropertyGraph(Slice slice, Manifest manifest){
-		NDLLIBCommon.logger().debug("new ManifestLoader");
-		this.manifest = manifest;
+	//these two constructors are used by the static method to convert rdf to graphs.
+	//this is a shortcut because the conversion does not (and should not) 
+	//depend on Manifest or Slice. Use of these two constructors therefore should
+	//be careful so that no Manifest or Slice instantiations are required along the path
+	
+	public ManifestLoaderPropertyGraph(){
 		isManifest = false;
-		this.slice = slice;
 		this.pg=new PropertyGraphFactory(new TinkerGraph());
 	}
-	public ManifestLoaderPropertyGraph(Slice slice, Manifest manifest, Graph graph){
-		NDLLIBCommon.logger().debug("new ManifestLoader");
-		this.manifest = manifest;
+	public ManifestLoaderPropertyGraph(Graph graph){
 		isManifest = false;
-		this.slice = slice;
+		this.pg=new PropertyGraphFactory(graph);
+	}
+	
+	public ManifestLoaderPropertyGraph(Manifest manifest){
+		NDLLIBCommon.logger().debug("new ManifestLoader");
+		isManifest = false;
+		this.pg=new PropertyGraphFactory(new TinkerGraph());
+	}
+	public ManifestLoaderPropertyGraph(Manifest manifest, Graph graph){
+		NDLLIBCommon.logger().debug("new ManifestLoader");
+		isManifest = false;
 		this.pg=new PropertyGraphFactory(graph);
 	}
 	// these are to keep shared storage interfaces straight until the model gets better
@@ -844,10 +851,9 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 		}
 		return null;
 	}
-
 	@Override
 	public boolean loadFile(File f) {
-		NDLLIBCommon.logger().debug("About to load graph");
+		//NDLLIBCommon.logger().debug("About to load graph");
 		BufferedReader bin = null; 
 		StringBuilder sb = null;
 		try {
@@ -866,7 +872,7 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 			bin.close();
 
 		} catch (Exception e) {
-			NDLLIBCommon.logger().debug("Exception loading graph: " + e);
+			//NDLLIBCommon.logger().debug("Exception loading graph: " + e);
 			return false;
 		} 
 		
@@ -882,7 +888,7 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 	public boolean loadString(String s) {
 		
 		try {
-			NDLLIBCommon.logger().debug("About to parse manifest");
+			//NDLLIBCommon.logger().debug("About to parse manifest");
 			
 			// parse as manifest
 			NdlManifestParser nmp = new NdlManifestParser(s, this);
@@ -892,12 +898,14 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 			//manifest.setManifestTerm(creationTime, expirationTime);
 			
 		} catch (Exception e) {
-			NDLLIBCommon.logger().debug("Excpetion: parsing request part of manifest" + e);
+			//NDLLIBCommon.logger().debug("Excpetion: parsing request part of manifest" + e);
 			return false;
 		} 
 		
 		//return false if this is not a manifest
 		return isManifest;
 	}
-
+	public Graph getGraph(){
+		return pg.getGraph();
+	}
 }
