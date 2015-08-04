@@ -1,8 +1,15 @@
 package orca.ndllib.propertygraph.connector;
 
+import com.tinkerpop.blueprints.Vertex;
+
 
 public class PropertyGraphStorageNode extends PropertyGraphNode{
-
+	private String capacity;
+	private String doFormat;
+	private String hasFSParam;
+	private String hasFSType;
+	private String hasMntPoint;
+	private String sharedNetworkStorage;
 	public PropertyGraphStorageNode(OrcaStorageNode osn) {
 		super(osn);
 		this.setCapacity(Long.toString(osn.getCapacity()));
@@ -12,40 +19,65 @@ public class PropertyGraphStorageNode extends PropertyGraphNode{
 		this.setHasMntPoint(osn.getMntPoint());
 		this.setSharedNetworkStorage(Boolean.toString(osn.getSharedNetwork()));
 	}
-	protected void setCapacity(String capacity){
-		Properties.put("capacity", capacity);		
+	public PropertyGraphStorageNode(Vertex v){
+		super(v);
+		this.setCapacity((String) v.getProperty(PropertyKeys.capacity));
+		this.setDoFormat((String) v.getProperty(PropertyKeys.doFormat));
+		this.setHasFSParam((String) v.getProperty(PropertyKeys.hasFSParam));
+		this.setHasFSType((String) v.getProperty(PropertyKeys.hasFSType));
+		this.setHasMntPoint((String) v.getProperty(PropertyKeys.hasMntPoint));
+		this.setSharedNetworkStorage((String) v.getProperty(PropertyKeys.sharedNetworkStorage));
 	}
-	protected String getCapacity(){
-		return Properties.get("capacity");
+	public void setVertex(Vertex v){
+		super.setVertex(v);
+		if(capacity!=null && !capacity.isEmpty())
+			v.setProperty(PropertyKeys.capacity, capacity);
+		if(doFormat!=null && !doFormat.isEmpty())
+			v.setProperty(PropertyKeys.doFormat, doFormat);
+		if(hasFSParam!=null && !hasFSParam.isEmpty())
+			v.setProperty(PropertyKeys.hasFSParam, hasFSParam);
+		if(hasFSType!=null && !hasFSType.isEmpty())
+			v.setProperty(PropertyKeys.hasFSType, hasFSType);
+		if(hasMntPoint!=null && !hasMntPoint.isEmpty())
+			v.setProperty(PropertyKeys.hasMntPoint, hasMntPoint);
+		if(sharedNetworkStorage!=null && !sharedNetworkStorage.isEmpty())
+			v.setProperty(PropertyKeys.sharedNetworkStorage, sharedNetworkStorage);
 	}
-	protected void setDoFormat(String doformat){
-		Properties.put("doFormat", doformat);		
+	public String getCapacity() {
+		return capacity;
 	}
-	protected String getDoformat(){
-		return Properties.get("doFormat");
+	public void setCapacity(String capacity) {
+		this.capacity = capacity;
 	}
-	protected void setHasFSParam(String hasFSParam){
-		Properties.put("hasFSParam", hasFSParam);		
+	public String getDoFormat() {
+		return doFormat;
 	}
-	protected String getHasFSParam(){
-		return Properties.get("hasFSParam");
+	public void setDoFormat(String doFormat) {
+		this.doFormat = doFormat;
 	}
-	protected void setHasFSType(String hasFSType){
-		Properties.put("hasFSType", hasFSType);		
+	public String getHasFSParam() {
+		return hasFSParam;
 	}
-	protected String getHasFSType(){
-		return Properties.get("hasFSType");
+	public void setHasFSParam(String hasFSParam) {
+		this.hasFSParam = hasFSParam;
 	}
-	protected void setHasMntPoint(String hasMntPoint){
-		Properties.put("hasMntPoint", hasMntPoint);		
+	public String getHasFSType() {
+		return hasFSType;
 	}
-	protected String getHasMntPoint(){
-		return Properties.get("hasMntPoint");
+	public void setHasFSType(String hasFSType) {
+		this.hasFSType = hasFSType;
 	}
-	protected void setSharedNetworkStorage(String sharedNetworkStorage){
-		Properties.put("sharedNetworkStorage", sharedNetworkStorage);		
+	public String getHasMntPoint() {
+		return hasMntPoint;
 	}
-	protected String getSharedNetworkStorage(){
-		return Properties.get("sharedNetworkStorage");
+	public void setHasMntPoint(String hasMntPoint) {
+		this.hasMntPoint = hasMntPoint;
 	}
+	public String getSharedNetworkStorage() {
+		return sharedNetworkStorage;
+	}
+	public void setSharedNetworkStorage(String sharedNetworkStorage) {
+		this.sharedNetworkStorage = sharedNetworkStorage;
+	}
+
 }

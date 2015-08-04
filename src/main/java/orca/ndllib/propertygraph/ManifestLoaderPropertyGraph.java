@@ -53,7 +53,7 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 	protected Date expirationTime = null;
 	
 
-	private PropertyGraphFactory pg;
+	private final PropertyGraphFactory pg;
 
 	//for testing if a manifest exists
 	private boolean isManifest;
@@ -63,11 +63,11 @@ public class ManifestLoaderPropertyGraph implements ManifestLoaderInt, INdlManif
 	//depend on Manifest or Slice. Use of these two constructors therefore should
 	//be careful so that no Manifest or Slice instantiations are required along the path
 	
-	public ManifestLoaderPropertyGraph(){
+	ManifestLoaderPropertyGraph(){
 		isManifest = false;
 		this.pg=new PropertyGraphFactory(new TinkerGraph());
 	}
-	public ManifestLoaderPropertyGraph(Graph graph){
+	ManifestLoaderPropertyGraph(Graph graph){
 		isManifest = false;
 		this.pg=new PropertyGraphFactory(graph);
 	}

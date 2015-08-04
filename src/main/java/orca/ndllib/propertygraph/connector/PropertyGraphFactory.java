@@ -12,10 +12,10 @@ import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 
 public class PropertyGraphFactory {
-	Map<OrcaNode,Vertex> map=new HashMap<OrcaNode,Vertex>();
-	List<PropertyGraphEdge> edges=new ArrayList<PropertyGraphEdge>();
-	List<OrcaNode> nodes=new ArrayList<OrcaNode>();
-	Graph graph;
+	final Map<OrcaNode,Vertex> map=new HashMap<OrcaNode,Vertex>();
+	final List<PropertyGraphEdge> edges=new ArrayList<PropertyGraphEdge>();
+	final List<OrcaNode> nodes=new ArrayList<OrcaNode>();
+	final Graph graph;
 	public Graph getGraph(){
 		return graph;
 	}
@@ -56,12 +56,7 @@ public class PropertyGraphFactory {
 		else {
 			pg=new PropertyGraphNode(on);
 		}
-		Iterator<Entry<String, String>> it=pg.Properties.entrySet().iterator();
-		while(it.hasNext()){
-			Entry<String, String> pair= it.next();
-			if(pair.getValue()!=null)
-				v.setProperty(pair.getKey(), pair.getValue());
-		}
+		pg.setVertex(v);
 		return v;
 	}
 	public Edge addEdge(OrcaNode out,OrcaNode in, String label){
@@ -74,12 +69,7 @@ public class PropertyGraphFactory {
 	public Edge addEdge(PropertyGraphEdge e){
 		if(map.containsKey(e.out) && map.containsKey(e.in)){
 			Edge ee=graph.addEdge(null, map.get(e.out), map.get(e.in), e.label);
-			Iterator<Entry<String, String>> it=e.properties.entrySet().iterator();
-			while(it.hasNext()){
-				Entry<String, String> pair= it.next();
-				if(pair.getValue()!=null)
-					ee.setProperty(pair.getKey(), pair.getValue());
-			}
+			e.setEdge(ee);
 			return ee;
 		}
 		else return null;

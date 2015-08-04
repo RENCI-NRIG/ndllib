@@ -3,9 +3,14 @@ package orca.ndllib.propertygraph.connector;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tinkerpop.blueprints.Edge;
+
 
 public class PropertyGraphEdge{
-	protected Map<String,String> properties=new HashMap<String,String>();
+	private String bandwidth;
+	private String latency;
+	private String internallabel;
+	private String realName;
 	public OrcaNode out;
 	public OrcaNode in;
 	public String label;
@@ -26,28 +31,42 @@ public class PropertyGraphEdge{
 		else
 			this.label="connectedTo";
 	}
-	protected void setBandwidth(String bandwidth){
-		properties.put("bandwidth", bandwidth);		
+	public void setEdge(Edge e){
+		if(bandwidth!=null && !bandwidth.isEmpty()){
+			e.setProperty(PropertyKeys.bandwidth, bandwidth);
+		}
+		if(latency!=null && !latency.isEmpty()){
+			e.setProperty(PropertyKeys.latency, latency);
+		}
+		if(internallabel!=null && !internallabel.isEmpty()){
+			e.setProperty(PropertyKeys.internallabel, internallabel);
+		}
+		if(realName!=null && !realName.isEmpty()){
+			e.setProperty(PropertyKeys.realName, realName);
+		}
 	}
-	protected String getBandwidth(){
-		return properties.get("bandwidth");
+	public String getBandwidth() {
+		return bandwidth;
 	}
-	protected void setLatency(String latency){
-		properties.put("latency", latency);		
+	public void setBandwidth(String bandwidth) {
+		this.bandwidth = bandwidth;
 	}
-	protected String getLatency(){
-		return properties.get("latency");
+	public String getLatency() {
+		return latency;
 	}
-	protected void setLabel(String label){
-		properties.put("internallabel", label);		
+	public void setLatency(String latency) {
+		this.latency = latency;
 	}
-	protected String getLabel(){
-		return properties.get("internallabel");
+	public String getLabel() {
+		return internallabel;
 	}
-	protected void setRealName(String realName){
-		properties.put("realName", realName);		
+	public void setLabel(String internallabel) {
+		this.internallabel = internallabel;
 	}
-	protected String getRealName(){
-		return properties.get("realName");
+	public String getRealName() {
+		return realName;
+	}
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 }

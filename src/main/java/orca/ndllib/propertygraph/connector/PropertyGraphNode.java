@@ -3,10 +3,29 @@ package orca.ndllib.propertygraph.connector;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import com.google.gson.Gson;
+import com.tinkerpop.blueprints.Vertex;
 
 public class PropertyGraphNode {
+	private String name;
+	private String reservationGuid;
+	private String state;
+	private String resNotice;
+	private String color;
+	private String nodeType;
+	private String addresses;
+	private String dependencies;
+	private String domain;
+	private String group;
+	private String image;
+	private String interfaces;
+	private String macAddresses;
+	private String managementAccess;
+	private String openPorts;
+	private String postBootScript;
+	private String substrateInfo;
+	private String url;
+	
 	public PropertyGraphNode(OrcaNode on) {
 		this.setName(on.getName());
 		this.setState(on.getState());
@@ -37,120 +56,185 @@ public class PropertyGraphNode {
 		}
 		this.setManagementAccess(ma);
 	}
-	Map<String,String> Properties=new HashMap<String,String>();
+	public PropertyGraphNode(Vertex v){
+		this.setName((String) v.getProperty(PropertyKeys.name));
+		this.setState((String) v.getProperty(PropertyKeys.state));
+		this.setReservationGuid((String) v.getProperty(PropertyKeys.reservationGuid));
+		this.setResNotice((String) v.getProperty(PropertyKeys.resNotice));
+		this.setDomain((String) v.getProperty(PropertyKeys.domain));
+		this.setGroup((String) v.getProperty(PropertyKeys.group));
+		this.setImage((String) v.getProperty(PropertyKeys.image));
+		this.setNodeType((String) v.getProperty(PropertyKeys.nodeType));
+		this.setPostBootScript((String) v.getProperty(PropertyKeys.postBootScript));
+		this.setUrl((String) v.getProperty(PropertyKeys.url));
+		this.setOpenPorts((String) v.getProperty(PropertyKeys.openPorts));
+		this.setSubstrateInfo((String) v.getProperty(PropertyKeys.substrateInfo));
+		this.setAddresses((String) v.getProperty(PropertyKeys.addresses));
+		this.setInterfaces((String) v.getProperty(PropertyKeys.interfaces));
+		this.setMacAddresses((String) v.getProperty(PropertyKeys.macAddresses));
+		this.setManagementAccess((String) v.getProperty(PropertyKeys.managementAccess));
+	}
+	public void setVertex(Vertex v){
+		if(name!=null && !name.isEmpty())
+			v.setProperty(PropertyKeys.name, name);
+		
+		if(state!=null && !state.isEmpty())
+			v.setProperty(PropertyKeys.state, state);
+		
+		if(reservationGuid!=null && !reservationGuid.isEmpty())
+			v.setProperty(PropertyKeys.reservationGuid, reservationGuid);
+
+		if(resNotice!=null && !resNotice.isEmpty())
+			v.setProperty(PropertyKeys.resNotice, resNotice);
+
+		if(domain!=null && !domain.isEmpty())
+			v.setProperty(PropertyKeys.domain, domain);
+
+		if(group!=null && !group.isEmpty())
+			v.setProperty(PropertyKeys.group, group);
+
+		if(image!=null && !image.isEmpty())
+			v.setProperty(PropertyKeys.image, image);
+
+		if(nodeType!=null && !nodeType.isEmpty())
+			v.setProperty(PropertyKeys.nodeType, nodeType);
+
+		if(postBootScript!=null && !postBootScript.isEmpty())
+			v.setProperty(PropertyKeys.postBootScript, postBootScript);
+
+		if(url!=null && !url.isEmpty())
+			v.setProperty(PropertyKeys.url, url);
+		
+		if(openPorts!=null && !openPorts.isEmpty())
+			v.setProperty(PropertyKeys.openPorts, openPorts);
+		
+		if(substrateInfo!=null && !substrateInfo.isEmpty())
+			v.setProperty(PropertyKeys.substrateInfo, substrateInfo);
+		
+		if(addresses!=null && !addresses.isEmpty())
+			v.setProperty(PropertyKeys.addresses, addresses);
+		
+		if(interfaces!=null && !interfaces.isEmpty())
+			v.setProperty(PropertyKeys.interfaces, interfaces);
+		
+		if(macAddresses!=null && !macAddresses.isEmpty())
+			v.setProperty(PropertyKeys.macAddresses, macAddresses);
+		
+		if(managementAccess!=null && !managementAccess.isEmpty())
+			v.setProperty(PropertyKeys.managementAccess, managementAccess);
+	}
 	//getters and setters for OrcaResources
 	protected void setName(String name){
-		Properties.put("name", name);		
+		this.name=name;		
 	}
 	protected String getName(){
-		return Properties.get("name");
+		return name;
 	}
 	protected String getReservationGuid(){
-		return Properties.get("reservationGuid");
+		return reservationGuid;
 	}
 	protected void setReservationGuid(String reservationGuid){
-		Properties.put("reservationGuid",reservationGuid);
+		this.reservationGuid=reservationGuid;
 	}
 	protected void setState(String state){
-		Properties.put("state", state);		
+		this.state=state;		
 	}
 	protected String getState(){
-		return Properties.get("state");
+		return state;
 	}
 	protected void setResNotice(String resNotice){
-		Properties.put("resNotice", resNotice);		
+		this.resNotice=resNotice;		
 	}
 	protected String getResNotice(){
-		return Properties.get("resNotice");
+		return resNotice;
 	}
 	protected void setColor(String color){
-		Properties.put("color", color);		
+		this.color=color;		
 	}
 	protected String getColor(){
-		return Properties.get("color");
+		return color;
 	}
 	
 	//getters and setters for OrcaNode
 	protected void setNodeType(String nodetype){
-		Properties.put("nodeType",nodetype);
+		this.nodeType=nodetype;
 	}
 	protected String getNodeType(){
-		return Properties.get("nodeType");
+		return nodeType;
 	}
 	//Addresses is hashmap, use gson
 	//with OrcaNode.getIP to serialize
 	protected void setAddresses(String addresses){
-		Properties.put("addresses", addresses);		
+		this.addresses=addresses;		
 	}
 	protected String getAddresses(){
-		return Properties.get("addresses");
+		return addresses;
 	}
-	//dependencies is a set of OrcaNodes
-	//use String s= OrcaNode name+":"+...
-	protected void setDependencies(String dependencies){
-		Properties.put("dependencies", dependencies);		
+
+	public String getDependencies() {
+		return dependencies;
 	}
-	protected String getDependencies(){
-		return Properties.get("dependencies");
+	public void setDependencies(String dependencies) {
+		this.dependencies = dependencies;
 	}
-	protected void setDomain(String domain){
-		Properties.put("domain",domain);
+	public String getDomain() {
+		return domain;
 	}
-	protected String getDomain(){
-		return Properties.get("domain");
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
-	protected void setGroup(String group){
-		Properties.put("group",group);
+	public String getGroup() {
+		return group;
 	}
-	protected String getGroup(){
-		return Properties.get("group");
+	public void setGroup(String group) {
+		this.group = group;
 	}
-	protected void setImage(String image){
-		Properties.put("image",image);
+	public String getImage() {
+		return image;
 	}
-	protected String getImage(){
-		return Properties.get("image");
+	public void setImage(String image) {
+		this.image = image;
 	}
-	protected void setInterfaces(String interfaces){
-		Properties.put("interfaces",interfaces);
+	public String getInterfaces() {
+		return interfaces;
 	}
-	protected String getInterfaces(){
-		return Properties.get("interfaces");
+	public void setInterfaces(String interfaces) {
+		this.interfaces = interfaces;
 	}
-	protected void setMacAddresses(String macAddresses){
-		Properties.put("macAddresses",macAddresses);
+	public String getMacAddresses() {
+		return macAddresses;
 	}
-	protected String getMacAddresses(){
-		return Properties.get("macAddresses");
+	public void setMacAddresses(String macAddresses) {
+		this.macAddresses = macAddresses;
 	}
-	protected void setManagementAccess(String managementAccess){
-		Properties.put("managementAccess",managementAccess);
+	public String getManagementAccess() {
+		return managementAccess;
 	}
-	protected String getManagementAccess(){
-		return Properties.get("managementAccess");
+	public void setManagementAccess(String managementAccess) {
+		this.managementAccess = managementAccess;
 	}
-	protected void setOpenPorts(String openPorts){
-		Properties.put("openPorts",openPorts);
+	public String getOpenPorts() {
+		return openPorts;
 	}
-	protected String getOpenPorts(){
-		return Properties.get("openPorts");
+	public void setOpenPorts(String openPorts) {
+		this.openPorts = openPorts;
 	}
-	protected void setPostBootScript(String postBootScript){
-		Properties.put("postBootScript",postBootScript);
+	public String getPostBootScript() {
+		return postBootScript;
 	}
-	protected String getPostBootScript(){
-		return Properties.get("postBootScript");
+	public void setPostBootScript(String postBootScript) {
+		this.postBootScript = postBootScript;
 	}
-	protected void setSubstrateInfo(String substrateInfo){
-		Properties.put("substrateInfo",substrateInfo);
+	public String getSubstrateInfo() {
+		return substrateInfo;
 	}
-	protected String getSubstrateInfo(){
-		return Properties.get("substrateInfo");
+	public void setSubstrateInfo(String substrateInfo) {
+		this.substrateInfo = substrateInfo;
 	}
-	protected void setUrl(String url){
-		Properties.put("url",url);
+	public String getUrl() {
+		return url;
 	}
-	protected String getUrl(){
-		return Properties.get("url");
+	public void setUrl(String url) {
+		this.url = url;
 	}
 }
