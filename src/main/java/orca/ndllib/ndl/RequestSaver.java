@@ -29,28 +29,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import orca.ndllib.NDLLIB;
-import orca.ndllib.Request;
-import orca.ndllib.resources.request.BroadcastNetwork;
-import orca.ndllib.resources.request.ComputeNode;
-import orca.ndllib.resources.request.Network;
-import orca.ndllib.resources.request.Node;
-import orca.ndllib.resources.request.RequestResource;
-import orca.ndllib.resources.request.Interface;
-import orca.ndllib.resources.request.InterfaceNode2Net;
-import orca.ndllib.resources.request.StitchPort;
-import orca.ndllib.resources.request.StorageNode;
 import orca.ndl.NdlCommons;
 import orca.ndl.NdlException;
 import orca.ndl.NdlGenerator;
+import orca.ndllib.Request;
+import orca.ndllib.resources.request.BroadcastNetwork;
+import orca.ndllib.resources.request.ComputeNode;
+import orca.ndllib.resources.request.Interface;
+import orca.ndllib.resources.request.InterfaceNode2Net;
+import orca.ndllib.resources.request.Network;
+import orca.ndllib.resources.request.Node;
+import orca.ndllib.resources.request.StitchPort;
+import orca.ndllib.resources.request.StorageNode;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -58,23 +53,10 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Resource;
 //import com.hyperrealm.kiwi.ui.dialog.ExceptionDialog;
 
-
-
-
-
-
-
-
-
-import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class RequestSaver {
 	private Request request;
-	
-	
-
-	
 	
 	private static RequestSaver instance;
 	private NdlGenerator ngen = null;
@@ -537,8 +519,7 @@ public class RequestSaver {
 			if ((sp.getPort() == null) || (sp.getPort().length() == 0) || 
 					(sp.getLabel() == null) || (sp.getLabel().length() == 0))
 				throw new NdlException("URL and label must be specified in StitchPort");
-			intI = ngen.declareExistingInterface(sp.getPort());
-			ngen.addLabelToIndividual(intI, sp.getLabel());
+			intI = ngen.declareStitchportInterface(sp.getPort(), sp.getLabel());
 		} else {
 			intI = ngen.declareInterface(e.getName()+"-"+n.getName());
 		}
