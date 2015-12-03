@@ -10,10 +10,32 @@
   <name>ndllib</name>
   <url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+        <properties>
+                <orca.snap.repository.id>geni-orca-snapshot</orca.snap.repository.id>
+                <orca.rel.repository.id>geni-orca-release</orca.rel.repository.id>
+                <orca.snap.repository.url>http://ci-dev.renci.org/nexus/content/repositories/geni-orca-snapshot/</orca.snap.repository.url>
+                <orca.rel.repository.url>http://ci-dev.renci.org/nexus/content/repositories/geni-orca-release/</orca.rel.repository.url>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <orca.website.id>orca.website</orca.website.id>
+                <orca.website.url>dav:https://geni-orca.renci.org/orca-doc/current</orca.website.url>
+        </properties>
 
+        <distributionManagement>
+                <snapshotRepository>
+                        <id>${orca.snap.repository.id}</id>
+                        <name>Orca Project Maven Snapshot Repository</name>
+                        <url>${orca.snap.repository.url}</url>
+                </snapshotRepository>
+                <repository>
+                        <id>${orca.rel.repository.id}</id>
+                        <name>Orca Project Maven Release Repository</name>
+                        <url>${orca.rel.repository.url}</url>
+                </repository>
+                <site>
+                        <id>${orca.website.id}</id>
+                        <url>${orca.website.url}</url>
+                </site>
+        </distributionManagement>
 
         <build>
                 <plugins>
