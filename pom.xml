@@ -30,7 +30,13 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
-
+         <repository>
+             <id>${orca.rel.repository.id}</id>
+             <url>${orca.rel.repository.url}</url>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+         </repository>
 
 	</repositories>
 	<distributionManagement>
