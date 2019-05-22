@@ -21,7 +21,7 @@
 	</properties>
 
 	<repositories>
-		<repository>
+        <repository>
 			<id>${orca.snap.repository.id}</id>
 			<name>Orca Project Maven Snapshot Repository</name>
 			<url>${orca.snap.repository.url}</url>
@@ -29,8 +29,14 @@
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
-		</repository>
-
+        </repository>
+         <repository>
+             <id>${orca.rel.repository.id}</id>
+             <url>${orca.rel.repository.url}</url>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+         </repository>
 
 	</repositories>
 	<distributionManagement>
@@ -118,7 +124,7 @@
 		<dependency>
 			<groupId>orca</groupId>
 			<artifactId>ndl</artifactId>
-			<version>5.0-SNAPSHOT</version>
+			<version>5.4.10-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -189,7 +195,7 @@
 		<dependency>
 			<groupId>orca.core</groupId>
 			<artifactId>util</artifactId>
-			<version>5.0-SNAPSHOT</version>
+			<version>5.4.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

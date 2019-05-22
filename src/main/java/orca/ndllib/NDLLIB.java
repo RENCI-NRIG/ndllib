@@ -101,7 +101,7 @@ public class NDLLIB {
 	 */
 	public static void non_gui_main() {
 		// Jena stuff needs to be set up early
-		NdlCommons.setGlobalJenaRedirections();
+		NdlCommons.init();
 		
 		//NDLLIB gui = NDLLIB.getInstance();
 
